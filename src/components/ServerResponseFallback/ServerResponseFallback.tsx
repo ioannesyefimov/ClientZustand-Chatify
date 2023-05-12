@@ -22,7 +22,7 @@ type ResponseFallbackType ={
     let content = (
         <>
         {location.pathname.includes("/auth")  ?  <NavigationBar/> : null}
-        {loading ?? <LoadingFallback />}
+        {loading && <LoadingFallback />}
         <Outlet/>
         </>
     )

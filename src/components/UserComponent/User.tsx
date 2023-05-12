@@ -9,9 +9,9 @@ type PropsType = {
 
 const User = ({user,className,location}:{user?:UserType,className?:string,location:string}) => {
     return (
-      <Link to={location==='profile' || location==='bar' ? '/profile' : `/user/${user?._id !== 'undefined' ? user?._id : 'deleted'}`} className={className ?? 'user'} >
+      <Link to={location==='profile' || location==='bar' ? '/profile' : `/user/${user?._id  ?? 'deleted'}`} className={className ?? 'user'} >
           <img src={user?.picture ? user.picture : userIco} alt="avatar" className='user-img' />
-          <span>{user?.userName ?? 'This user has been deleted...(⊙_⊙;)'}</span>        
+          <span className='user-name'>{user?.userName ?? 'This user has been deleted...(⊙_⊙;)'}</span>        
       </Link>
     )
   }

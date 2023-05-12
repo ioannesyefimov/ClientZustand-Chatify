@@ -34,7 +34,7 @@ let router = createBrowserRouter([
     
       },
       {
-        element: <UserComponent />,
+        element: <UserComponent locationType='user' />,
         path: '/user/:userId'
       },
       {

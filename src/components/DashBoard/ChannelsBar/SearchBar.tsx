@@ -1,4 +1,4 @@
-import  {  useEffect, useState } from 'react'
+import  {  SetStateAction, useEffect, useState } from 'react'
 import { searchIco } from '../../../assets'
 import FormInput from '../../FormInput/FormInput'
 import { ChannelType, UserType } from '../../types'
@@ -16,9 +16,10 @@ type PropsType ={
     isFetch:boolean
     swrKey:string
   }
-  setSearchedChannels: (channel:ChannelType[] | null)=>void
+    setSearched: React.Dispatch<SetStateAction<unknown>>
+    // setSearched: ()=>void
 }
-const SearchBar = ({user,fetchParams,setSearchedChannels,channels,searchType}:PropsType) => {
+const SearchBar = ({user,fetchParams,setSearched,channels,searchType}:PropsType) => {
   const serverUrl=useAuthStore(s=>s.serverUrl)
   const setServerResponse=useAuthStore(s=>s.setServerResponse)
   const [search,setSearch]=useState('')
@@ -37,13 +38,13 @@ const SearchBar = ({user,fetchParams,setSearchedChannels,channels,searchType}:Pr
     async function  initSearch(){
         let params = new URLSearchParams(location.search)
         let searchParam = params?.get('search') ?? debouncedValue
-        console.log(Boolean(searchParam))
+       
         if(!searchParam && fetchParams?.isFetch) {
-         return setSearchedChannels(data?.data?.channels ?? data?.data?.users)
+         return setSearched(data?.data?.channels ?? data?.data?.users)
         }
-        if(!searchParam)return setSearchedChannels(null)
+        if(!searchParam)return setSearched(null)
         let result = await  handleSearch({search:searchParam,searchType:SEARCH_TYPE[searchType],searchValues:{channels:data?.data?.channels ?? channels}})
-          setSearchedChannels(result?.filtered as any)
+          setSearched(result?.filtered as any)
           // setSearchedChannels(searchedChannels?.data?.channels)
     } 
 

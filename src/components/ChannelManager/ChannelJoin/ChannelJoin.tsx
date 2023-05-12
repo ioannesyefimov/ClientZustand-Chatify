@@ -6,11 +6,13 @@ import Button from '../../Button/Button'
 import { backIco, closeIco } from '../../../assets'
 
 import { useChatStore } from '../../../ZustandStore'
+import { useState } from 'react'
+import { ChannelType } from '../../types'
 
 const ChannelJoin = ()=>{
+    const [searchedChannels,setSearchedChannels] = useState<ChannelType[]>()
     const channels = useChatStore( s=>s.channels)
-    const setSearchedChannels = useChatStore( s=>s.setSearchedChannels)
-    const searchedChannels = useChatStore( s=>s.searchedChannels)
+    // const setSearchedChannels = useChatStore( s=>s.setSearchedChannels)
     let navigate = useNavigate()
     return (
         <div className='prompt-menu-component  box-shadow--gray'>
@@ -21,11 +23,11 @@ const ChannelJoin = ()=>{
                 <img src={backIco} alt="back icon" />
             </Button>
             <form>
-                <SearchBar   channels={channels} searchType='CHANNELS' fetchParams={{
+                <SearchBar   channels={channels} searchType='CHANNEL' fetchParams={{
                     isFetch:true,
                     url:'channels',
                     swrKey:'/api/channels'
-                }} setSearchedChannels={setSearchedChannels}/>
+                }} setSearched={setSearchedChannels as React.Dispatch<unknown>}/>
                 <Channels  type="join" fallbackText={`Nothing  was found...`}  channels={searchedChannels!}/>
             </form>
         </div>

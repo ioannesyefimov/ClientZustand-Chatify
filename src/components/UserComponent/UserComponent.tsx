@@ -11,9 +11,7 @@ import { APIFetch } from '../utils'
 import { LoadingFallback } from '../LoadingFallback/LoadingFallback'
 import { useAuthStore } from '../../ZustandStore'
 
-const UserComponent = () => {
-  // const {handleSearch,searchedValue,setSearchedValue} = useSearch()
-  // const [showedUser,setShowedUser] = useState<UserType|null>()
+const UserComponent = ({locationType}:{locationType?:string}) => {
   let {userId} = useParams()
   console.log(`id`,userId)
   const serverUrl=useAuthStore(s=>s.serverUrl)
@@ -23,28 +21,7 @@ const UserComponent = () => {
 
   if(isLoading) return <LoadingFallback/>
   if(error) setServerResponse(error)
-
-  // useEffect(
-  //   ()=>{
-  //     console.log(`id`,userId);
-  //     if(!userId) return console.log(`params is empty`);
-  //     handleSearch({search:userId,searchType:'USERS'})
-  //     return ()=>{setSearchedValue({});setShowedUser(null)}
-  //   },[]
-  // )
-  // useEffect(()=>{
-  //   console.log(`SEARCHEDVALUE `, searchedValue);
-    
-  //   if(searchedValue?.users){
-  //     handleSearch({search:userId,searchType:'USER'})
-  //   }
-  //   if(searchedValue?.filteredUsers){
-  //     setShowedUser(searchedValue.filteredUsers[0])
-  //   }
-  // },[searchedValue])
-
   type UserChannelsType = {default?:any,channel:ChannelType,_id:string}
-
   const showedUser = data?.data?.user
   let userChannels =(
     <div className="user-channels">
@@ -63,7 +40,7 @@ const UserComponent = () => {
   let content = (
     <>
       <div className='user-component' >
-       <User location="profile" user={showedUser!} key={showedUser?._id}/>
+       <User location={locationType==='user' ? `/user/${showedUser?._id}` : 'profile'} user={showedUser!} key={showedUser?._id}/>
         {userChannels}
       </div>
     </>
@@ -80,7 +57,7 @@ const UserComponent = () => {
         <div className="user-component">
           <h2>Not Found...</h2>
           <span>Check spelling if you are sure there is such user...</span>
-          <Link to="/search">Search again</Link>
+          <Link to="/">Search again</Link>
         </div>
     )}
     </>

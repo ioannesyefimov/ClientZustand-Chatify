@@ -67,7 +67,7 @@ return (
        ): (
         null
        )}
-    <div className="scrolledToDiv" ref={scrollToRef as anyh}></div>
+    <div className="scrolledToDiv" ref={scrollToRef as any}></div>
      </div>
   )
 })

@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { SetStateAction, useCallback, useMemo, useState } from 'react'
 import { ChannelType, UserType } from '../../components/types'
 import { APIFetch, sleep, throwErr } from '../../components/utils'
 import {  useResponseContext } from '..'
@@ -61,7 +61,7 @@ const useSearch = () => {
             }
             console.log(`SEARCH:`, search);
             console.log(`type:`,searchType)
-            search = search ? search.toLowerCase() : ''
+            search = search ? search?.toLowerCase() : ''
             switch(searchType){
                 // case SEARCH_TYPE.CHANNELS:{
                 //     let response = await APIFetch({url:`${serverUrl}/channels`});
@@ -142,17 +142,11 @@ const useSearch = () => {
             
     },[search])
 
-    const  handleSearchChange = async(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>{
+    const  handleSearchChange = async(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,setSearch:React.Dispatch<SetStateAction<string>>) =>{
        await sleep(500)
         setSearch(e.target.value)
     } 
-
-      const value = useMemo(
-        ()=>({
-            SEARCH_TYPE,search,handleSearchChange,handleSearch
-        }),[search]
-      )
-  return value
+  return { SEARCH_TYPE,search,handleSearchChange,handleSearch}
 }
 
 export default useSearch

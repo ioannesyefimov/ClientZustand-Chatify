@@ -11,10 +11,13 @@ import { Button } from '../..'
 import useFetchChannels from '../../../hooks/useFetchChannels/useFetchChannels'
 import Members from './Members/Members'
 import { useChatStore } from '../../../ZustandStore'
+import { LoadingFallback } from '../../LoadingFallback/LoadingFallback'
 
 const ChannelsBar = ({user}:{user:UserType}) => {
   const [showedBar , setShowedBar]=useState(false)
-  const {searchedChannels,setSearchedChannels,currentChannel,setCurrentChannel}=useChatStore()
+  const [searchedChannels ,setSearchedChannels]=useState<unknown>()
+  const currentChannel=useChatStore(s=>s.currentChannel)
+  const setCurrentChannel=useChatStore(s=>s.setCurrentChannel)
   const  location = useLocation()
   const navigate = useNavigate()
   useEffect(
@@ -72,8 +75,8 @@ const ChannelsBar = ({user}:{user:UserType}) => {
             <span>Channels</span>
             <Button onClick={()=>navigate(`${location.pathname}?manage`)} name='link' img={settingIco} />
             </div>
-            <SearchBar searchType='CHANNEL' channels={channels} setSearchedChannels={setSearchedChannels}  />
-            {isLoading ? <>Loading...</> : (
+            <SearchBar searchType='CHANNEL' channels={channels} setSearched={setSearchedChannels}  />
+            {isLoading ? <LoadingFallback className="loading" ><h3>Loading...</h3></LoadingFallback> : (
                 <Channels type='leave' fallbackText={searchedChannels?.length   ? 'Not found' : `You aren't member of any channels`} channels={userChannels as ChannelType[]} />
             )} 
             <Button name='refetch'  onClick={()=>fetchChannels!(user)} img={refreshIco} type='button'/>

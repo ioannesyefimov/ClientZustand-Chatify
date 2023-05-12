@@ -10,9 +10,17 @@ function useDebounce({value,delay}:PropsType) {
 
     useEffect(
         ()=>{
-            const id = setTimeout(()=>setDebouncedValue(value),delay)
+            const id = setTimeout(()=>{
+                console.log(`setting debounce timeout`);
+                
+                return setDebouncedValue(value)
+            },delay)
+                
 
-            return ()=>clearTimeout(id)
+            return ()=>{
+                console.log(`setting debounce timeout`);
+                clearTimeout(id);
+            }
         },[delay,value]
     )
   return debouncedValue

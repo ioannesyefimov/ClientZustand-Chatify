@@ -1,8 +1,8 @@
-import React, {  useEffect, useState } from 'react'
+import React, {  useCallback, useEffect, useState } from 'react'
 import './UserSearch.scss'
 import { UserType } from '../types'
 import { APIFetch, sleep } from '../utils'
-import {  useSearch } from '../../hooks'
+import {  useDebounce, useSearch } from '../../hooks'
 import User from '../UserComponent/User'
 import { Link } from 'react-router-dom'
 import { searchIco } from '../../assets'
@@ -13,28 +13,31 @@ import { useAuthStore } from '../../ZustandStore'
 
 
 const UserSearch = () => {
+    const [search,setSearch]=useState('')
+    const serverUrl = useAuthStore(s=>s.serverUrl)
     let fetcher = ()=>APIFetch({url:`${serverUrl}/users`,method:'GET'})
     const {data:users,isLoading,error}=useSWR('/api/auth/users',fetcher)
-    const [showedUser,setShowedUser]=useState<UserType | UserType[]>()
-    // let fetcher = ()=>APIFetch({url:`${serverUrl}/users?email=${query.get("email")}&userName=${query.get("userName")}&id=${query.get("id")}`,method:'GET'})
-    const serverUrl = useAuthStore(s=>s.serverUrl)
- 
-    const {handleSearch,search,handleSearchChange} = useSearch()
+    const [showedUsers,setShowedUsers]=useState<UserType | UserType[]>()
+    const {handleSearch} = useSearch()
+
+    const debouncedValue = useDebounce({value:search,delay:500})
+
+    const initSearch = useCallback(
+        async ()=>{
+            if(debouncedValue){
+                let result =await  handleSearch({search:debouncedValue,searchType:'USER',searchValues: {users:users?.data?.users}})
+                console.log(`result`,result);
+                
+                setShowedUsers(result?.filtered as UserType[])
+            } else if (!debouncedValue) {
+                setShowedUsers(users?.data?.users)
+            }
+        },[debouncedValue,users]
+    )
     useEffect(
         ()=>{
-            sleep(1000).then(
-                async ()=>{
-                    if(search){
-                        let result =await  handleSearch({search,searchType:'USER',searchValues: {users:users?.data?.users}})
-                        console.log(`result`,result);
-                        
-                        setShowedUser(result?.filtered as UserType[])
-                    } else {
-                        setShowedUser(users?.data?.users)
-                    }
-                }
-            )
-        },[search]
+           initSearch()
+        },[debouncedValue,users]
     )
     // useEffect(
     //     ()=>{
@@ -53,18 +56,15 @@ const UserSearch = () => {
 
     if(isLoading)return <LoadingFallback/>
 
+    let mappedUsers = (showedUsers as UserType[])?.map((user:UserType)=>{
+        return <User location='search'  user={user}/>
+    })
     let content = (
         <div className='member-info'>  
-       <FormInput name='search' id="searchInput" placeholder='Search' photo={searchIco} type='text' onChange={(e)=>handleSearchChange(e)} value={search} />
-        {
-            (showedUser as UserType[])?.map((user:UserType)=>{
-                return (
-                    <Link key={user._id!} to={`/user?id=${user._id}`} replace >
-                        <User location=''  user={user}/>
-                    </Link> 
-                )
-            })
-        }      
+       <FormInput name='search' id="searchInput" placeholder='Search' photo={searchIco} type='text' onChange={(e)=>setSearch(e.currentTarget.value)} value={search} />
+        <div className='users-wrapper'>
+        {mappedUsers}      
+        </div>
         </div>
     )
                 

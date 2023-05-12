@@ -3,11 +3,9 @@ import { ChannelType, MessageType } from '../components/types'
 const useChatStore = create<{
     // fetchChannels: (user:UserType)=>Promise<void>
     channels:ChannelType[] | [];
-    searchedChannels:ChannelType[] | null
     currentChannel: ChannelType | null
     setCurrentChannel: (channel:ChannelType|null)=>void
     setChannels: (channels:ChannelType[])=>void;
-    setSearchedChannels:(channels:ChannelType[] | null)=>void
     addCurrentChannelMessage: (message:MessageType)=>any
     joinChannel: (channel:ChannelType) =>void
     leaveChannel: (channel_id:string) =>void
@@ -16,8 +14,6 @@ const useChatStore = create<{
 }>((set,get)=> ({
     channels:[],
     currentChannel:null,
-    searchedChannels:null,
-    setSearchedChannels: (searchedChannels:ChannelType[] | null)=>set({searchedChannels}),
     setCurrentChannel: (currentChannel:ChannelType | null)=>set({currentChannel}),
     setChannels: (channels) =>set({channels}),
     joinChannel: (channel:ChannelType) => set((state)=>({channels: [...state?.channels,channel]})),
