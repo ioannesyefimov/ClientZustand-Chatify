@@ -2,7 +2,7 @@ import  {  useEffect, useState } from 'react'
 import { searchIco } from '../../../assets'
 import FormInput from '../../FormInput/FormInput'
 import { ChannelType, UserType } from '../../types'
-import { useSearch } from '../../../hooks'
+import { useDebounce, useSearch } from '../../../hooks'
 import { useLocation } from 'react-router-dom'
 import { APIFetch, sleep } from '../../utils'
 import useSWR from 'swr'
@@ -24,6 +24,7 @@ const SearchBar = ({user,fetchParams,setSearchedChannels,channels,searchType}:Pr
   const [search,setSearch]=useState('')
   // const search = useChatStore(s=>s.search)
   // const setSearch = useChatStore(s=>s.setSearch)
+  const debouncedValue = useDebounce({value:search,delay:500})
   const fetcher = ()=>APIFetch({
     url:`${serverUrl}/${fetchParams?.url}`,
     method:'GET'
@@ -34,9 +35,8 @@ const SearchBar = ({user,fetchParams,setSearchedChannels,channels,searchType}:Pr
     setServerResponse(error)
   }  
     async function  initSearch(){
-      await sleep(3000);
         let params = new URLSearchParams(location.search)
-        let searchParam = params?.get('search') ?? search
+        let searchParam = params?.get('search') ?? debouncedValue
         console.log(Boolean(searchParam))
         if(!searchParam && fetchParams?.isFetch) {
          return setSearchedChannels(data?.data?.channels ?? data?.data?.users)
@@ -52,7 +52,7 @@ const SearchBar = ({user,fetchParams,setSearchedChannels,channels,searchType}:Pr
     ()=>{
       
           initSearch()
-    },[search,data?.data]
+    },[debouncedValue,data?.data]
   )
   // useEffect(
   //   ()=>{
