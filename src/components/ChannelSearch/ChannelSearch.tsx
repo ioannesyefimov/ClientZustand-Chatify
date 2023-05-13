@@ -14,7 +14,7 @@ const ChannelSearch = () => {
   const fetcher = ()=>APIFetch({url:`${serverUrl}/channels`,method:'get'})
     const {data:channels,isLoading,error}=useSWR('/api/channels',fetcher)
 
-    const {handleSearchChange} = useSearch()
+    // const {handleSearchChange} = useSearch()
     
 
     

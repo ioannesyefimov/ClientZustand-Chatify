@@ -15,7 +15,7 @@ import { LoadingFallback } from '../../LoadingFallback/LoadingFallback'
 
 const ChannelsBar = ({user}:{user:UserType}) => {
   const [showedBar , setShowedBar]=useState(false)
-  const [searchedChannels ,setSearchedChannels]=useState<unknown>()
+  const [searchedChannels ,setSearchedChannels]=useState<ChannelType[]>()
   const currentChannel=useChatStore(s=>s.currentChannel)
   const setCurrentChannel=useChatStore(s=>s.setCurrentChannel)
   const  location = useLocation()
@@ -76,7 +76,7 @@ const ChannelsBar = ({user}:{user:UserType}) => {
             <Button onClick={()=>navigate(`${location.pathname}?manage`)} name='link' img={settingIco} />
             </div>
             <SearchBar searchType='CHANNEL' channels={channels} setSearched={setSearchedChannels}  />
-            {isLoading ? <LoadingFallback className="loading" ><h3>Loading...</h3></LoadingFallback> : (
+            {isLoading ? <LoadingFallback /> : (
                 <Channels type='leave' fallbackText={searchedChannels?.length   ? 'Not found' : `You aren't member of any channels`} channels={userChannels as ChannelType[]} />
             )} 
             <Button name='refetch'  onClick={()=>fetchChannels!(user)} img={refreshIco} type='button'/>

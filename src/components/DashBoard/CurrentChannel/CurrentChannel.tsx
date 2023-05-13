@@ -8,6 +8,7 @@ import MessagesProvider from '../../MessagesWrapper/Context/MessagesContext'
 import MessagesWrapper from '../../MessagesWrapper/MessagesWrapper'
 import { useAuthStore } from '../../../ZustandStore'
 import { LoadingFallback } from '../../LoadingFallback/LoadingFallback'
+import ChannelsSettings from '../ChannelsSettings/ChannelsSettings'
 
 const {certOptions,io,serverUrl} = SocketStore()
 export const channelSocket = io(`${serverUrl}/currentChannel`,{
@@ -80,6 +81,7 @@ const CurrentChannel = () => {
   let channelContent =
   (
     <>
+      {location.search.includes('?settings=show') && <ChannelsSettings/>}
     <div className='channel-title'>
       <h2 >{currentChannel?.channelName}</h2> 
     </div>

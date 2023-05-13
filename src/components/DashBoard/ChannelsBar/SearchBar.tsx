@@ -16,7 +16,7 @@ type PropsType ={
     isFetch:boolean
     swrKey:string
   }
-    setSearched: React.Dispatch<SetStateAction<unknown>>
+    setSearched: React.Dispatch<SetStateAction<any>>
     // setSearched: ()=>void
 }
 const SearchBar = ({user,fetchParams,setSearched,channels,searchType}:PropsType) => {

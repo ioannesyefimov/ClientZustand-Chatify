@@ -11,7 +11,7 @@ const ChannelManager = () => {
             {location.search==='?manage' ? (
                 <div className='wrapper'>
                     <Link to={`${location.pathname}?manage=join`}  replace>Join channel</Link>
-                    <Link to={`${location.pathname}?managecreate`}  replace>Create new channel</Link>
+                    <Link to={`${location.pathname}?manage=create`}  replace>Create new channel</Link>
                 </div>
 
             ): (
