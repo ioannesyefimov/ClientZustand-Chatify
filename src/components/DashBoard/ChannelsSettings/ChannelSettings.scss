@@ -1,0 +1,13 @@
+.profile-settings-component {
+
+    position: absolute;
+    // display: grid;
+    place-content: center;
+    margin: auto;
+    inset: 0;
+    z-index: 154;
+    background-color: black;
+    & > * {
+        color: white;
+    }
+}
