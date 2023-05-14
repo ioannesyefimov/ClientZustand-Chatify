@@ -43,7 +43,7 @@ export type ChannelType = {
     _id?:string 
     channelAvatar:string 
     channelDescription?: string
-    isAdmin?:boolean
+    hasAdminPermissions?:boolean
 }
 
 export type ProviderProps = {

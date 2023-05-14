@@ -38,11 +38,11 @@ const Hamburger = ({children,type}:PropsType) => {
         ()=>{
             if(location.pathname === '/chat' ){
                 setIsToggled('toggled')
-            }else {
+            }else if(location.pathname!=='/chat' || location.search !==''){
                 setIsToggled('untoggled')
 
             }
-        },[location.pathname]
+        },[location.pathname,location.search]
     )
     let content = (
         <div className={`hamburger navbar `} data-istoggled={isToggled}  >
