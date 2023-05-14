@@ -49,18 +49,18 @@ const useHandleChannel = (setCurrent?:Dispatch<SetStateAction<any>> | undefined)
               console.log(`FIELDS: `, fields)
               let response:ResponseType = await APIFetch({url:`${serverUrl}/channels/join`, body:{channel_id:id,userEmail:user.email},method:'POST', setError:setServerResponse})
               if(!response.success) throwErr(response?.err)
+              console.log(`RESPONSE : `, response)
               // setChannels(prev=>({...prev, ...response?.data?.channel }))
               // setCookie('user',newChannels,{path:'/',maxAge:2000})
               // let newChannels = [...user.channels, response.data.channel]
               joinChannel(response?.data?.channel)
               // setCookie('channels',newChannels,{path:'/',maxAge:2000})
               navigate(`/chat/${response?.data?.channel?._id}`)
-              console.log(`RESPONSE : `, response)
           } catch (error) {
               console.log(`ERROR:`,error)
               setServerResponse(error)
           }finally{
-              // setLoading(false)
+              setLoading(false)
           }
       }
 

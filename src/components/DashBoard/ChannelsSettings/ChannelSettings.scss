@@ -1,13 +1,21 @@
 .profile-settings-component {
 
-    position: absolute;
+    // position: absolute;
+    width:80%;
+    max-width: 700px;
     // display: grid;
-    place-content: center;
     margin: auto;
-    inset: 0;
+    // inset: 0;
     z-index: 154;
-    background-color: black;
+    background-color: rgb(17, 15, 21);
     & > * {
         color: white;
+    }
+
+    .channel {
+        // display: flex;
+        &-logo {
+            max-width: 100px;
+        }
     }
 }

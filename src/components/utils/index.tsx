@@ -355,7 +355,7 @@ export function sleep(ms:number) {
 }
 
 function getFirstLetter(str:string,words?:number){
-  if(!str) return Errors.MISSING_ARGUMENTS
+  if(!str) return <img src="https://icon2.cleanpng.com/20180719/qlu/kisspng-computer-icons-error-message-download-error-icon-5b504a9606c293.4498774215319886300277.jpg"/>
   let letters
   if(countWords(str) > 1){
     let arr = str.split(' ')

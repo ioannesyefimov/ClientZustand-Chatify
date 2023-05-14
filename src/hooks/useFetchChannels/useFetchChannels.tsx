@@ -9,7 +9,6 @@ const useFetchChannels = (user:UserType) => {
     // const serverUrl = useServerUrl()
     const setChannels=useChatStore((state)=>state.setChannels)
     const serverUrl = useAuthStore(state=>state.serverUrl)
-    const setLoading = useAuthStore(state=>state.setLoading)
     const {cookies,setCookie} = useAuthCookies()
     // const setLoading=useSetLoading()
     // const setChannels = useSetChannels()
@@ -23,14 +22,13 @@ const useFetchChannels = (user:UserType) => {
             
             if(channels){
                 setChannels(channels?.data?.channels)
-            }else if (error?.name === Errors.CHANNELS_NOT_FOUND){
+            }else {
                 setChannels([])
             }
         },[channels]
     )
     const fetchChannels = useCallback(
     async(user:UserType,signal?:AbortSignal)=>{
-        setLoading(true)
         try {
             if(!user?.email ) {
                 return console.log(`USER IS UNDEFINED`)
@@ -42,19 +40,17 @@ const useFetchChannels = (user:UserType) => {
             }
             let channels = response?.data?.channels
             console.log(`channels`, channels);
-            
+            setChannels(channels)
             setCookie('channels', channels, {maxAge: 2000,path:'/'})
             setCookie('user',response.data.user,{path:'/',maxAge:2000})
         } catch (error) {
         console.error(error)
         } finally{
-            setLoading(false)
         }
     },[user])
-    let value =useMemo(
-        ()=>({channels:channels?.data?.channels,error,isLoading,fetchChannels}),[channels?.data]) 
-    return value
-
+    return {
+        channels:channels?.data?.channels,error,isLoading,fetchChannels
+    }
 }
 
 export default  useFetchChannels
