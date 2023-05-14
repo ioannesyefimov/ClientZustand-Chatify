@@ -81,7 +81,7 @@ const CurrentChannel = () => {
   let channelContent =
   (
     <>
-      {location.search.includes('?settings=show') && <ChannelsSettings/>}
+      {location.search.includes('?settings=show') && <ChannelsSettings channel={currentChannel!}/>}
     <div className='channel-title'>
       <h2 >{currentChannel?.channelName}</h2> 
     </div>

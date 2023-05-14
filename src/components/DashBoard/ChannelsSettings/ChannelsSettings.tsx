@@ -6,11 +6,10 @@ import { useResponseContext, useUpload, useAuthCookies } from '../../../hooks';
 import Button from '../../Button/Button';
 import FormInput from '../../FormInput/FormInput';
 import UploadInput from '../../UploadInput/UploadInput';
-import User from '../../UserComponent/User';
 import { throwErr, Errors, APIFetch, validateInput } from '../../utils';
 import Channel from '../Channel/Channel';
 import channelSettingsReducer,  { ACTIONS, initState } from './channelSettingsReducer';
-
+import './ChannelSettings.scss'
 function ChannelsSettings({channel}:{channel:ChannelType}) {
   const [state,dispatch] = useReducer(channelSettingsReducer,initState);
   const {setServerResponse} = useResponseContext()

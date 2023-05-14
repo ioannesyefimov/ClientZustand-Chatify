@@ -12,6 +12,7 @@ import useFetchChannels from '../../../hooks/useFetchChannels/useFetchChannels'
 import Members from './Members/Members'
 import { useChatStore } from '../../../ZustandStore'
 import { LoadingFallback } from '../../LoadingFallback/LoadingFallback'
+import ChannelsSettings from '../ChannelsSettings/ChannelsSettings'
 
 const ChannelsBar = ({user}:{user:UserType}) => {
   const [showedBar , setShowedBar]=useState(false)
@@ -50,11 +51,13 @@ const ChannelsBar = ({user}:{user:UserType}) => {
               <div className='channel-members'>
                 <h4>MEMBERS</h4>
                 <Members members={currentChannel?.members}/>
+                
               </div>
             </div>
 
           </div>
             <Button onClick={()=>navigate('/chat')}  text='leave room' name='leave' img={logoutIco} />
+            <Button onClick={()=>navigate(location.pathname + '?settings=show')}   name='settings' img={settingIco} />
 
       </div>
       <UserBar user={user} />

@@ -25,6 +25,19 @@
         display:grid;
         position: relative;
         padding: 3.5rem 2rem 1rem;
+        button {
+            color: white;
+        }
+        button.settings {
+            position: absolute;
+            padding: 0;
+            bottom: 15px;
+            left:15px;
+            img {
+                width: 35px;
+
+            }
+        }
         button.back{
             position: absolute;
             top:2%;

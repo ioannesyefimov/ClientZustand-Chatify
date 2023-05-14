@@ -23,6 +23,8 @@ const useFetchChannels = (user:UserType) => {
             
             if(channels){
                 setChannels(channels?.data?.channels)
+            }else if (error?.name === Errors.CHANNELS_NOT_FOUND){
+                setChannels([])
             }
         },[channels]
     )
