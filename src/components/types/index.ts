@@ -7,6 +7,11 @@ export type SubmitInputType ={
     setPropsValue:Dispatch<SetStateAction<any>>
 }
 
+export type RoleType ={
+    _id:string
+    permissions:{_id:string,description:string[],name:string}[],
+    name:string
+}
 
 export type MessageType =  {
     user: UserType
