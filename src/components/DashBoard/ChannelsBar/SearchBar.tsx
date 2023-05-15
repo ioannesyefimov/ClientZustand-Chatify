@@ -20,7 +20,8 @@ type PropsType ={
     // setSearched: ()=>void
 }
 const SearchBar = ({user,fetchParams,setSearched,channels,searchType}:PropsType) => {
-  const serverUrl=useAuthStore(s=>s.serverUrl)
+  const serverUrl=useAuthStore(s=>s.serverUrl)ls
+  
   const setServerResponse=useAuthStore(s=>s.setServerResponse)
   const [search,setSearch]=useState('')
   // const search = useChatStore(s=>s.search)
