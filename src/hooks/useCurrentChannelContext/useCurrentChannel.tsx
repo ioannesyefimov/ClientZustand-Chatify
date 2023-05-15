@@ -2,7 +2,7 @@ import {  useCallback, useEffect} from "react"
 import useSWR from 'swr'
 import { APIFetch, Errors } from "../../components/utils"
 import SocketStore from "../../components/SocketStore"
-import { UserType } from "../../components/types"
+import { RoleType, UserType } from "../../components/types"
 import { channelSocket } from "../../components/DashBoard/CurrentChannel/CurrentChannel"
 import { useAuthStore, useChatStore } from "../../ZustandStore"
 import { useLocation } from "react-router-dom"
@@ -45,6 +45,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                 console.log(`CURRENT CHANNEL RESPONSE `, channel);
                 let current = channel?.data?.channel
                 if(current?._id){
+                    let hasAdminPermissions = current?.members?.find((member:UserType)=>member._id===channel?.data?.user?._id)?.roles?.some((role:RoleType)=>role.permissions?.description==='everything')
                     setCurrentChannel(current)
                     channelSocket.emit('join_channel',{room:current?._id})
                     setLoading(false)

@@ -38,7 +38,7 @@ const Hamburger = ({children,type}:PropsType) => {
         ()=>{
             if(location.pathname === '/chat' ){
                 setIsToggled('toggled')
-            }else if(location.pathname!=='/chat' || location.search !==''){
+            }else if(location?.search || location?.pathname!=='chat'){
                 setIsToggled('untoggled')
 
             }
@@ -75,6 +75,7 @@ const Hamburger = ({children,type}:PropsType) => {
                     {children}
                 </div> 
             </div>
+            <div onClick={()=>setIsToggled('untoggled')} className='darkening-div'></div>
         </div>
         
     )

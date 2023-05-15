@@ -100,7 +100,7 @@
 
 
 .hamburger-outer{
-    
+    $barWidth: 100%;
     position: fixed !important;
     height: 100%;
     z-index: 5;
@@ -121,21 +121,28 @@
             // clip-path: inset(0 0 99% 0) ;
             position: relative ;
             inset: 0;
-            width: 100% !important;
+            width: $barWidth !important;
             z-index: 100;
         }
         @include respond-to(smallHeight){
             position: fixed !important;
             // clip-path: inset(0 0 99% 0) ;
             inset: 0;
-            width: 85%;
+            width:calc($barWidth - 15% );
             z-index: 100;
         }
         .hamburger-btn {
             left: 88% !important;
             top:1%;
         }
-        width: 30% ;
+        .darkening-div{
+            position: fixed;
+            width:calc($barWidth -  30%);
+            background-color: rgba(0, 0, 0, 0.359);
+            height: 100%;
+            right: 0;
+        }
+        width:calc($barWidth - 70%) ;
         max-width: 400px;
         min-width:230px;
     }    

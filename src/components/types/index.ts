@@ -46,6 +46,13 @@ export type ChannelType = {
     hasAdminPermissions?:boolean
 }
 
+export type RoleType = {
+    description:string
+    name:string
+    _id:string
+    permissions: {_id:string,name:string,description:RoleType}
+}
+
 export type ProviderProps = {
     children: React.ReactNode
 }

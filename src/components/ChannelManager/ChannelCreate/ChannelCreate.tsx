@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { backIco, closeIco } from '../../../assets'
 
 import './ChannelCreate.scss'
-import { useAuthStore } from '../../../ZustandStore'
+import { useAuthStore, useChatStore } from '../../../ZustandStore'
 
 const ChannelCreate = ()=>{
     const [channelName,setChannelName] = useState<string>('')
@@ -15,7 +15,8 @@ const ChannelCreate = ()=>{
     const [channelAvatar,setChannelAvatar] = useState<string>('')
     const {file,handleUpload}=useUpload()
     const {setServerResponse} = useResponseContext()
-    
+    const joinChannel = useChatStore(s=>s.joinChannel)
+
     const setLoading = useAuthStore(s=>s.setLoading)
     const user = useAuthStore(s=>s.user)
     const serverUrl = useAuthStore(s=>s.serverUrl)
@@ -39,12 +40,11 @@ const ChannelCreate = ()=>{
                 // let uploadedPicture = await APIFetch({url:`${serverUrl}/upload/picture`, body:{image:channelAvatar,accessToken:cookies?.accessToken}})
                 let response:ResponseType = await APIFetch({url:`${serverUrl}/channels/create`, body:{userEmail:user.email, accessToken:cookies?.accessToken,channelName,channelAvatar:file,channelDescription},method:'POST'})
                 if(!response.success) throwErr(response?.err)
-                let updatedUser = JSON.stringify({...user,channels:response?.data.channels})
-                setCookie('user',updatedUser,{path:'/',maxAge:2000})
+                // let updatedUser = JSON.stringify({...user,channels:response?.data.channels})
+                setCookie('user',response?.data?.user,{path:'/',maxAge:2000})
                 setCookie('channels',response?.data?.channels,{path:'/',maxAge:2000})
-                navigate(`/chat?channel=${response?.data?.channel._id}`)
-                console.log(`RESPONSE : `, response)
-                console.log(`updatedUser : `, updatedUser)
+                joinChannel(response?.data?.channel)
+                navigate(`/chat/${response?.data?.channel._id}`)
             } catch (error) {
                 console.log(`ERROR:`,error)
                 return setServerResponse(error)

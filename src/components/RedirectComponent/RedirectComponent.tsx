@@ -23,15 +23,12 @@ type HandleLoginProps = {
     redirectUrl:string | null
 }
 const RedirectComponent = () => {
-    // const [data,setData]=useState<StateType>(initDataState)
-    const {setLoading,loading,serverUrl}=useAuthStore()
+    const {loading,serverUrl}=useAuthStore()
     const {handleGitHubLogin}=useGithub('')
     const {setCookie} = useAuthCookies()
     const {setServerResponse} = useResponseContext() 
     let location = useLocation()
     let navigate = useNavigate()
-
-
     const fetcher = async function handleRedirect() {
         let query = new URLSearchParams(location.search)
         let type = query.get('type')
@@ -41,7 +38,7 @@ const RedirectComponent = () => {
         let redirectUrl = query.get("redirectUrl")
         await sleep(2000);
         if(code){
-            return await handleGitHubLogin(code);
+            return  handleGitHubLogin(code);
         }
         console.log(`type: ${type}`)
         console.log(`loggedThrough: ${loggedThrough}`)

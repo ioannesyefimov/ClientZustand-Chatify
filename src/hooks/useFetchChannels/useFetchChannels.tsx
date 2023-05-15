@@ -36,6 +36,7 @@ const useFetchChannels = (user:UserType) => {
             let response = await APIFetch({signal,url: `${serverUrl}/channels/userChannels?userEmail=${user?.email ? user.email : cookies.user.email}`, method:"GET",headers: {"Content-Type":"application/json"}})
             console.log(`CHANNELS RESPONSE:`, response)
             if(!response?.success){
+                setChannels([])
                 throwErr(response?.err)
             }
             let channels = response?.data?.channels
