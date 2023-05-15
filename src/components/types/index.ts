@@ -9,8 +9,14 @@ export type SubmitInputType ={
 
 export type RoleType ={
     _id:string
-    permissions:{_id:string,description:string[],name:string}[],
+    permissions:{_id:string,description:string,name:string},
     name:string
+}
+
+export type MemberType = {
+    _id:string
+    member:UserType
+    roles: RoleType[]
 }
 
 export type MessageType =  {
@@ -40,23 +46,17 @@ export type Member = UserType
 
 export type ChannelType = {
     [index:number]: ChannelType
+    _id?:string 
     channel?:ChannelType
     channelName:string
     messages: MessageType[] 
     members: Member[]
     isJoined?:boolean
-    _id?:string 
     channelAvatar:string 
     channelDescription?: string
     hasAdminPermissions?:boolean
 }
 
-export type RoleType = {
-    description:string
-    name:string
-    _id:string
-    permissions: {_id:string,name:string,description:RoleType}
-}
 
 export type ProviderProps = {
     children: React.ReactNode
@@ -77,6 +77,7 @@ export type LogType  = {
 
 export type UserType = {
     member?:UserType
+    roles?:RoleType[]
     userName:string
     email:string
     picture?:string
