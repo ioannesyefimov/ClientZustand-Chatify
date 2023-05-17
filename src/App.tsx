@@ -1,7 +1,7 @@
 import './App.scss'
 import './components/Themes/Themes.scss'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import {ProtectedRoute,Landing,ChatContainer,UserComponent, Authentication,NotFound,AuthForm, RedirectComponent, MemberInfo, SearchComponent, ChannelSearch, Profile, ProfileSettings, ServerResponseFallback} from './components'
+import {ProtectedRoute,Landing,ChatContainer,UserComponent, Authentication,NotFound,AuthForm, RedirectComponent, MemberInfo, SearchComponent, ChannelSearch, Profile, ProfileSettings, ServerResponseFallback,ChannelsSettings, ChannelManager, ChannelJoin, ChannelCreate} from './components'
 import ErrorBoundary from './components/ErrorProvider/ErrorProvider'
 
 
@@ -53,6 +53,27 @@ let router = createBrowserRouter([
     
            element: <ChatContainer  />,
            path: '/chat/:channel_id?/:manager?',
+           children: [
+            {
+              element: <ChannelsSettings/>,
+              path:'settings'
+            },
+            {
+              element: <ChannelManager/>,
+              path:'manage',
+              children: [
+                {
+                  element: <ChannelJoin/>,
+                  path:'join'
+                },
+                {
+                  element: <ChannelCreate/>,
+                  path:'create'
+                }
+              ]
+             
+            }
+           ]
           },
           {
            // element: <ChannelManager/>,

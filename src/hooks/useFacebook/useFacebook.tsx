@@ -63,7 +63,6 @@ const useFacebook = (loginType:string,redirectUrl:string|undefined) => {
             const response = await APIFetch({url: `${serverUrl}/auth/facebook`, method:'POST', body: {credentials}});
             console.log(response)
             if(!response.success){
-                clearState('')
                 throwErr({message: response?.message, loggedThrough:response?.loggedThrough})
             } 
             if(redirectUrl){

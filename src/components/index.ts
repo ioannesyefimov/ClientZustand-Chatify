@@ -5,7 +5,7 @@ import FormInput from "./FormInput/FormInput";
 import SearchComponent from "./SearchComponent/SearchComponent";
 import ChannelSearch from "./ChannelSearch/ChannelSearch";
 import AuthSocialButtons from "./AuthButtons/AuthSocialButtons";
-
+import ChannelsSettings from "./DashBoard/ChannelsBar/ChannelsSettings/ChannelsSettings";
 import Landing from "./Landing/Landing";
 import UploadInput from "./UploadInput/UploadInput";
 import ServerResponseFallback from "./ServerResponseFallback/ServerResponseFallback";
@@ -33,5 +33,5 @@ export
     
     Button,SubmitInput , UploadInput,MemberInfo,SearchComponent,ChannelSearch,Landing,
     ChannelManager,ChannelJoin,UserBar,UserComponent,ServerResponseFallback,ProtectedRoute,
-    FormInput, NotFound,AuthForm,Dashboard,RedirectComponent,AuthSocialButtons,ChannelCreate,ChatContainer,
+    FormInput, NotFound,AuthForm,Dashboard,RedirectComponent,AuthSocialButtons,ChannelCreate,ChatContainer,ChannelsSettings,
 }

@@ -101,11 +101,11 @@
             .left-wrapper-inner {
                 flex:1;
                 .channel {
+                    display: grid;
                     @include respond-to(littleHeight){
                         gap:.1rem;
                     }
                     gap:.7rem,;
-                    display: grid;
                     &-name{
                         font-size: 1.2rem;
                     }
@@ -115,7 +115,7 @@
                     }
                     &-members {
                         @include respond-to(littleHeight){
-                            gap:.1rem;
+                            gap:.5rem;
                             display: block
                         }
                         @extend .scrollbar;
@@ -126,12 +126,16 @@
                         .user {
                             all:unset;
                             display: flex;
-                            gap:.5rem;
+                            gap:.7rem;
                             align-items: center;
                             &-img{
                                 max-width: 35px;
                                 border-radius: 6px;
                             }
+                            &-status{
+                                max-width: 15px;
+                            }
+
                             &-name{
                                 color:#828282;
                             }

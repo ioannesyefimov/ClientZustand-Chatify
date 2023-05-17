@@ -15,7 +15,10 @@ const userSocket = io(`${serverUrl}/user`,{autoConnect:false,pfx:certOptions.pfx
 const ProtectedRoute = () => {
   const setChannels =useChatStore(s=>s.setChannels)
   const {cookies,clearState} = useAuthCookies()
-  const {user,setUser,setLoading}=useAuthStore()
+  const setUser=useAuthStore(s=>s.setUser)
+  const setOnlineUsers=useAuthStore(s=>s.setOnlineUsers)
+  const user=useAuthStore(s=>s.user)
+  const setLoading=useAuthStore(s=>s.setLoading)
   if(!user?.email && !cookies?.user?.email) return <Navigate to="/auth/signin" replace/> 
    
   useEffect(
@@ -28,21 +31,8 @@ const ProtectedRoute = () => {
       
         if(isLogged?.email){
           setUser(isLogged);
-          userSocket.connect()
-          userSocket.emit('user_online',{userId:user?._id})
-          let onOnline = (data: any)=>{
-            console.log(`onOnline:`, data)
-          } 
-          let onConnection = ()=>{
-            console.log(`CONNECTED TO USER SOCKET`,)
-          }
-    
-          userSocket.on('user_online',onOnline)
-          userSocket.on('connect',onConnection)
-          return ()=>{
-            userSocket.off('user_online')
-            userSocket.off('connect',onConnection)
-          }
+          userSocket.emit('user_online',{userId:isLogged?._id})
+         
         }
       setLoading(false)
       }
@@ -52,10 +42,32 @@ const ProtectedRoute = () => {
 
   useEffect(
     ()=>{
-      if(!cookies.accessToken){
-        clearState('')
+      if(user?._id){
+        userSocket.connect()
+       
+        let onOnline = (data: any)=>{
+          console.log(`onOnline:`, data)
+          setOnlineUsers(data?.online)
+          
+        } 
+        let onConnection = ()=>{
+          console.log(`CONNECTED TO USER SOCKET`,)
+        }
+        let onDisconnect = ()=>{
+          console.log(`DISCONNECTED FROM USER SOCKET`,)
+        }
+  
+        userSocket.on('user_online',onOnline)
+        userSocket.on('connect',onConnection)
+        userSocket.on('disconnect',onDisconnect)
+        return ()=>{
+          userSocket.off('user_online',onOnline)
+          userSocket.off('connect',onConnection)
+          userSocket.off('disconnect',onDisconnect)
+          userSocket.disconnect()
+        }
       }
-    },[cookies.accessToken]
+    },[user?._id]
   )
   return  (
       <div className='app-wrapper'>

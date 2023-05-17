@@ -1,23 +1,31 @@
+.user {
+    
+    align-items: center;
+    display: flex ;
+    flex-direction: column;
+    gap:.4rem;
+    // width: 100px;
+    margin: 2rem auto 0 auto;
+   
+    &-name{
+        color:#828282;
+    }
+    &-status{
+        max-width: 15px;
+    }
+
+}
 .user-component{
     display: grid;
     margin-top: 3rem;
+  
     .user {
         color:gold;
-        align-items: center;
-        display: flex ;
-        flex-direction: column;
-        gap:.4rem;
-        // width: 100px;
-        margin: 2rem auto 0 auto;
         &-img{
             border-radius: 8px;
             width: 100px;
             box-shadow: 0px 0px 5px 0px gold;
         }
-        &-name{
-            color:#828282;
-        }
-
     }
     .user-channels{
         border: 1px solid gray;

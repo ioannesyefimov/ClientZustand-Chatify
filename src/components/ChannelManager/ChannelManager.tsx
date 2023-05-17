@@ -8,24 +8,17 @@ const ChannelManager = () => {
 
     let content = (
         <div className='channel-manager-component'>
-            {location.search==='?manage' ? (
+            {!location.pathname.includes('/join') && !location.pathname.includes('create') ?
+            (
                 <div className='wrapper'>
-                    <Link to={`${location.pathname}?manage=join`}  replace>Join channel</Link>
-                    <Link to={`${location.pathname}?manage=create`}  replace>Create new channel</Link>
+                    <Link to={`join`}  replace>Join channel</Link>
+                    <Link to={`create`}  replace>Create new channel</Link>
                 </div>
-
-            ): (
-                location.search === '?manage=join' ? (
-                    <ChannelJoin/>
-                )  : (
-                    location.search === '?manage=create' ? (
-                        <ChannelCreate/>
-                    ) : (
-                        null
-                    )
-                )
-            )
-            }
+            ) : (
+                <Outlet/>
+            )    
+        }
+                  
         </div>
     )
 

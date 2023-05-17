@@ -54,10 +54,10 @@ const RedirectComponent = () => {
             })
         }
     }
-    const {data,isLoading,error}=useSWR(location?.search ? `/api/auth`:null , fetcher)
+    const {data,isLoading,error}=useSWR(location?.search ? `/api/auth/user`:null , fetcher)
 
 
- 
+    
     //   let handleRedirect = 
     //     async(signal:AbortSignal,token?:string)=>{
     //         try {
@@ -120,6 +120,7 @@ const RedirectComponent = () => {
         },[data]
     )
         
+    
     return (
     <div className='redirect-component'>
         {isLoading && <LoadingFallback/>}

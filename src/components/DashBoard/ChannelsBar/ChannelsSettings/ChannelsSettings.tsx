@@ -1,27 +1,28 @@
 import React, { useEffect, useReducer, useRef } from 'react'
-import { ChannelType } from '../../types'
-import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../../../ZustandStore';
-import { useResponseContext, useUpload, useAuthCookies } from '../../../hooks';
-import Button from '../../Button/Button';
-import FormInput from '../../FormInput/FormInput';
-import UploadInput from '../../UploadInput/UploadInput';
-import { throwErr, Errors, APIFetch, validateInput } from '../../utils';
-import Channel from '../Channel/Channel';
+import { ChannelType } from '../../../types'
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuthStore, useChatStore } from '../../../../ZustandStore';
+import { useResponseContext, useUpload, useAuthCookies } from '../../../../hooks';
+import Button from '../../../Button/Button';
+import FormInput from '../../../FormInput/FormInput';
+import UploadInput from '../../../UploadInput/UploadInput';
+import { throwErr, Errors, APIFetch, validateInput } from '../../../utils';
+import Channel from '../../Channel/Channel';
 import channelSettingsReducer,  { ACTIONS, initState } from './channelSettingsReducer';
 import './ChannelSettings.scss'
-function ChannelsSettings({channel}:{channel:ChannelType}) {
+import { settingIco } from '../../../../assets';
+function ChannelsSettings() {
+
+  const channel = useChatStore(s=>s.currentChannel)
   const [state,dispatch] = useReducer(channelSettingsReducer,initState);
   const {setServerResponse} = useResponseContext()
-
     const {file,handleUpload}=useUpload()
     const {cookies,clearState,setCookie} = useAuthCookies()
-    const user = useAuthStore(s=>s.user)
     const setUser = useAuthStore(s=>s.setUser)
     const navigate =useNavigate()
     const setLoading = useAuthStore(s=>s.setLoading)
     const serverUrl = useAuthStore(s=>s.serverUrl)
-  
+    const location = useLocation()
     const channelNameRef= useRef<HTMLLabelElement>()
     const channelDescriptionRef= useRef<HTMLLabelElement>()
     const avatarRef= useRef<HTMLLabelElement>()
@@ -69,9 +70,10 @@ function ChannelsSettings({channel}:{channel:ChannelType}) {
       let img= await handleUpload(e);
       return dispatch({type:ACTIONS.SET_CHANNEL_AVATAR, payload:img as string})
     }
-  
+    
+    
     let content = (
-      <div  className="profile-settings-component" >
+      <div  className="channels-settings-component" >
         <Channel  name={channel.channelName} avatar={channel.channelAvatar} id={channel._id!} type='join' isJoined={true}   />
 
           <form action="submit" onSubmit={(e)=>handleSubmit(e)}>

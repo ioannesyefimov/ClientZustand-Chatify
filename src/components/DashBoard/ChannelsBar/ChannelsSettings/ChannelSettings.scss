@@ -1,11 +1,11 @@
-.profile-settings-component {
+.channels-settings-component {
 
-    // position: absolute;
     width:80%;
     max-width: 700px;
     // display: grid;
     margin: auto;
-    // inset: 0;
+    inset: 0;
+    display: grid;
     z-index: 154;
     background-color: rgb(17, 15, 21);
     & > * {

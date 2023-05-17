@@ -2,7 +2,7 @@ import {  useCallback, useEffect} from "react"
 import useSWR from 'swr'
 import { APIFetch, Errors } from "../../components/utils"
 import SocketStore from "../../components/SocketStore"
-import { ChannelType, RoleType, UserType } from "../../components/types"
+import { ChannelType, RoleType, SocketResponse, UserType } from "../../components/types"
 import { channelSocket } from "../../components/DashBoard/CurrentChannel/CurrentChannel"
 import { useAuthStore, useChatStore } from "../../ZustandStore"
 import { useLocation } from "react-router-dom"
@@ -31,12 +31,11 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
   
     useEffect(
         ()=>{
-            if(isLoading){
-                setLoading(true)
-            }
             console.log(`channelid`,channel_id);
-            
-            if(location.pathname ==='/chat') return setCurrentChannel(null)
+            if(location.pathname ==='/chat') {
+                setCurrentChannel(null)
+                return
+            }
             if (channel?.err){
                 console.error(`error`,error);
                 setServerResponse(channel?.err)
@@ -44,21 +43,87 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
             if(channel?.data){
                 console.log(`CURRENT CHANNEL RESPONSE `, channel);
                 let current:ChannelType = channel?.data?.channel
-                    let hasAdminPermissions = current?.members?.find((member:UserType)=>member._id===channel?.data?.user?._id)
-                    ?.roles?.some((role:RoleType)=>role.permissions.description === 'everything')
-                    console.log(`HAS admin permissionsm, ${hasAdminPermissions}`);
-                    current.hasAdminPermissions = hasAdminPermissions
+                let hasAdminPermissions = current?.members?.find((member:UserType)=>member?.member?._id===channel?.data?.user?._id)
+                ?.roles?.some((role:RoleType)=>role.permissions.description === 'everything')
+                console.log(`HAS admin permissionsm, ${hasAdminPermissions}`);
+                current.hasAdminPermissions = hasAdminPermissions
 
-                    console.log(`Current channel: `, currentChannel);
-                    
-                    setCurrentChannel(current)
-                    channelSocket.emit('join_channel',{room:current?._id})
-                    setLoading(false)
+                console.log(`Current channel: `, currentChannel);
                 
+                setCurrentChannel(current)
+                channelSocket.connect()
+
+                channelSocket.emit('join_channel',{room:current?._id,user:user})
+                setLoading(false)      
+                
+                return ()=>{
+                    let USER = user?.email ? user : channel?.data?.user
+                    channelSocket?.emit('leave_channel',{USER,id:current?._id})}
             }
-        },[channel,user?.email,location.pathname,error]
+
+        },[channel?.data,location.pathname]
     )
 
+    useEffect(
+        ()=>{
+            if(currentChannel?._id){
+
+                let onConnect = ()=>{
+                  console.log(`CONNECTED BY ID ${channelSocket.id}`)
+                }
+                let onMessage = (data:SocketResponse)=>{
+                  if(!data?.success) setServerResponse(data?.err)
+                  console.log(`received message`, data);
+                  
+                  if(data?.data?.messages){
+                    addCurrentChannelMessage(data?.data?.message)
+                    // scrollToRef?.current?.scrollIntoView({behavior:'smooth'}) 
+                  }
+                  setLoading(false)
+                }
+                let onDeleteMessage = (data:SocketResponse)=>{
+                  if(!data?.success) setServerResponse(data?.err)
+                  console.log(`DELETING  MESSAGE RESPONSE`,data);
+                  if(data?.success){
+                    console.log(`SUCCESS DELETE`, data);
+                    deleteCurrentChannelMessage(data?.data?.message?._id)
+                  } else {
+                    setServerResponse(data?.err)
+                  }
+                  setLoading(false)
+          
+                }
+                let onDisconnect = ()=>{
+                  console.log(`Disconnected from server`)
+                }
+                let onJoinChannel=(data:SocketResponse)=>{
+                  if(!data?.success) setServerResponse(data?.err)
+                  console.log(`JOINED CHANNEL ${data.data.room}`);
+                }
+                // channelSocket.on('get_channel',onGetChannel)
+                channelSocket.on('disconnect',onDisconnect)
+                channelSocket.on('connect',onConnect)
+                channelSocket.on('receive_message',onMessage)
+                channelSocket.on('delete_message',onDeleteMessage)
+                channelSocket.on('join_channel',onJoinChannel)
+                return ()=>{
+                  channelSocket.off('delete_message',onDeleteMessage);
+                  channelSocket.off('receive_message',onMessage);
+                  channelSocket.off('connect',onConnect);
+                  channelSocket.off('disconnect',onDisconnect)
+                  channelSocket.disconnect()
+                  // channelSocket.off('get_channel',onGetChannel);
+                  if(currentChannel?._id){
+                    channelSocket.emit('leave_channel',{user:user.email,id:currentChannel?._id})
+                    console.log(`LEAVING CHANNEL: ${currentChannel?._id}`);
+                      setCurrentChannel(null)
+                  }
+              }
+            }
+         
+        },[currentChannel?._id]
+      )
+    
     
 
     return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading}

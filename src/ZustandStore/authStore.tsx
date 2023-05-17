@@ -1,17 +1,22 @@
 import {create} from 'zustand'
 import { UserType } from '../components/types'
 import { Errors } from '../components/utils';
+type onlineUsers= {socketId:string,userId:string}[]
 const useAuthStore = create<{
     user:UserType;
+    onlineUsers: onlineUsers;
     serverResponse:any;
-    setServerResponse:(serverResponse:any)=>void;
-    setUser: (user:UserType)=>any;
     serverUrl:string
     loading:boolean
+    setOnlineUsers:(onlineUsers:onlineUsers)=>void
+    setServerResponse:(serverResponse:any)=>void;
+    setUser: (user:UserType)=>any;
     setLoading:(state:boolean)=>void;
 }>((set)=> ({
     user: { userName: '', email: '', picture: '', _id: '', loggedThrough: '',channels:[] },
+    onlineUsers:[],
     loading: false,
+    setOnlineUsers: (onlineUsers:onlineUsers)=>set({onlineUsers}),
     serverResponse:null,
     setServerResponse:(serverResponse:any)=>set({serverResponse}),
     setUser: (user:UserType) =>set({user}),

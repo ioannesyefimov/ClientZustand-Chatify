@@ -49,21 +49,31 @@ type ResponseFallbackType ={
         'signin'
     ) : serverResponse?.name === Errors.MISSING_ARGUMENTS  ? 'continue' : isObj(serverResponse?.errors) ? 'fill again' :'reload'
 
-    let responseArguments = serverResponse?.arguments ?? isObj(serverResponse?.arguments) ? (
-        Object.keys(serverResponse?.arguments)?.map((argument,i)=>{
+    let responseArguments 
+    if(isObj(serverResponse?.arguments)){
+        if(typeof serverResponse?.arguments === 'string'){
+
+            responseArguments = <span className='response-type'>{ serverResponse.arguments }</span>
+
+        }else if (typeof serverResponse?.arguments === 'object'){
+            
+            responseArguments =  Object.keys(serverResponse?.arguments)?.map((key,i)=>{
+                return (
+                    <span className='response-type' key={i}>{key}: { serverResponse.arguments[key] }</span>
+                )
+            })
+        }
+
+    } else if (serverResponse?.errors){
+        responseArguments = Object.keys(serverResponse?.errors)?.map((error,i)=>{
             return (
-                <span className='response-type' key={i}>{argument}: {serverResponse.arguments[argument]}</span>
+                <span className='response-type' key={i}>{error}: {serverResponse.errors[error]}</span>
             )
         })
-        )  : (
-            serverResponse?.errors ? (
-                Object.keys(serverResponse?.errors)?.map((error,i)=>{
-                    return (
-                        <span className='response-type' key={i}>{error}: {serverResponse.errors[error]}</span>
-                    )
-                })
-            ) : null
-        )
+    }
+   
+         
+    
     
 
     let signedUpDifferently = (

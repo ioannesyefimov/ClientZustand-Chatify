@@ -137,12 +137,12 @@
         }
         .darkening-div{
             position: fixed;
-            width:calc($barWidth -  30%);
+            width:calc($barWidth);
             background-color: rgba(0, 0, 0, 0.359);
             height: 100%;
             right: 0;
         }
-        width:calc($barWidth - 70%) ;
+        // width:calc($barWidth - 70%) ;
         max-width: 400px;
         min-width:230px;
     }    

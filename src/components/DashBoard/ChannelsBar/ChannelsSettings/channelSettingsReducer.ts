@@ -1,5 +1,5 @@
 import { Reducer } from "react";
-import { useUpload } from "../../../hooks";
+import { useUpload } from "../../../../hooks";
 
 
 export enum ACTIONS{
