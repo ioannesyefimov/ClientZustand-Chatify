@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useRef, useState } from "react";
 import { ChildrenType, MessageType } from "../../types";
 import { useResponseContext } from "../../../hooks";
-import { channelSocket } from "../../DashBoard/CurrentChannel/CurrentChannel";
+import { channelSocket } from "../../../hooks/useCurrentChannelContext/useCurrentChannel";
 import { useAuthStore, useChatStore } from "../../../ZustandStore";
 
 export type HandleClickType = {

@@ -14,6 +14,7 @@ let router = createBrowserRouter([
         element: <NotFound />,
         path: '*'
       },
+   
       {
         element: <Landing />,
         path: '/'
@@ -45,6 +46,7 @@ let router = createBrowserRouter([
             element:<Profile/>,
             path:'/profile'
           },
+          
           {
             element: <ProfileSettings/>,
             path:'/profile/settings'
@@ -58,21 +60,7 @@ let router = createBrowserRouter([
               element: <ChannelsSettings/>,
               path:'settings'
             },
-            {
-              element: <ChannelManager/>,
-              path:'manage',
-              children: [
-                {
-                  element: <ChannelJoin/>,
-                  path:'join'
-                },
-                {
-                  element: <ChannelCreate/>,
-                  path:'create'
-                }
-              ]
-             
-            }
+           
            ]
           },
           {

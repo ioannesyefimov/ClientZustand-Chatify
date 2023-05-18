@@ -9,12 +9,8 @@ export default function Members({members}:{members?:UserType[]}) {
     {
         members?.length ? (
             members?.filter(member=>member.member !== null).map(user=>{
-                let isOnline = onlineUsers?.some(onlineUser=>{
-                    console.log(`online:`, onlineUser)
-                    console.log(`user:`, user)
-                  return  onlineUser?.userId===user?._id || onlineUser?.userId===user?.member?._id
-                })
-                return (<User isOnline={isOnline} key={user.member?._id} user={user.member} location=""/>)  
+                
+                return (<User key={user.member?._id} user={user.member} location=""/>)  
 
             })
         ) : (

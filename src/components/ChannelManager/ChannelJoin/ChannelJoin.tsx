@@ -16,10 +16,10 @@ const ChannelJoin = ()=>{
     let navigate = useNavigate()
     return (
         <div className='prompt-menu-component  box-shadow--gray'>
-            <Button onClick={()=>navigate('/chat')} type='button' name="close">
+            <Button onClick={()=>navigate(location?.pathname)} type='button' name="close">
                 <img src={closeIco} alt="close icon" />
             </Button>
-            <Button onClick={()=>navigate("/chat/manage")} type='button' name="back">
+            <Button onClick={()=>navigate(-1)} type='button' name="back">
                 <img src={backIco} alt="back icon" />
             </Button>
             <form>

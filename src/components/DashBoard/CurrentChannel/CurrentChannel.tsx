@@ -1,18 +1,10 @@
-import  { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useCurrentChannel, useResponseContext } from '../../../hooks'
-import { SocketResponse } from '../../types'
-import SocketStore from '../../SocketStore'
 import './CurrentChannel.scss'
 import MessagesProvider from '../../MessagesWrapper/Context/MessagesContext'
 import MessagesWrapper from '../../MessagesWrapper/MessagesWrapper'
 import { useAuthStore } from '../../../ZustandStore'
-import { LoadingFallback } from '../../LoadingFallback/LoadingFallback'
-import ChannelsSettings from '../ChannelsBar/ChannelsSettings/ChannelsSettings'
 
-const {certOptions,io,serverUrl} = SocketStore()
-export const channelSocket = io(`${serverUrl}/currentChannel`,{
-  pfx:certOptions.pfx,passphrase:certOptions.passphrase,reconnection:true,reconnectionDelayMax:5000,reconnectionAttempts:Infinity, autoConnect:false});
 
 const CurrentChannel = () => {
   const setLoading = useAuthStore(state=>state.setLoading)

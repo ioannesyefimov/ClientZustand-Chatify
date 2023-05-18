@@ -2,9 +2,10 @@
 import React, { useContext } from 'react'
 import { Cookies, useCookies } from 'react-cookie'
 import { ChannelType, UserType } from '../../components/types'
-import { useAuthStore } from '../../ZustandStore'
+import { useAuthStore, useChatStore } from '../../ZustandStore'
 import { NavigateFunction } from 'react-router-dom'
 import { useSWRConfig } from 'swr'
+import { userSocket } from '../../components/ProtectedRoute/ProtectedRoute'
 export type CookiesType = {
   user: UserType
   accessToken:string,
@@ -21,9 +22,12 @@ const useAuthCookies = () => {
   const [cookies,setCookie,removeCookie]= useCookies<'user'|'accessToken'|'refreshToken'|'channels', CookiesType
     >(['user' ,'accessToken','refreshToken',"channels"])
   const setUser = useAuthStore.getState().setUser
-  const user = useAuthStore.getState().user
-  const setOnlineUsers =  useAuthStore.getState().setOnlineUsers
-  const onlineUsers =  useAuthStore.getState().onlineUsers
+  // const user = useAuthStore.getState().user
+  // const setOnlineUsers =  useAuthStore.getState().setOnlineUsers
+  const resetAuth =  useAuthStore.getState().resetAuth
+  const resetChat =  useChatStore.getState().resetChat
+  // const onlineUsers =  useAuthStore.getState().onlineUsers
+
   const {cache}=useSWRConfig()
   const clearState =(replace:string, navigate?:NavigateFunction) => {
   
@@ -47,7 +51,10 @@ const useAuthCookies = () => {
   window.localStorage.clear()
   cache.delete('/api/auth/user')
   cache.delete('/api/channels/userChannels')
-  setOnlineUsers(onlineUsers?.filter(loggedOutUser=>loggedOutUser.userId !== user?._id))
+  userSocket?.disconnect()
+  resetAuth()
+  resetChat()
+  
 }
   return {cookies,setCookie,removeCookie,clearState}
 }

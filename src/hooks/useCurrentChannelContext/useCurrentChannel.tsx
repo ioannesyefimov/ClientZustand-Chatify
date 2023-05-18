@@ -3,19 +3,20 @@ import useSWR from 'swr'
 import { APIFetch, Errors } from "../../components/utils"
 import SocketStore from "../../components/SocketStore"
 import { ChannelType, RoleType, SocketResponse, UserType } from "../../components/types"
-import { channelSocket } from "../../components/DashBoard/CurrentChannel/CurrentChannel"
 import { useAuthStore, useChatStore } from "../../ZustandStore"
 import { useLocation } from "react-router-dom"
- 
- const serverUrl = SocketStore().serverUrl
+const {certOptions,io,serverUrl} = SocketStore()
+ export const channelSocket = io(`${serverUrl}/currentChannel`,{
+  pfx:certOptions.pfx,passphrase:certOptions.passphrase,reconnection:true,reconnectionDelayMax:5000,reconnectionAttempts:Infinity, autoConnect:false});
+
 
 export default function useCurrentChannel(channel_id:string,user:UserType) {
     const currentChannel=useChatStore(state=>state.currentChannel)
     const setCurrentChannel=useChatStore(state=>state.setCurrentChannel)  
     const addCurrentChannelMessage = useChatStore(s=>s.addCurrentChannelMessage)
     const currentChannelMessages = useChatStore(s=>s.currentChannel?.messages)
-  const deleteCurrentChannelMessage = useChatStore(s=>s.deleteCurrentChannelMessage)
-
+    const deleteCurrentChannelMessage = useChatStore(s=>s.deleteCurrentChannelMessage)
+    const setOnlineUsers = useAuthStore(s=>s.setOnlineUsers)
     const setServerResponse = useAuthStore(s=>s.setServerResponse)
     const setLoading = useAuthStore(s=>s.setLoading)
     
@@ -54,6 +55,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                 channelSocket.connect()
 
                 channelSocket.emit('join_channel',{room:current?._id,user:user})
+                channelSocket.emit('get_online_users',{})
                 setLoading(false)      
                 
                 return ()=>{
@@ -81,6 +83,9 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                   }
                   setLoading(false)
                 }
+                let onOnlineUsers = (data:SocketResponse)=>{
+                  setOnlineUsers(data?.online)
+                }
                 let onDeleteMessage = (data:SocketResponse)=>{
                   if(!data?.success) setServerResponse(data?.err)
                   console.log(`DELETING  MESSAGE RESPONSE`,data);
@@ -100,7 +105,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                   if(!data?.success) setServerResponse(data?.err)
                   console.log(`JOINED CHANNEL ${data.data.room}`);
                 }
-                // channelSocket.on('get_channel',onGetChannel)
+                channelSocket.on('get_online_users',onOnlineUsers)
                 channelSocket.on('disconnect',onDisconnect)
                 channelSocket.on('connect',onConnect)
                 channelSocket.on('receive_message',onMessage)

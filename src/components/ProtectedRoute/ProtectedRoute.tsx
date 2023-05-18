@@ -10,7 +10,8 @@ import { useAuthStore, useChatStore } from '../../ZustandStore'
 
 const {io,serverUrl,certOptions}=SocketStore()
 
-const userSocket = io(`${serverUrl}/user`,{autoConnect:false,pfx:certOptions.pfx,passphrase:certOptions.passphrase});
+export const userSocket = io(`${serverUrl}/user`,{
+  pfx:certOptions.pfx,passphrase:certOptions.passphrase,reconnection:true,reconnectionDelayMax:5000,reconnectionAttempts:Infinity, autoConnect:false});
 
 const ProtectedRoute = () => {
   const setChannels =useChatStore(s=>s.setChannels)
@@ -23,16 +24,14 @@ const ProtectedRoute = () => {
    
   useEffect(
     ()=>{
-      console.log(`cookies`,cookies);
-      
       sleep(500).then( 
         async()=>{
         let isLogged = cookies?.user
       
         if(isLogged?.email){
           setUser(isLogged);
-          userSocket.emit('user_online',{userId:isLogged?._id})
-         
+        userSocket.connect()
+
         }
       setLoading(false)
       }
@@ -43,29 +42,27 @@ const ProtectedRoute = () => {
   useEffect(
     ()=>{
       if(user?._id){
-        userSocket.connect()
-       
         let onOnline = (data: any)=>{
-          console.log(`onOnline:`, data)
-          setOnlineUsers(data?.online)
-          
-        } 
-        let onConnection = ()=>{
+            console.log(`onOnline:`, data)
+            setOnlineUsers(data?.online)
+          } 
+          let onConnection = ()=>{
+          userSocket.emit('user_online',{userId:user?._id})
           console.log(`CONNECTED TO USER SOCKET`,)
-        }
-        let onDisconnect = ()=>{
-          console.log(`DISCONNECTED FROM USER SOCKET`,)
-        }
-  
-        userSocket.on('user_online',onOnline)
-        userSocket.on('connect',onConnection)
-        userSocket.on('disconnect',onDisconnect)
-        return ()=>{
-          userSocket.off('user_online',onOnline)
-          userSocket.off('connect',onConnection)
-          userSocket.off('disconnect',onDisconnect)
-          userSocket.disconnect()
-        }
+          }
+          let onDisconnect = ()=>{
+            console.log(`DISCONNECTED FROM USER SOCKET`,)
+          }
+    
+          userSocket.on('user_online',onOnline)
+          userSocket.on('connect',onConnection)
+          userSocket.on('disconnect',onDisconnect)
+          return ()=>{
+            userSocket.off('user_online',onOnline)
+            userSocket.off('connect',onConnection)
+            userSocket.off('disconnect',onDisconnect)
+            userSocket.disconnect()
+          }
       }
     },[user?._id]
   )

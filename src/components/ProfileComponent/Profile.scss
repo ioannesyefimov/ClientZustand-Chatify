@@ -6,13 +6,18 @@
         justify-content: space-around;
         flex-direction: row
        };
+
+       @media (max-width:650px) {
+        flex-direction: column;
+       }
     flex-direction: column;
     display: flex;
     flex:1;
     display: flex;
     max-width: 1020px;
-    margin: 1rem auto auto auto;
+    padding: 1rem auto auto auto;
     align-items: center;
+    background: #0B090C;
     .profile-information{
         display: grid;
         gap:0.5rem;
@@ -32,8 +37,7 @@
         // @extend .box-shadow--gray;
         padding: .5rem 2rem;
         border:1px solid gray;
-        background: #0B090C;
-
+        background-color: #3C393F !important;
         border-radius: 8px;
         place-content: center;
         display:grid;
@@ -64,11 +68,20 @@
         padding: 1.5rem;
         border-radius: 8px;
         border:1px solid gray;
-        background: #0B090C;
+
+        background-color: #3C393F !important;
+
         min-width: 320px;
 
         h4 {
             text-align: center;
+
+        }
+        .channel{
+            box-shadow:0 0 2px beige;
+            &-name{
+                color: whitesmoke;
+            }
 
         }
     }

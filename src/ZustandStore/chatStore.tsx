@@ -1,5 +1,11 @@
 import {create} from 'zustand'
 import { ChannelType, MessageType } from '../components/types'
+
+const initState = {
+    channels:[],
+    currentChannel:null
+
+}
 const useChatStore = create<{
     // fetchChannels: (user:UserType)=>Promise<void>
     channels:ChannelType[] | [];
@@ -11,9 +17,10 @@ const useChatStore = create<{
     leaveChannel: (channel_id:string) =>void
 
     deleteCurrentChannelMessage : (message_id:string)=>void
+    resetChat:()=>void
 }>((set,get)=> ({
-    channels:[],
-    currentChannel:null,
+    channels:initState.channels,
+    currentChannel:initState.currentChannel,
     setCurrentChannel: (currentChannel:ChannelType | null)=>set({currentChannel}),
     setChannels: (channels) =>set({channels}),
     joinChannel: (channel:ChannelType) => set((state)=>({channels: [...state?.channels,channel]})),
@@ -24,7 +31,9 @@ const useChatStore = create<{
     deleteCurrentChannelMessage : (message_id:string)=>{
         console.log(`message_id`,message_id)
         return set((state:any)=>({currentChannel:{...state.currentChannel,messages: state.currentChannel.messages?.filter((msg:MessageType)=>msg._id !== message_id)}}))
-    }
+    },
+    resetChat: ()=>{set(initState)}
+
      
 }))
 

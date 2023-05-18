@@ -12,7 +12,7 @@ const ChatContainer = () => {
     let content = (
         <div className='chat-container-outer '>  
             <CurrentChannel />
-            {/* {location.search.includes('?manage') && <ChannelManager/>} */}
+            {location.search.includes('?manage') && <ChannelManager/>}
             <Outlet/>
         </div>
     )

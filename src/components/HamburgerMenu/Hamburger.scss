@@ -127,6 +127,7 @@
         @include respond-to(smallHeight){
             position: fixed !important;
             // clip-path: inset(0 0 99% 0) ;
+            
             inset: 0;
             width:calc($barWidth - 15% );
             z-index: 100;

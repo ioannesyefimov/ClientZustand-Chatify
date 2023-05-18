@@ -21,7 +21,7 @@ const UploadInput = React.forwardRef(({channel,labelName,id,onChange,handleRemov
             {labelName ?? ''}
             <div className="wrapper">
 
-                <img className="converted-img"  src={!value ? uploadIco : value }  />
+                <img className={!value ? 'default' :`converted-img`}  src={!value ? uploadIco : value }  />
                 <input  type="file" name={'upload'} id={id} onChange={onChange}  />
                 <Button img={trashIco} name='delete-btn' onClick={handleRemoveImg}/>
             </div>
