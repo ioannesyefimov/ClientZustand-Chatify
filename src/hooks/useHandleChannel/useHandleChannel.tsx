@@ -11,10 +11,10 @@ const useHandleChannel = (setCurrent?:Dispatch<SetStateAction<any>> | undefined)
     const setLoading = useAuthStore(s=>s.setLoading)
     const serverUrl = useAuthStore(s=>s.serverUrl)
     const navigate = useNavigate()
-    const setChannels =useChatStore(s=>s.setChannels) 
     const leaveChannel =useChatStore(s=>s.leaveChannel) 
+    // const setChannels =useChatStore(s=>s.setChannels) 
     const joinChannel =useChatStore(s=>s.joinChannel) 
-    const {setCookie,cookies} =useAuthCookies() 
+    // const {setCookie,cookies} =useAuthCookies() 
 
 
     const handleLeaveChannel = async(id:string,user:UserType)=>{
@@ -74,41 +74,7 @@ const useHandleChannel = (setCurrent?:Dispatch<SetStateAction<any>> | undefined)
       signal?:AbortSignal
     } 
 
-    // const handleCurrentChannel =
-    //   async({name,setter,socket,scrollToRef,user,signal}:HandleCurrentChannelProps)=>{
-    //     try {
-    //       setLoading(true)
-    //     console.log(`NAME: ${name}`);
-    //     let query = new URLSearchParams(name)
-    //     let channel_id = query.get('channel')
-    //     // console.log(`channel_id:`, channel_id);
-    //     // console.log(`user:`, user);
-    //     if(!user?.email){
-    //       return
-    //     } 
-    //     if(!channel_id){
-    //       for(let i of name){
-    //         if(i.includes('='))
-    //          throwErr({name:Errors.CHANNEL_NOT_FOUND})            
-    //        }
-    //         setter(null)
-    //       return setLoading(false)
-    //     }
-    //     socket.emit('get_channel', {channel_id,userEmail:user?.email})
-    //     }
-        
-    //     catch (error) {
-        
-    //       setServerResponse(error)
-    //   } finally {
-        
-    //     scrollToRef?.current?.scrollIntoView({behavior:'smooth'})
-    //   }
-    // }
-
-
     return {handleLeaveChannel,handleJoinChannel,}
-    // handleCurrentChannel}
 }
 
 export default useHandleChannel

@@ -37,10 +37,12 @@ export type ResponseType = {
     err?:any
 }
 export type SocketResponse = {
+    [index:string]:any
     success:boolean
     data?: any
     message?: any
     err?:any
+    
   }
 export type Member = UserType
 

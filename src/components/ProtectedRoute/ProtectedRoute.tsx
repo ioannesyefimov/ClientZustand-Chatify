@@ -30,7 +30,6 @@ const ProtectedRoute = () => {
       
         if(isLogged?.email){
           setUser(isLogged);
-        userSocket.connect()
 
         }
       setLoading(false)
@@ -42,6 +41,7 @@ const ProtectedRoute = () => {
   useEffect(
     ()=>{
       if(user?._id){
+        userSocket.connect()
         let onOnline = (data: any)=>{
             console.log(`onOnline:`, data)
             setOnlineUsers(data?.online)

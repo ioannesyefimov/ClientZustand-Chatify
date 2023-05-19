@@ -69,7 +69,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
     useEffect(
         ()=>{
             if(currentChannel?._id){
-
+              
                 let onConnect = ()=>{
                   console.log(`CONNECTED BY ID ${channelSocket.id}`)
                 }

@@ -55,53 +55,6 @@ const RedirectComponent = () => {
         }
     }
     const {data,isLoading,error}=useSWR(location?.search ? `/api/auth/user`:null , fetcher)
-
-
-    
-    //   let handleRedirect = 
-    //     async(signal:AbortSignal,token?:string)=>{
-    //         try {
-    //             setLoading(true)
-    //             let query = new URLSearchParams(location.search)
-    //             let type = query.get('type')
-    //             let loggedThrough = query.get('loggedThrough')
-    //             let accessToken = query.get('accessToken')
-    //             let code = query.get("code")
-    //             let redirectUrl = query.get("redirectUrl")
-    //             if(signal.aborted) return
-    //             await sleep(2000);
-    //             if(code){
-    //                 return await handleGitHubLogin(code,signal);
-    //             }
-    //             console.log(`type: ${type}`)
-    //             console.log(`loggedThrough: ${loggedThrough}`)
-    //             console.log(`accessToken: ${accessToken}`)
-    //             if(!accessToken) {
-    //                 throwErr({name:Errors.MISSING_ARGUMENTS,arguments:'accessToken'})
-    //             }
-    //             if(!type) throwErr({name:Errors.MISSING_ARGUMENTS,arguments:'type'})
-    //             // setCookies('accessToken', accessToken, {path:'/',maxAge: 2000})
-    //             if(type==='newAccessToken'){
-    //                 let redirect = query.get('redirectUrl')!
-    //                 navigate(redirect)
-    //                 console.log(`REDIRECTION to ${redirect}`)
-    //                 return false
-    //             }
-    //             if(type && loggedThrough && accessToken){
-    //                return handleLogin({accessToken,type,loggedThrough,signal,redirectUrl});
-    //             }
-    //         } catch (error:any) {
-    //             setServerResponse(error)
-    //         }
-    // }
-    // useEffect(
-    //     ()=>{
-    //         if(!location.search)return 
-    //         let controller = new AbortController()
-    //         let {signal} = controller
-    //         handleRedirect(signal)
-    //     },[location.search])
-
     useEffect(
         ()=>{
             if(data?.data?.user){
@@ -119,14 +72,15 @@ const RedirectComponent = () => {
             }
         },[data]
     )
-        
+    const content = (
+        <div className='redirect-component'>
+            {isLoading ? <LoadingFallback/> : (
+                <Link to='/chat' replace>Home</Link>
+            )}
+        </div>
+        )
     
-    return (
-    <div className='redirect-component'>
-        {isLoading && <LoadingFallback/>}
-        <Link to='/chat' replace>Home</Link>
-    </div>
-    )
+    return content
 
 }
 

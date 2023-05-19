@@ -4,6 +4,8 @@ import './CurrentChannel.scss'
 import MessagesProvider from '../../MessagesWrapper/Context/MessagesContext'
 import MessagesWrapper from '../../MessagesWrapper/MessagesWrapper'
 import { useAuthStore } from '../../../ZustandStore'
+import ChannelNavBar from '../ChannelNavBar/ChannelNavBar'
+import ChannelWebRTC from '../../ChannelWebRTC/ChannelWebRTC'
 
 
 const CurrentChannel = () => {
@@ -13,15 +15,16 @@ const CurrentChannel = () => {
   const {channel_id}=useParams()
   const {currentChannel,setCurrentChannel,addCurrentChannelMessage,currentChannelMessages,deleteCurrentChannelMessage,isLoading}=useCurrentChannel(channel_id ?? '',user)
 
- 
+  if(!currentChannel?._id) return <h2 className='channel-title dashboard'>Choose your channel</h2>
 
   let channelContent =
   (
     <>
-     
-    <div className='channel-title'>
-      <h2 >{currentChannel?.channelName}</h2> 
-    </div>
+    {location?.search.includes('?channelCall=true') ? (
+      <ChannelWebRTC />
+    ) : (
+     <ChannelNavBar channel={currentChannel!}/>
+    )}
       <MessagesProvider>
         {isLoading ? 
           (<h2>Loading messages...</h2>) : 
@@ -32,17 +35,10 @@ const CurrentChannel = () => {
     )
     return (
     
-    <div className="main-wrapper">
-      {
-        currentChannel?._id ? (
-          channelContent 
-        ) : 
-        (
-          <h2 className='channel-title dashboard'>Choose your channel</h2>
-          ) 
-      }
-    </div>
-)
+      <div className="main-wrapper">
+        {channelContent}
+      </div>
+  )
 }
 
 export default CurrentChannel
