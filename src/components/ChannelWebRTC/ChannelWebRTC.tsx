@@ -6,19 +6,20 @@ import Button from '../Button/Button';
 import { callIco } from '../../assets';
 import { SocketResponse } from '../types';
 import { Socket } from 'socket.io-client';
+import { useCallback } from 'react';
+type PeerConnections = { [userId: string]: RTCPeerConnection };
 
 const {io,certOptions,serverUrl}=SocketStore()
 const ChannelWebRTC: React.FC = () => {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
-  const [remoteStreams, setRemoteStreams] = useState<MediaStream[]>([]);
-  const [peerConnections,setPeerConnections]=useState<RTCPeerConnection[]>([])
-
-  const socketRef = useRef<Socket|null>(null)
+  const [peerConnections, setPeerConnections] = useState<PeerConnections>({});
   const channel= useChatStore(s=>s.currentChannel)
-  const user = useAuthStore(s=>s.user)
   const localVideoRef = useRef<HTMLVideoElement>(null);
-  const remoteVideoRefs = useRef<HTMLVideoElement[]>([]);
-  // const configuration: RTCConfiguration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+  const remoteVideoRefs = useRef<{ [userId: string]: HTMLVideoElement | null }>({});
+  const socketRef = useRef<Socket | null>(null);
+
+
+  const user = useAuthStore(s=>s.user)
 
   useEffect(() => {
     // Access user's media devices (camera and microphone)
@@ -36,67 +37,49 @@ const ChannelWebRTC: React.FC = () => {
       });
 
     // Clean up
+    console.log(`REMOTE REFS`, remoteVideoRefs);
+    
     return () => {
       if (localStream) {
         localStream.getTracks().forEach(track => track.stop());
       }
-      remoteStreams.forEach(stream => {
-        stream.getTracks().forEach(track => track.stop());
-      });
+     
     };
   }, []);
   useEffect(() => {
-    const initializePeerConnection = (userId: string) => {
-      try {
-        const configuration: RTCConfiguration = {
-          iceServers: [{ urls: 'stun:stun.stunserver.org:3478' }],
-        };
-
-        const pc = new RTCPeerConnection(configuration);
-
-        // Add local stream and handle remote stream
-        // ...
-
-        pc.onicecandidate = (event) => {
-          if (event.candidate) {
-            socketRef.current?.emit('candidate', { userId, candidate: event.candidate });
-          }
-        };
-
-        pc.ontrack = (event) => {
-          if (event.streams && event.streams[0]) {
-            remoteVideoRefs.current[userId]!.srcObject = event.streams[0];
-          }
-        };
-
-        setPeerConnections((prevConnections) => ({
-          ...prevConnections,
-          [userId]: pc,
-        }));
-      } catch (error) {
-        console.log(`Error initializing peer connection for user ${userId}:`, error);
-      }
-    };
-
-    initializePeerConnection('user1');
-    initializePeerConnection('user2');
+   
+    if(user?._id){
+      initializePeerConnection(user?._id);
+    }
     // Initialize more peer connections for additional users as needed
 
     return () => {
       Object.values(peerConnections).forEach((pc) => pc.close());
     };
-  }, []);
+  }, [user?._id]);
+
 
   useEffect(
     ()=>{
-      const socket = io(`${serverUrl}/current-channel-call`)
+      const socket = io(`${serverUrl}/current-channel-call`,certOptions)
+      
       socket.on('connect',()=>{
-        console.log('Socket.IO connection established')
+        console.log(`Socket.IO connection established`)
         socketRef.current = socket
-      })
+        socket.emit('join_room',{room:channel?._id,user_id:user?._id}) 
+        socket.emit('candidate',{room:channel?._id,user_id:user?._id}) 
 
-      socket.on('answer_call',data=>{
-        const {userId,type,offer,answer,candidate}=data
+      })
+      const onCandidate=(data:any)=>{
+        console.log(`data`,data)
+        initializePeerConnection(data?.user_id)
+
+      }
+      const onJoinRoom = (data:any)=>{
+        console.log(data?.message)
+      }
+      const onMessage = (data:any)=>{
+        const {userId,type,offer,answer,candidate}=data;
         if (type === 'offer') {
           handleOffer(userId, offer);
         } else if (type === 'answer') {
@@ -104,59 +87,106 @@ const ChannelWebRTC: React.FC = () => {
         } else if (type === 'candidate') {
           handleIceCandidate(userId, candidate);
         }
-      })
+      }
+      socket.on('message',onMessage);
+      socket.on('join_room',onJoinRoom);
+      socket.on('candidate',onCandidate);
       socket.on('disconnect', () => {
-        console.log('Socket.IO connection closed.');
+        console.log('Socket.IO connection closed.')
         socketRef.current = null;
       });
-  
-      return () => {
+      return ()=>{
         if (socketRef.current) {
           socketRef.current.disconnect();
         }
-      };
+        socket.off('message',onMessage)
+        socket.off('candidate',onCandidate)
+        socket.off('join_room',onJoinRoom)
+      }
+
     },[]
   )
- 
-  const handleCall = async (userId: string) => {
+  const initializePeerConnection = (user_id: string) => {
     try {
+      console.log(`Initializinmg peer connection with id : ${user_id}`);
+      
+      const configuration: RTCConfiguration = {
+        iceServers: [{ urls: 'stun:stun.stunserver.org:3478' }],
+      };
+      const pc = new RTCPeerConnection(configuration);
+      // Add local stream and handle remote stream
+      // ...
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          socketRef.current?.emit('candidate', { user_id, candidate: event.candidate });
+        }
+      };
+
+      pc.ontrack = (event) => {
+        if (event.streams && event.streams[0]) {
+          remoteVideoRefs.current[user_id]!.srcObject = event.streams[0];
+        }
+      };
+
+      setPeerConnections((prevConnections) => ({
+        ...prevConnections,
+        [user_id]: pc,
+      }));
+    } catch (error) {
+       console.log(`Error initializing peer connection for user ${user_id}:`, error);
+    }
+  };
+
+  const handleCall =useCallback(
+     async (userId:string) => {
+    
+    try {
+      console.log(`CALLING`);
       const pc = peerConnections[userId];
       if (!pc) {
         console.log(`Peer connection not found for user ${userId}`);
         return;
       }
+      console.log(`CALLING`);
 
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
 
       const offerSdp = pc.localDescription?.sdp;
-      socketRef.current?.emit('message', { userId, type: 'offer', offer: offerSdp });
+      console.log(`SOCKET`,socketRef?.current);
+      
+      socketRef?.current?.emit('message', { userId, type: 'offer', offer: offerSdp,room:channel?._id });
     } catch (error) {
       console.log(`Error creating offer for user ${userId}:`, error);
     }
-  };
+  },[socketRef?.current])
 
-  const handleOffer = async (userId: string, offerSdp: string) => {
+  const handleOffer =useCallback( 
+    async (userId:string, offerSdp:string) => {
     try {
+      console.log(`PEERCONNECTIONS`,peerConnections);
+      
       const pc = peerConnections[userId];
       if (!pc) {
         console.log(`Peer connection not found for user ${userId}`);
         return;
       }
 
-      await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp: offerSdp }));
+      await pc.setRemoteDescription({ type: 'offer', sdp: offerSdp });
 
       const answer = await pc.createAnswer();
       await pc.setLocalDescription(answer);
 
-      const answerSdp = pc.localDescription?.sdp;
-      socketRef.current?.emit('message', { userId, type: 'answer', answer: answerSdp });
+      const answerSdp = pc?.localDescription?.sdp;
+      socketRef.current?.emit('message', { userId, type: 'answer', answer: answerSdp,room:channel?._id });
     } catch (error) {
       console.log(`Error creating answer for user ${userId}:`, error);
     }
-  };
+  },[socketRef?.current])
 
-  const handleAnswer = async (userId: string, answerSdp: string) => {
+  const handleAnswer =
+     async (userId:string, answerSdp: string) => {
     try {
       const pc = peerConnections[userId];
       if (!pc) {
@@ -168,9 +198,9 @@ const ChannelWebRTC: React.FC = () => {
     } catch (error) {
       console.log(`Error setting remote description for user ${userId}:`, error);
     }
-  };
+  }
 
-  const handleIceCandidate = async (userId: string, candidate: RTCIceCandidateInit) => {
+  const handleIceCandidate = async (userId:string, candidate:RTCIceCandidate) => {
     try {
       const pc = peerConnections[userId];
       if (!pc) {
@@ -187,13 +217,16 @@ const ChannelWebRTC: React.FC = () => {
   return (
     <section className='channel__webrtc'>
       <video className='local__video' ref={localVideoRef} autoPlay playsInline muted />
-      {remoteStreams?.map((stream, index) => (
-        <video key={index} ref={videoRef => remoteVideoRefs.current[index] = videoRef} autoPlay playsInline />
-      ))}
-      {/* <button className='call__btn' onClick={handleCall}>Call</button> */}
-      <Button name="call_btn" img={callIco} onClick={handleCall}/>
+      {
+      Object.keys(remoteVideoRefs?.current).map((key)=>{
+        console.log(`KEY`,key)
+        console.log(`property`,remoteVideoRefs[key])
+        return <h1>haha</h1>
+      })
+      }
+      <Button name="call_btn" img={callIco} onClick={()=>handleCall(user?._id)}/>
     </section >
-  );
-};
+  )
+}
 
 export default ChannelWebRTC;
