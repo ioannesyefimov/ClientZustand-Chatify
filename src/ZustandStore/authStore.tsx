@@ -1,7 +1,7 @@
 import {create} from 'zustand'
 import { UserType } from '../components/types'
 
-type onlineUsers= {socketId:string,userId:string}[]
+type onlineUsers= {[index:string]:string}
 const initState = {
     user:{userName: '', email: '', picture: '', _id: '', loggedThrough: '',channels:[] },
     onlineUsers:[],

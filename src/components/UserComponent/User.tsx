@@ -12,9 +12,7 @@ type PropsType = {
 const User = ({user,className,location}:{ user?:UserType,className?:string,location:string}) => {
   const onlineUsers=useAuthStore(s=>s.onlineUsers)
 
-  let isOnline = onlineUsers?.some(onlineUser=>{
-    return  onlineUser?.userId===user?._id || onlineUser?.userId===user?.member?._id
-  })
+  let isOnline = Object.keys(onlineUsers).some((onlineUser)=>onlineUsers[onlineUser]===user?._id)
   return (
       <Link to={location==='profile' || location==='bar' ? '/profile' : `/user/${user?._id  ?? 'deleted'}`} className={className ?? 'user'} >
           <img src={user?.picture ? user.picture : userIco} alt="avatar" className='user-img' />

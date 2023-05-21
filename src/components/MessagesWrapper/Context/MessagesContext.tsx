@@ -33,8 +33,6 @@ const useMessagesStore = ()=>{
     const setLoading=useAuthStore(s=>s.setLoading)
     const {setServerResponse} = useResponseContext()
     const currentChannel=useChatStore(s=>s.currentChannel)
-  console.log(`USER`,user);
-  
     const handleSubmitMessage=async({e,value,setValue,propsValue,setPropsValue}:HandleClickType): Promise<void> =>{
         try {
           console.log(`SUBMITTING MESSAGE`)

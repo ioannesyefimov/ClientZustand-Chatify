@@ -8,15 +8,14 @@ import { SocketResponse } from '../types';
 import { Socket } from 'socket.io-client';
 import { useCallback } from 'react';
 type PeerConnections = { [userId: string]: RTCPeerConnection };
-
 const {io,certOptions,serverUrl}=SocketStore()
+const channelCallSocket = io(`${serverUrl}/current-channel-call`,{pfx:certOptions.pfx,passphrase:certOptions?.passphrase,autoConnect:false})
 const ChannelWebRTC: React.FC = () => {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [peerConnections, setPeerConnections] = useState<PeerConnections>({});
   const channel= useChatStore(s=>s.currentChannel)
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRefs = useRef<{ [userId: string]: HTMLVideoElement | null }>({});
-  const socketRef = useRef<Socket | null>(null);
 
 
   const user = useAuthStore(s=>s.user)
@@ -50,36 +49,40 @@ const ChannelWebRTC: React.FC = () => {
    
     if(user?._id){
       initializePeerConnection(user?._id);
+      return () => {
+        Object.values(peerConnections).forEach((pc) => pc.close());
+      };
     }
     // Initialize more peer connections for additional users as needed
 
-    return () => {
-      Object.values(peerConnections).forEach((pc) => pc.close());
-    };
   }, [user?._id]);
 
 
   useEffect(
     ()=>{
-      const socket = io(`${serverUrl}/current-channel-call`,certOptions)
+      channelCallSocket.connect()
       
-      socket.on('connect',()=>{
+      channelCallSocket.on('connect',()=>{
         console.log(`Socket.IO connection established`)
-        socketRef.current = socket
-        socket.emit('join_room',{room:channel?._id,user_id:user?._id}) 
-        socket.emit('candidate',{room:channel?._id,user_id:user?._id}) 
+        channelCallSocket.emit('join_room',{room:channel?._id,user_id:user?._id}) 
+        // socket.emit('candidate',{room:channel?._id,user_id:user?._id}) 
 
       })
-      const onCandidate=(data:any)=>{
-        console.log(`data`,data)
-        initializePeerConnection(data?.user_id)
+      // const onCandidate=(data:any)=>{
+      //   console.log(`data`,data)
+      //   initializePeerConnection(data?.user_id)
 
+      // }
+      const onNewPerrConnection = (data:any)=>{
+         initializePeerConnection(data?.user_id)
       }
       const onJoinRoom = (data:any)=>{
         console.log(data?.message)
       }
       const onMessage = (data:any)=>{
         const {userId,type,offer,answer,candidate}=data;
+        console.log(`on message data:`,data);
+        
         if (type === 'offer') {
           handleOffer(userId, offer);
         } else if (type === 'answer') {
@@ -88,20 +91,17 @@ const ChannelWebRTC: React.FC = () => {
           handleIceCandidate(userId, candidate);
         }
       }
-      socket.on('message',onMessage);
-      socket.on('join_room',onJoinRoom);
-      socket.on('candidate',onCandidate);
-      socket.on('disconnect', () => {
+      channelCallSocket.on('message',onMessage);
+      channelCallSocket.on('new_peer',onNewPerrConnection);
+      channelCallSocket.on('join_room',onJoinRoom);
+      channelCallSocket.on('disconnect', () => {
         console.log('Socket.IO connection closed.')
-        socketRef.current = null;
       });
       return ()=>{
-        if (socketRef.current) {
-          socketRef.current.disconnect();
-        }
-        socket.off('message',onMessage)
-        socket.off('candidate',onCandidate)
-        socket.off('join_room',onJoinRoom)
+      
+        channelCallSocket.off('message',onMessage)
+        // channelCallSocket.off('candidate',onCandidate)
+        channelCallSocket.off('join_room',onJoinRoom)
       }
 
     },[]
@@ -116,10 +116,10 @@ const ChannelWebRTC: React.FC = () => {
       const pc = new RTCPeerConnection(configuration);
       // Add local stream and handle remote stream
       // ...
-
+      
       pc.onicecandidate = (event) => {
         if (event.candidate) {
-          socketRef.current?.emit('candidate', { user_id, candidate: event.candidate });
+         channelCallSocket?.emit('candidate', { user_id, candidate: event.candidate });
         }
       };
 
@@ -128,7 +128,7 @@ const ChannelWebRTC: React.FC = () => {
           remoteVideoRefs.current[user_id]!.srcObject = event.streams[0];
         }
       };
-
+      channelCallSocket?.emit('join_room',{room:channel?._id,user_id:user?._id,signal:pc})
       setPeerConnections((prevConnections) => ({
         ...prevConnections,
         [user_id]: pc,
@@ -138,7 +138,7 @@ const ChannelWebRTC: React.FC = () => {
     }
   };
 
-  const handleCall =useCallback(
+  const handleCall =
      async (userId:string) => {
     
     try {
@@ -154,15 +154,15 @@ const ChannelWebRTC: React.FC = () => {
       await pc.setLocalDescription(offer);
 
       const offerSdp = pc.localDescription?.sdp;
-      console.log(`SOCKET`,socketRef?.current);
+      console.log(`SOCKET`,channelCallSocket);
       
-      socketRef?.current?.emit('message', { userId, type: 'offer', offer: offerSdp,room:channel?._id });
+      channelCallSocket?.emit('message', { userId, type: 'offer', offer: offerSdp,room:channel?._id });
     } catch (error) {
       console.log(`Error creating offer for user ${userId}:`, error);
     }
-  },[socketRef?.current])
+  }
 
-  const handleOffer =useCallback( 
+  const handleOffer =
     async (userId:string, offerSdp:string) => {
     try {
       console.log(`PEERCONNECTIONS`,peerConnections);
@@ -179,11 +179,11 @@ const ChannelWebRTC: React.FC = () => {
       await pc.setLocalDescription(answer);
 
       const answerSdp = pc?.localDescription?.sdp;
-      socketRef.current?.emit('message', { userId, type: 'answer', answer: answerSdp,room:channel?._id });
+     channelCallSocket?.emit('message', { userId, type: 'answer', answer: answerSdp,room:channel?._id });
     } catch (error) {
       console.log(`Error creating answer for user ${userId}:`, error);
     }
-  },[socketRef?.current])
+  }
 
   const handleAnswer =
      async (userId:string, answerSdp: string) => {

@@ -42,12 +42,12 @@ const ProtectedRoute = () => {
     ()=>{
       if(user?._id){
         userSocket.connect()
-        let onOnline = (data: any)=>{
-            console.log(`onOnline:`, data)
-            setOnlineUsers(data?.online)
+        let onOnline = (users: any)=>{
+            console.log(`onOnline:`, users)
+            setOnlineUsers(users)
           } 
           let onConnection = ()=>{
-          userSocket.emit('user_online',{userId:user?._id})
+          userSocket.emit('user_online',{user_id:user?._id})
           console.log(`CONNECTED TO USER SOCKET`,)
           }
           let onDisconnect = ()=>{

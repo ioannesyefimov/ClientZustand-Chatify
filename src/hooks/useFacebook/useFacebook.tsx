@@ -40,7 +40,7 @@ const useFacebook = (loginType:string,redirectUrl:string|undefined) => {
                             console.log(`FB:status==: ${resp.status}`)
                             if(resp.status==='connected'){
                                 
-                                return cookies?.accessToken ? navigate(`/auth/redirect/?accessToken=${cookies?.accessToken}&loggedThrough=Facebook&type=user/auth`) : console.log(`token is ${cookies?.accessToken}`)
+                                return cookies?.accessToken ? navigate(`/auth/redirect/?accessToken=${cookies?.accessToken}&loggedThrough=Facebook&type=auth/user`) : console.log(`token is ${cookies?.accessToken}`)
                             }
                         })
                         btn.removeAttribute('disabled')

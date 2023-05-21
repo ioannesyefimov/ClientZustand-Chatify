@@ -6,12 +6,21 @@ import mkcert from 'vite-plugin-mkcert'
 // https://vitejs.dev/config/
 export default ({mode}) => {
   process.env = {...process.env, ...loadEnv(mode, process.cwd() )};
-  return defineConfig({
+  console.log(`MODE:`,mode)
+  return mode==='ipaddress' ? (
+    defineConfig({
+      plugins: [react(),mkcert() ],
+      server
+      : {
+        host:'192.168.1.102'
+      } 
+    })
+  ) :(
+   defineConfig({
     plugins: [react(),mkcert() ],
     
-    server: {
-      host:'192.168.1.102'
-    }
-})
+   
+    })
+  )
   
 }
