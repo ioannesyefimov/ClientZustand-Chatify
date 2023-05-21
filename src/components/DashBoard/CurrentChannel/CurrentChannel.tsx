@@ -21,7 +21,7 @@ const CurrentChannel = () => {
   (
     <>
     {location?.search.includes('?channelCall=true') ? (
-      <ChannelWebRTC />
+      <ChannelWebRTC channel={currentChannel}/>
     ) : (
      <ChannelNavBar channel={currentChannel!}/>
     )}
