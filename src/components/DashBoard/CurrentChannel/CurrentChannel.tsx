@@ -5,7 +5,7 @@ import MessagesProvider from '../../MessagesWrapper/Context/MessagesContext'
 import MessagesWrapper from '../../MessagesWrapper/MessagesWrapper'
 import { useAuthStore } from '../../../ZustandStore'
 import ChannelNavBar from '../ChannelNavBar/ChannelNavBar'
-import ChannelWebRTC from '../../ChannelWebRTC/ChannelWebRTC'
+import MultiplePeerComponent from '../../MultiplePeerComponent/MultiplePeerComponent'
 
 
 const CurrentChannel = () => {
@@ -21,7 +21,7 @@ const CurrentChannel = () => {
   (
     <>
     {location?.search.includes('?channelCall=true') ? (
-      <ChannelWebRTC channel={currentChannel}/>
+      <MultiplePeerComponent channel={currentChannel}/>
     ) : (
      <ChannelNavBar channel={currentChannel!}/>
     )}
