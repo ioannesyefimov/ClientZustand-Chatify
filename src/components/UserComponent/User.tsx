@@ -13,12 +13,17 @@ const User = ({user,className,location}:{ user?:UserType,className?:string,locat
   const onlineUsers=useAuthStore(s=>s.onlineUsers)
 
   let isOnline = Object.keys(onlineUsers).some((onlineUser)=>onlineUsers[onlineUser]===user?._id)
+  let statusImg = isOnline===true ? onlineStatusIco : isOnline===false ? offlineStatusIco :''
   return (
       <Link to={location==='profile' || location==='bar' ? '/profile' : `/user/${user?._id  ?? 'deleted'}`} className={className ?? 'user'} >
           <img src={user?.picture ? user.picture : userIco} alt="avatar" className='user-img' />
           <div className="flex ga-1">
             <span className='user-name'>{user?.userName ?? 'This user has been deleted...(⊙_⊙;)'}</span>        
-            <img className='user-status' src={isOnline===true ? onlineStatusIco : isOnline===false ? offlineStatusIco : !isOnline ? '': null} alt="online icon" />
+            {
+              location!=='bar' && (
+                <img className='user-status' src={statusImg} alt="online icon" />
+              )
+            }
           </div>
       </Link>
     )

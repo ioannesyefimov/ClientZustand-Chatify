@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv  } from 'vite'
 import react from '@vitejs/plugin-react'
 import mkcert from 'vite-plugin-mkcert'
+import fs from 'fs'
 
 
 // https://vitejs.dev/config/
@@ -9,7 +10,7 @@ export default ({mode}) => {
   console.log(`MODE:`,mode)
   return mode==='ipaddress' ? (
     defineConfig({
-      plugins: [react(),mkcert() ],
+      plugins: [react(),mkcert()],
       server
       : {
         host:'192.168.1.102'
@@ -17,7 +18,8 @@ export default ({mode}) => {
     })
   ) :(
    defineConfig({
-    plugins: [react(),mkcert() ],
+    plugins: [react(),mkcert()],
+   
     
    
     })

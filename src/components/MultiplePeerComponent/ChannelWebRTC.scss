@@ -1,0 +1,35 @@
+.channel-webrtc{
+    display: grid;
+    place-content: center;
+    position: relative;
+    // flex:45%; 
+    gap:1rem;  
+    .local-user{
+        margin:auto;
+        &-video{
+            width: 100%;
+            object-fit: cover;
+            //     width: 150px;
+        //     outline: 1px solid black    ;
+        }
+    }
+
+    .remote-users {
+        display: flex;
+
+    }
+    .remote-user{
+        &-video{
+            outline: 1px solid red;
+        }
+    }
+
+    .focused-user {
+        position: absolute;
+        margin: auto;
+        inset: 0;
+        width: 70%;
+        height: 60%;
+    }
+   
+}
