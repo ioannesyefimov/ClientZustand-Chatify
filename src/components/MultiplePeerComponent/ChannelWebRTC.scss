@@ -1,8 +1,10 @@
 .channel-webrtc{
     display: grid;
+    padding: .5rem 1rem;
     place-content: center;
     position: relative;
     // flex:45%; 
+    border-right: 1px solid black;
     gap:1rem;  
     .local-user{
         margin:auto;
@@ -27,9 +29,11 @@
     .focused-user {
         position: absolute;
         margin: auto;
-        inset: 0;
-        width: 70%;
-        height: 60%;
+        top:0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 50%;
     }
    
 }

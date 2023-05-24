@@ -4,6 +4,8 @@ import { ChannelType } from '../types';
 import { Socket } from 'socket.io-client';
 import './ChannelWebRTC.scss'
 import { useAuthStore, useChatStore } from '../../ZustandStore';
+import Button from '../Button/Button';
+import { declineIco } from '../../assets';
 
 const { io, certOptions, serverUrl } = SocketStore();
 
@@ -35,7 +37,8 @@ const MultiplePeerComponent = () => {
 
     socket.on('users', (userIds: string[]) => {
       console.log(`users`,userIds);
-      
+      userIds=userIds.filter(userId=>userId!==user?._id)
+      console.log(`filtered users`,userIds);
       if(!userIds) return console.log(`usersIDS IS ${userIds}`)
       const newPeers = userIds?.map((userId) => ({
         userId,
@@ -99,14 +102,14 @@ const MultiplePeerComponent = () => {
           const tracks = stream.getTracks();
           tracks.forEach((track) => {
             peer.peerConnection.addTrack(track, stream);
+            if (peer.userId !== socketRef.current?.id) {
+              const sender = peer.peerConnection.addTrack(track, stream);
+              sender.onremovetrack = () => {
+                console.log('Remote user stopped sending video');
+              };
+            }
           });
 
-          if (peer.userId !== socketRef.current?.id) {
-            const sender = peer.peerConnection.addTrack(track, stream);
-            sender.onremovetrack = () => {
-              console.log('Remote user stopped sending video');
-            };
-          }
         });
       } catch (error) {
         console.log('Error accessing media devices:', error);
@@ -139,17 +142,17 @@ const MultiplePeerComponent = () => {
         }
       });
     }
-    handleCall(userId)
+    handleCall(userId,socketRef?.current?.id ?? '')
 
     return peerConnection;
   };
-  const handleCall = (userId: string) => {
+  const handleCall = (userId: string,socketId:string) => {
     const peer = peers.find((p) => p.userId === userId);
     if (peer) {
       peer.peerConnection.createOffer()
         .then((offer) => peer.peerConnection.setLocalDescription(offer))
         .then(() => {
-          socketRef.current?.emit('offer', { userId, offer: peer.peerConnection.localDescription });
+          socketRef.current?.emit('offer', { userId,socketId, offer: peer.peerConnection.localDescription });
         })
         .catch((error) => {
           console.log('Error creating or setting local description:', error);
@@ -173,19 +176,8 @@ const MultiplePeerComponent = () => {
             {/* <button className='remote-user-btn' onClick={() => handleCall(peer.userId)}>Call</button> */}
           </div>
         ))}
-       <div className='remote-user' >
-            <video className='remote-user-video'  playsInline autoPlay />
-            {/* <button className='remote-user-btn' onClick={() => handleCall(peer.userId)}>Call</button> */}
-          </div>
-       <div className='remote-user' >
-            <video className='remote-user-video'  playsInline autoPlay />
-            {/* <button className='remote-user-btn' onClick={() => handleCall(peer.userId)}>Call</button> */}
-          </div>
-       <div className='remote-user' >
-            <video className='remote-user-video'  playsInline autoPlay />
-            {/* <button className='remote-user-btn' onClick={() => handleCall(peer.userId)}>Call</button> */}
-          </div>
       </div>
+      <Button img={declineIco} name="decline"/>
     </div>
   );
 };

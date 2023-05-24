@@ -20,11 +20,7 @@ const CurrentChannel = () => {
   let channelContent =
   (
     <>
-    {location?.search.includes('?channelCall=true') ? (
-      <MultiplePeerComponent channel={currentChannel}/>
-    ) : (
-     <ChannelNavBar channel={currentChannel!}/>
-    )}
+      <ChannelNavBar channel={currentChannel!}/>
       <MessagesProvider>
         {isLoading ? 
           (<h2>Loading messages...</h2>) : 
