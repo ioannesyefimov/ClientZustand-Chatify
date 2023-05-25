@@ -1,7 +1,7 @@
 import './App.scss'
 import './components/Themes/Themes.scss'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import {ProtectedRoute,Landing,ChatContainer,UserComponent, Authentication,NotFound,AuthForm, RedirectComponent, MemberInfo, SearchComponent, ChannelSearch, Profile, ProfileSettings, ServerResponseFallback,ChannelsSettings, ChannelManager, ChannelJoin, ChannelCreate} from './components'
+import {ProtectedRoute,Landing,ChatContainer,UserComponent, Authentication,NotFound,AuthForm, RedirectComponent, MemberInfo, SearchComponent, ChannelSearch, Profile, ProfileSettings, ServerResponseFallback,ChannelsSettings, ChannelManager, ChannelJoin, ChannelCreate, ChannelCallWrapper} from './components'
 import ErrorBoundary from './components/ErrorProvider/ErrorProvider'
 
 
@@ -62,6 +62,10 @@ let router = createBrowserRouter([
             },
            
            ]
+          },
+          {
+            element: <ChannelCallWrapper/>,
+            path:'/chat-video/:channel_id?'
           },
           {
            // element: <ChannelManager/>,

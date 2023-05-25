@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom'
 type PropsType = {
     children?: ReactNode
     type:string
-    animation? : string | string[]
+    animation? : {"toggled":string,untoggled:string}
 }
 
 declare module 'react' {
@@ -16,7 +16,7 @@ declare module 'react' {
     }
 }
 
-const Hamburger = ({children,type}:PropsType) => {
+const Hamburger = ({children,type,animation}:PropsType) => {
     const [isToggled, setIsToggled] = useState<'loaded'|'toggled'|'untoggled'|''>('loaded')
     const {width} = useWindowSize()
     let isShowed = width < 500 ? 'animate animate--fast animate--forwards' : ''
@@ -26,6 +26,8 @@ const Hamburger = ({children,type}:PropsType) => {
     let img = isToggled === 'untoggled' || isToggled==='loaded' ? hamburgerIco : closeIco
   
     let toggle = ()=>{
+        console.log(`changing hamburger state`);
+        
         if(isToggled === 'loaded'){
             setIsToggled('toggled')
         } else if(isToggled==='toggled') {
@@ -44,34 +46,34 @@ const Hamburger = ({children,type}:PropsType) => {
             }
         },[location.pathname,location.search]
     )
-    let content = (
-        <div className={`hamburger navbar `} data-istoggled={isToggled}  >
-            <button onClick={toggle} className='hamburger-btn'>
-                <img src={hamburgerIco} alt="hamburgerIco" />
-            </button>
-            <div data-istoggled={isToggled ?? 'untoggled'} className={`hamburger-children   ${isShowed}`}>
-            {children}
-            </div> 
-        </div>  
-    ) 
+    // let content = (
+    //     <div className={`hamburger bar `} data-istoggled={isToggled}  >
+    //         <button onClick={toggle} className='hamburger-btn'>
+    //             <img src={hamburgerIco} alt="hamburgerIco" />
+    //         </button>
+    //         <div data-istoggled={isToggled ?? 'untoggled'} className={`hamburger-children   ${isShowed}`}>
+    //         {children}
+    //         </div> 
+    //     </div>  
+    // ) 
 
-    let navBar = (
-        <div className={`hamburger navbar `}  >
-            <button onClick={toggle} className='hamburger-btn'>
-                <img src={hamburgerIco} alt="hamburgerIco" />
-            </button>
-            <div data-istoggled={isToggled==='loaded' ? 'loaded-bar' : isToggled} className={`hamburger-children  ${isShowed}`}>
-            {children}
-            </div> 
-        </div>  
-    ) 
-    let channels = (
-        <div className='hamburger-outer'data-istoggled={isToggled}>
+    // let bar = (
+    //     <div className={`hamburger bar `}  >
+    //         <button onClick={toggle} className='hamburger-btn'>
+    //             <img src={hamburgerIco} alt="hamburgerIco" />
+    //         </button>
+    //         <div data-istoggled={isToggled==='loaded' ? 'loaded-bar' : isToggled} className={`hamburger-children  ${isShowed}`}>
+    //         {children}
+    //         </div> 
+    //     </div>  
+    // ) 
+    let content = (
+        <div className={`hamburger-outer ${type}`}data-istoggled={isToggled}>
             <button onClick={toggle} className='hamburger-btn'>
             <img src={img} alt="hamburgerIco" />
                 </button>
             <div className={`hamburger channel-navigation`} data-istoggled={isToggled} >
-                <div   className={`hamburger-children  ${isShowed}`}>
+                <div   className={`hamburger-children ${isToggled==='toggled' ? animation?.toggled : isToggled==='untoggled' ? animation?.untoggled : ''}  ${isShowed}`}>
                     {children}
                 </div> 
             </div>
@@ -80,6 +82,6 @@ const Hamburger = ({children,type}:PropsType) => {
         
     )
     
-    return  type === 'navbar' ? (navBar) : type ==='channels'? (channels) : content
+    return  content
     }
 export default Hamburger

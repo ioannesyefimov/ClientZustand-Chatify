@@ -13,7 +13,7 @@ function ChannelNavBar({channel}:{channel:ChannelType}) {
             </div>
 
             <div className="wrapper">
-                <Link className='call-img' to={location?.pathname + '?channelCall=true'}>
+                <Link className='call-img' to={`/chat-video/${channel?._id}`}>
                     <img src={callIco} />
                 </Link>
             </div>

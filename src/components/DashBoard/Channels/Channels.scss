@@ -6,7 +6,7 @@
         @include respond-to(smallHeight){
             display: flex;
         }
-        margin-top: 2rem;
+        // margin-top: 2rem;
         display: grid;
         gap:.8rem;
         &-wrapper{

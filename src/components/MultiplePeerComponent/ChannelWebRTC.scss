@@ -1,3 +1,44 @@
+@use '../utils/animations.scss' as *;
+
+.channel-call-wrapper {
+
+    .hamburger-outer.bar {
+        padding: .2rem .7rem;
+        right: 0;
+        &[data-istoggled=untoggled]{
+            animation-name: disapperToRight !important;
+            .hamburger-btn {
+                left: -30px;
+            }
+        }
+        &[data-istoggled=toggled]{
+
+            // animation-name: appearFromRigth !important;
+            .hamburger-btn{
+                left: 0%;
+            }
+        }
+        &[data-istoggled=loaded]{
+            position: absolute;
+            .hamburger-btn {
+                left: -30px;
+            }
+            .hamburger {
+                &-children {
+                    display: none;
+                    // transform: translateX(200%) !important;
+                    // opacity: 0;
+                }
+            }
+        }
+        .hamburger-btn {
+            position: absolute !important;
+            // top: 2% !important;
+
+        }
+    }
+}
+
 .channel-webrtc{
     display: grid;
     padding: .5rem 1rem;
@@ -26,14 +67,14 @@
         }
     }
 
-    .focused-user {
-        position: absolute;
-        margin: auto;
-        top:0;
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 50%;
-    }
+    // .focused-user {
+    //     position: absolute;
+    //     margin: auto;
+    //     top:0;
+    //     left: 0;
+    //     right: 0;
+    //     width: 100%;
+    //     height: 50%;
+    // }
    
 }

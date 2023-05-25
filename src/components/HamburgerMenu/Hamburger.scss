@@ -1,29 +1,29 @@
 @use '../utils/utils.scss' as * ;
 @use '../../App.scss' as * ;
 
-.dashboard-component:has(.hamburger.navbar[data-istoggled=toggled]){
-    &::after{
-        @include gradient(to bottom right,(#e01c3371,#acabb0e9));
-        opacity: .2;
-        position: absolute;
-        content: '';
-        width: 70%;
-        height: 100%;
-        animation: normal appearFromTop 1s forwards;
-        z-index: 5555;
-       }
-}
-.dashboard-component:has(.hamburger.navbar[data-istoggled=untoggled]){
-    &::after{
-        @include gradient(to bottom right,(#e01c3371,#acabb0e9));
-        position: absolute;
-        content: '';
-        width: 70%;
-        height: 100%;
-        animation: normal disappearToTop 1s forwards;
-        z-index: 5555;
-       }
-}
+// .dashboard-component:has(.hamburger.navbar[data-istoggled=toggled]){
+//     &::after{
+//         @include gradient(to bottom right,(#e01c3371,#acabb0e9));
+//         opacity: .2;
+//         position: absolute;
+//         content: '';
+//         width: 70%;
+//         height: 100%;
+//         animation: normal appearFromTop 1s forwards;
+//         z-index: 5555;
+//        }
+// }
+// .dashboard-component:has(.hamburger.navbar[data-istoggled=untoggled]){
+//     &::after{
+//         @include gradient(to bottom right,(#e01c3371,#acabb0e9));
+//         position: absolute;
+//         content: '';
+//         width: 70%;
+//         height: 100%;
+//         animation: normal disappearToTop 1s forwards;
+//         z-index: 5555;
+//        }
+// }
 
 .hamburger-btn {
     filter:brightness(100%) invert(100%);
@@ -40,7 +40,7 @@
     }
 }
 
-.hamburger.navbar {
+.hamburger.bar {
    position: fixed;                                  
    display: grid;
    align-items: center;
@@ -66,9 +66,12 @@
 
     }
     .hamburger-children{
+        @extend .scrollbar;
+
         position: relative;
         
-        @include gradient(to bottom right,(#E01C34,#ACABB0));
+        background-color: #242424;
+        padding:0.4rem .7rem;        // @include gradient(to bottom right,(#E01C34,#ACABB0));
         display: flex;
         align-items: center;
         justify-content: center;
@@ -101,13 +104,13 @@
 
 .hamburger-outer{
     $barWidth: 100%;
-    position: fixed !important;
+    position: fixed  ;
     height: 100%;
     z-index: 5;
     display: grid;
     // align-items: center;
     .hamburger-btn {
-        left: 88% !important;
+        left: 88% ;
         top:3.5rem;
     }
     &[data-istoggled=toggled]{

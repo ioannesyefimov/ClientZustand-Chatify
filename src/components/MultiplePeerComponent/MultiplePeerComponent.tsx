@@ -6,23 +6,24 @@ import './ChannelWebRTC.scss'
 import { useAuthStore, useChatStore } from '../../ZustandStore';
 import Button from '../Button/Button';
 import { declineIco } from '../../assets';
+import { Link } from 'react-router-dom';
 
 const { io, certOptions, serverUrl } = SocketStore();
 
 interface Peer {
+  socketId?:string
   userId: string;
   peerConnection: RTCPeerConnection
 }
 
 
-const MultiplePeerComponent = () => {
+const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) => {
   const [peers, setPeers] = useState<Peer[]>([]);
   const socketRef = useRef<Socket>();
   const userVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRefs = useRef<{ [key: string]: HTMLVideoElement }>({});
   const userStreamRef = useRef<MediaStream>();
 
-  const currentChannel = useChatStore(s=>s.currentChannel)
   const user = useAuthStore(s=>s.user)
 
   useEffect(() => {
@@ -42,6 +43,7 @@ const MultiplePeerComponent = () => {
       if(!userIds) return console.log(`usersIDS IS ${userIds}`)
       const newPeers = userIds?.map((userId) => ({
         userId,
+        socketId: socketRef?.current?.id,
         peerConnection: initializePeerConnection(userId),
       }));
       setPeers(newPeers);
@@ -102,7 +104,7 @@ const MultiplePeerComponent = () => {
           const tracks = stream.getTracks();
           tracks.forEach((track) => {
             peer.peerConnection.addTrack(track, stream);
-            if (peer.userId !== socketRef.current?.id) {
+            if (peer.socketId !== socketRef.current?.id) {
               const sender = peer.peerConnection.addTrack(track, stream);
               sender.onremovetrack = () => {
                 console.log('Remote user stopped sending video');
@@ -130,7 +132,11 @@ const MultiplePeerComponent = () => {
     };
 
     peerConnection.ontrack = (event) => {
+      console.log(`peer video triggered`);
+      
       if (remoteVideoRefs.current[userId]) {
+        console.log(`triggered remote video ref`);
+        
         remoteVideoRefs.current[userId].srcObject = event.streams[0];
       }
     };
@@ -170,14 +176,21 @@ const MultiplePeerComponent = () => {
         <video className='local-user-video' ref={userVideoRef} playsInline autoPlay muted />
       </div>
       <div className='remote-users'>
-        {peers.map((peer) => (
+        {peers.map((peer) => {
+          console.log(`peer:`,peer);
+          console.log(`peerRef:`,remoteVideoRefs.current[peer.userId]);
+          
+          return (
           <div className='remote-user' key={peer.userId}>
-            <video className='remote-user-video' ref={(ref) => { remoteVideoRefs.current[peer.userId] = ref; }} playsInline autoPlay />
-            {/* <button className='remote-user-btn' onClick={() => handleCall(peer.userId)}>Call</button> */}
+            <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) => { remoteVideoRefs.current[peer.userId] = ref; }} playsInline autoPlay />
           </div>
-        ))}
+          )
+        }
+        )}
       </div>
-      <Button img={declineIco} name="decline"/>
+      <Link className="decline" to={"/chat"}>
+          <img src={declineIco} className='decline-img' alt="" />
+      </Link>
     </div>
   );
 };

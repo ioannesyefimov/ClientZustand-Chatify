@@ -28,6 +28,30 @@
      z-index: 4;
     }
 }
+@keyframes appearFromLRight {
+    from {
+        transform: translateX(120%);
+        z-index: -1;
+        opacity: 0;
+    } to {
+        transform: translateX(-120%);   
+     opacity: 1;
+     z-index: 4;
+    }
+}
+@keyframes disappearToRight {
+    from {
+        transform: translateX(-120%);   
+       opacity: 1;
+       z-index: 4;
+
+    } to {
+        transform: translateX(120%);
+        opacity: 0;
+        z-index: -1;
+
+    }
+}
 @keyframes disappearToLeft {
     from {
         transform: translateX(0%);   
@@ -59,11 +83,15 @@
 .animate.disappearToTop {
     animation-name: disappearToTop;
 
-
 }
 .animate.appearFromLeft {
     animation-name: appearFromLeft;
-
+}
+.animate.appearFromRight {
+    animation-name: appearFromRight;
+}
+.animate.disappearToRight {
+    animation-name: disappearToRight;
 }
 .animate.disappearToLeft {
     animation-name: disappearToLeft;
