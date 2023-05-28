@@ -36,15 +36,15 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       socket.emit('join_room', {userId:user._id,room:currentChannel?._id})
     })
 
-    socket.on('users', (userIds: string[]) => {
-      console.log(`users`,userIds);
-      userIds=userIds.filter(userId=>userId!==user?._id)
-      console.log(`filtered users`,userIds);
-      if(!userIds) return console.log(`usersIDS IS ${userIds}`)
-      const newPeers = userIds?.map((userId) => ({
-        userId,
-        socketId: socketRef?.current?.id,
-        peerConnection: initializePeerConnection(userId),
+    socket.on('users', (data: {user:{userId:string,socketId:string,}}[]) => {
+      console.log(`users`,data);
+      data=data.filter(userId=>userId.user.userId!==user?._id)
+      console.log(`filtered users`,data);
+      if(!data) return console.log(`usersIDS IS ${data}`)
+      const newPeers = data?.map((user) => ({
+        userId:user.user.userId,
+        socketId: user.user.socketId,
+        peerConnection: initializePeerConnection(user.user.userId),
       }));
       setPeers(newPeers);
     });
@@ -104,11 +104,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           const tracks = stream.getTracks();
           tracks.forEach((track) => {
             peer.peerConnection.addTrack(track, stream);
-            if (peer.socketId !== socketRef.current?.id) {
               const sender = peer.peerConnection.addTrack(track, stream);
               sender.onremovetrack = () => {
                 console.log('Remote user stopped sending video');
-              };
             }
           });
 

@@ -5,7 +5,7 @@ const SocketStore = ()=>{
         passphrase:'134679582ioa',
     }
 
-const serverUrl = import.meta.env.VITE_IP_ADDRESS ?  'https://192.168.1.102:5050' : 'https://localhost:5050'
+const serverUrl = import.meta.env.VITE_IP_ADDRESS ?  `https://${import.meta.env.VITE_IP_ADDRESS}:5050` : 'https://localhost:5050'
 
 
     return {io,certOptions,serverUrl}

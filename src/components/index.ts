@@ -23,14 +23,13 @@ import Profile from "./ProfileComponent/Profile";
 import UserComponent from "./UserComponent/UserComponent";
 import ProfileSettings from "./ProfileComponent/ProfileSettings/ProfileSettings";
 import ChannelCallWrapper from "./MultiplePeerComponent/ChannelCallWrapper";
-
 import ChatContainer from "./DashBoard/ChatContainer";
+
 import ErrorProvider from "./ErrorProvider/ErrorProvider";
 export 
 {
-    Profile,ProfileSettings,
+    ChannelCallWrapper,   Profile,ProfileSettings,
     ErrorProvider,  Authentication, 
-    ChannelCallWrapper,
     Button,SubmitInput , UploadInput,MemberInfo,SearchComponent,ChannelSearch,Landing,
     ChannelManager,ChannelJoin,UserBar,UserComponent,ServerResponseFallback,ProtectedRoute,
     FormInput, NotFound,AuthForm,Dashboard,RedirectComponent,AuthSocialButtons,ChannelCreate,ChatContainer,ChannelsSettings,

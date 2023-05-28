@@ -1,8 +1,8 @@
 @use '../utils/animations.scss' as *;
 
-.channel-call-wrapper {
+.video-chat-wrapper {
 
-    .hamburger-outer.bar {
+    .hamburger-outer.messages {
         padding: .2rem .7rem;
         right: 0;
         &[data-istoggled=untoggled]{

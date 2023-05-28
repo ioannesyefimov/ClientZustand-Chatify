@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 import mkcert from 'vite-plugin-mkcert'
 import fs from 'fs'
 
-
+const ip = process.env.VITE_IP_ADDRESS
 // https://vitejs.dev/config/
 export default ({mode}) => {
   process.env = {...process.env, ...loadEnv(mode, process.cwd() )};
@@ -13,7 +13,7 @@ export default ({mode}) => {
       plugins: [react(),mkcert()],
       server
       : {
-        host:'192.168.1.102'
+        host:ip ?? '192.168.1.101'
       } 
     })
   ) :(
