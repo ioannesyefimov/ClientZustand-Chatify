@@ -7,7 +7,7 @@ const initState = {
     onlineUsers:[],
     loading:false,
     serverResponse:null,
-    serverUrl:import.meta.env.VITE_IP_ADDRESS ?  'https://192.168.1.102:5050/api' : 'https://localhost:5050/api',
+    serverUrl:import.meta.env.VITE_IP_ADDRESS ?  `https://${import.meta.env.VITE_IP_ADDRESS}:5050/api` : 'https://localhost:5050/api',
 }
 
 const useAuthStore = create<{

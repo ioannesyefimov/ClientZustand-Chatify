@@ -38,20 +38,22 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
 
     socket.on('users', (data: {user:{userId:string,socketId:string,}}[]) => {
       console.log(`users`,data);
-      data=data.filter(userId=>userId.user.userId!==user?._id)
+      data=data.filter(userId=>userId?.user.userId!==user?._id)
       console.log(`filtered users`,data);
       if(!data) return console.log(`usersIDS IS ${data}`)
       const newPeers = data?.map((user) => ({
-        userId:user.user.userId,
-        socketId: user.user.socketId,
-        peerConnection: initializePeerConnection(user.user.userId),
+        userId:user?.user.userId,
+        socketId: user?.user.socketId,
+        peerConnection: initializePeerConnection(user?.user.userId),
       }));
+      console.log(`new peers`, newPeers);
+      
       setPeers(newPeers);
     });
 
     socket.on('offer', ({ userId, offer,from }: {from:string; userId: string; offer: RTCSessionDescriptionInit }) => {
       const peer = peers.find((p) => p.userId === from);
-      console.log(`getting offer for ${userId}:`,offer);
+      console.log(`getting offer for ${userId} from ${from}:`,offer);
       console.log(`peer`,peer);
       console.log(`peers`,peers);
       
@@ -139,7 +141,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`peer video triggered`);
       
       if (remoteVideoRefs.current[userId]) {
-        console.log(`triggered remote video ref`);
+        console.log(`triggered remote video ref`,event.streams[0]);
         
         remoteVideoRefs.current[userId].srcObject = event.streams[0];
       }
@@ -196,7 +198,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         }
         )}
       </div>
-      <Link className="decline" to={"/chat"}>
+      <Link className="decline" to={currentChannel?._id ? `/chat/${currentChannel?._id}` : '/chat'}>
           <img src={declineIco} className='decline-img' alt="" />
       </Link>
     </div>
