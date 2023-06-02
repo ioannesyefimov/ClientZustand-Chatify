@@ -28,14 +28,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
 
   useEffect(() => {
   
-    console.log(`initializing current channel call`);
-    socket.connect()
-    socket.on('connect',()=>{
-      console.log(`${user?._id} connected to channelCall socket by ID: ${socket?.id}`)
-      socket.emit('join_room', {userId:user._id,room:currentChannel?._id})
-    })
-
-    socket.on('users', (data: {user:{userId:string,socketId:string,}}[]) => {
+  
+    function onUsers (data: {user:{userId:string,socketId:string,}}[]) {
       console.log(`users`,data);
       data=data.filter(userId=>userId?.user.userId!==user?._id)
       console.log(`filtered users`,data);
@@ -48,9 +42,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`new peers`, newPeers);
       
       setPeers(newPeers);
-    });
-
-    socket.on('offer', ({ userId, offer,from }: {from:string; userId: string; offer: RTCSessionDescriptionInit }) => {
+    }
+    function onOffer({ userId, offer,from }: {from:string; userId: string; offer: RTCSessionDescriptionInit }) {
       const peer = peers.find((p) => p.userId === from);
       console.log(`getting offer for ${userId} from ${from}:`,offer);
       console.log(`peer`,peer);
@@ -68,9 +61,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             console.log('Error creating or setting local/remote description:', error);
           });
       }
-    });
-
-    socket.on('answer', ({ userId, answer }: { userId: string; answer: RTCSessionDescriptionInit }) => {
+    }
+    function onAnswer  ({ userId, answer }: { userId: string; answer: RTCSessionDescriptionInit }) {
       const peer = peers.find((p) => p.userId === userId);
       console.log(`ON answer is triggered`);
       
@@ -82,9 +74,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           console.log('Error setting remote description:', error);
         });
       }
-    });
-
-    socket.on('iceCandidate', ({ userId, candidate }: { userId: string; candidate: RTCIceCandidate }) => {
+    }
+    function onIceCandidate({ userId, candidate }: { userId: string; candidate: RTCIceCandidate }) {
       const peer = peers.find((p) => p.userId === userId);
       if (peer) {
         peer.peerConnection
@@ -93,17 +84,32 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             console.log('Error adding ICE candidate:', error);
           });
       }
-    });
+    }
+        socket.connect()
+    socket.on('connect',()=>{
+      console.log(`${user?._id} connected to channelCall socket by ID: ${socket?.id}`)
+      socket.emit('join_room', {userId:user._id,room:currentChannel?._id})
+    })
+    socket.on('offer', onOffer);
+
+    socket.on('answer',onAnswer);
+
+    socket.on('iceCandidate', onIceCandidate);
 
     socket.on('userRemoved',(userId)=>{
       console.log(`USER ${userId} has been removed`)
     })
+    socket.on('users', onUsers);
+    console.log(`initializing current channel call`);
 
     return () => {
       socket.disconnect();
-      setRemoteVideo(prev=>prev.filter(user=>user?.socketId!==socket.id))
+      socket.off('offer',onOffer)
+      socket.off('users',onUsers)
+      socket.off('answer',onAnswer)
+      socket.off('iceCandidate',onIceCandidate)
     }
-  }, []);
+  }, [peers.length]);
 
   useEffect(() => {
     const initializeMediaStream = async () => {
@@ -153,7 +159,6 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         setRemoteVideo(prev=>[...prev,{userId,socketId, media:event.streams[0]}])
         console.log(`remoteVideos:`,remoteVideo);
         remoteVideoRefs.current[userId].srcObject = event.streams[0];
-        remoteVideoRefs.current[userId].play()
         console.log(remoteVideoRefs.current[userId].srcObject, 'THIS IS SRC OBJ OF THE REF ' + userId)
       }
     };
@@ -166,7 +171,6 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       });
     }
     // handleCall(userId,socketRef?.current?.id ?? '')
-
     return peerConnection;
   };
   const handleCall = (userId: string,socketId:string) => {
