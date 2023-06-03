@@ -20,15 +20,27 @@ const socket = io(`${serverUrl}/current-channel-call`,{pfx: certOptions.pfx,pass
 const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) => {
   const [peers, setPeers] = useState<Peer[]>([]);
   const socketRef = useRef<Socket>();
+  const [me,setMe]=useState('')
   const userVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRefs = useRef<{ [key: string]: HTMLVideoElement }>({});
   const userStreamRef = useRef<MediaStream>();
-  const [remoteVideo,setRemoteVideo]=useState([])
   const user = useAuthStore(s=>s.user)
 
   useEffect(() => {
+    socket.connect()
+    socket.on('connect',()=>{
+      setMe(socket.id)
+      console.log(`${user?._id} connected to channelCall socket by ID: ${socket?.id}`)
+      socket.emit('join_room', {userId:user._id,room:currentChannel?._id})
+    })
+    return()=>{
+      socket.disconnect();
+      setMe('')
+    }
+  }, []);
   
-  
+  useEffect(
+    ()=>{
     function onUsers (data: {user:{userId:string,socketId:string,}}[]) {
       console.log(`users`,data);
       data=data.filter(userId=>userId?.user.userId!==user?._id)
@@ -43,7 +55,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       
       setPeers(newPeers);
     }
-    function onOffer({ userId, offer,from }: {from:string; userId: string; offer: RTCSessionDescriptionInit }) {
+    function onOffer({ userId, offer,from ,fromSocket}: {from:string; userId: string; offer: RTCSessionDescriptionInit,fromSocket:string }) {
       const peer = peers.find((p) => p.userId === from);
       console.log(`getting offer for ${userId} from ${from}:`,offer);
       console.log(`peer`,peer);
@@ -55,7 +67,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           .then(() => peer.peerConnection.createAnswer())
           .then((answer) => peer.peerConnection.setLocalDescription(answer))
           .then(() => {
-            socket.emit('answer', { userId,socketId:peer.socketId, answer: peer.peerConnection.localDescription });
+            socket.emit('answer', { userId,socketId:fromSocket, answer: peer.peerConnection.localDescription });
           })
           .catch((error) => {
             console.log('Error creating or setting local/remote description:', error);
@@ -67,8 +79,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`ON answer is triggered`);
       
       if (peer) {
-        if(peer.peerConnection.signalingState ==='stable') return console.log(`CONNECTION SIGNAL IS STABL;E
-        `);
+        if(peer.peerConnection.signalingState ==='stable') return console.log(`CONNECTION SIGNAL IS STABLE`);
+        console.log();
+        
         
         peer.peerConnection.setRemoteDescription(answer).catch((error) => {
           console.log('Error setting remote description:', error);
@@ -77,6 +90,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     }
     function onIceCandidate({ userId, candidate }: { userId: string; candidate: RTCIceCandidate }) {
       const peer = peers.find((p) => p.userId === userId);
+      console.log(`ice candidate triggered`);
+      
       if (peer) {
         peer.peerConnection
           .addIceCandidate(candidate)
@@ -85,32 +100,22 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           });
       }
     }
-        socket.connect()
-    socket.on('connect',()=>{
-      console.log(`${user?._id} connected to channelCall socket by ID: ${socket?.id}`)
-      socket.emit('join_room', {userId:user._id,room:currentChannel?._id})
-    })
     socket.on('offer', onOffer);
-
     socket.on('answer',onAnswer);
-
     socket.on('iceCandidate', onIceCandidate);
-
     socket.on('userRemoved',(userId)=>{
       console.log(`USER ${userId} has been removed`)
     })
     socket.on('users', onUsers);
     console.log(`initializing current channel call`);
-
     return () => {
-      socket.disconnect();
       socket.off('offer',onOffer)
       socket.off('users',onUsers)
       socket.off('answer',onAnswer)
       socket.off('iceCandidate',onIceCandidate)
     }
-  }, [peers.length]);
-
+    },[peers.length]
+  )
   useEffect(() => {
     const initializeMediaStream = async () => {
       try {
@@ -120,7 +125,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         if (userVideoRef.current) {
           userVideoRef.current.srcObject = stream;
         }
-
+        console.log(`initializing media stream`);
+        
         peers.forEach((peer) => {
           const tracks = stream.getTracks();
           tracks.forEach((track) => {
@@ -136,7 +142,6 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         console.log('Error accessing media devices:', error);
       }
     };
-
     initializeMediaStream();
   }, [peers]);
 
@@ -145,6 +150,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     const peerConnection = new RTCPeerConnection(configuration);
 
     peerConnection.onicecandidate = (event) => {
+      console.log(`ice candidate triggered,`,event);
+      
       if (event.candidate) {
         socket?.emit('iceCandidate', { userId, candidate: event.candidate });
       }
@@ -156,14 +163,12 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       if (remoteVideoRefs.current[userId]) {
         console.log(`triggered remote video ref`,event.streams[0]);
         console.log(`peer:`,remoteVideoRefs.current[userId]);
-        setRemoteVideo(prev=>[...prev,{userId,socketId, media:event.streams[0]}])
-        console.log(`remoteVideos:`,remoteVideo);
         remoteVideoRefs.current[userId].srcObject = event.streams[0];
         console.log(remoteVideoRefs.current[userId].srcObject, 'THIS IS SRC OBJ OF THE REF ' + userId)
       }
     };
 
-    if (userStreamRef.current) {
+    if (userStreamRef?.current) {
       userStreamRef.current.getTracks().forEach((track) => {
         if(track ){
           peerConnection.addTrack(track, userStreamRef.current!);
@@ -182,7 +187,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       peer.peerConnection.createOffer()
         .then((offer) => peer.peerConnection.setLocalDescription(offer))
         .then(() => {
-          socket.emit('offer', { userId,from:user._id, socketId, offer: peer.peerConnection.localDescription });
+          socket.emit('offer', { userId,from:user._id,fromSocket:socket.id, socketId, offer: peer.peerConnection.localDescription });
         })
         .catch((error) => {
           console.log('Error creating or setting local description:', error);
@@ -194,11 +199,6 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
 
   }
   
-  useEffect(
-    ()=>{
-      Object.keys(remoteVideoRefs.current).forEach(ref=>console.log(`ref+`, ref, 'src obj '))
-    },[remoteVideoRefs.current]
-  )
   return (
     <div className='channel-webrtc'>
       <div className='local-user focused-user'>
@@ -208,16 +208,14 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         {peers.map((peer) => {
           console.log(`peer:`,peer);
           console.log(`peerRef:`,remoteVideoRefs.current[peer.userId]);
-          
           return (
           <div className='remote-user' key={peer.userId}>
-            <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) => { remoteVideoRefs.current[peer.userId] = ref; }} playsInline autoPlay />
+            <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
             <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
           </div>
           )
         }
         )}
-       
       </div>
       <Link className="decline" to={currentChannel?._id ? `/chat/${currentChannel?._id}` : '/chat'}>
           <img src={declineIco} className='decline-img' alt="" />
