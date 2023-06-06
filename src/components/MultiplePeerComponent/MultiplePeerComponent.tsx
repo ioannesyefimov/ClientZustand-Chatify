@@ -7,6 +7,7 @@ import { useAuthStore, useChatStore } from '../../ZustandStore';
 import Button from '../Button/Button';
 import { callIco, declineIco } from '../../assets';
 import { Link } from 'react-router-dom';
+import { sleep } from '../utils';
 
 const { io, certOptions, serverUrl } = SocketStore();
 
@@ -43,7 +44,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     ()=>{
     function onUsers (data: {user:{userId:string,socketId:string,}}[]) {
       console.log(`users`,data);
-      data=data.filter(userId=>userId?.user.userId!==user?._id)
+      data=data.filter(userId=>userId?.user.userId!==user?._id && userId !== null)
       console.log(`filtered users`,data);
       if(!data) return console.log(`usersIDS IS ${data}`)
       const newPeers = data?.map((user) => ({
@@ -79,26 +80,25 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`ON answer is triggered`);
       
       if (peer) {
-        if(peer.peerConnection.signalingState ==='stable') return console.log(`CONNECTION SIGNAL IS STABLE`);
-        console.log();
-        
+        if(peer.peerConnection.signalingState === 'stable') return console.log(`CONNECTION SIGNAL IS ${peer.peerConnection.signalingState}`);
         
         peer.peerConnection.setRemoteDescription(answer).catch((error) => {
           console.log('Error setting remote description:', error);
         });
       }
     }
+    function onJoinRoom(data:string){
+      console.log(data)
+    }
     function onIceCandidate({ userId, candidate }: { userId: string; candidate: RTCIceCandidate }) {
       const peer = peers.find((p) => p.userId === userId);
-      console.log(`ice candidate triggered`);
-      
-      if (peer) {
+      console.log(`ice candidate triggered`,candidate);
+      if(!peer?.peerConnection) return console.log(`PC IS ${peer?.peerConnection}`)
         peer.peerConnection
           .addIceCandidate(candidate)
           .catch((error) => {
             console.log('Error adding ICE candidate:', error);
           });
-      }
     }
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
@@ -107,9 +107,11 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`USER ${userId} has been removed`)
     })
     socket.on('users', onUsers);
+    socket.on('join_room',onJoinRoom)
     console.log(`initializing current channel call`);
     return () => {
       socket.off('offer',onOffer)
+      socket.off('join_room',onJoinRoom)
       socket.off('users',onUsers)
       socket.off('answer',onAnswer)
       socket.off('iceCandidate',onIceCandidate)
@@ -150,10 +152,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     const peerConnection = new RTCPeerConnection(configuration);
 
     peerConnection.onicecandidate = (event) => {
-      console.log(`ice candidate triggered,`,event);
       
       if (event.candidate) {
-        socket?.emit('iceCandidate', { userId, candidate: event.candidate });
+        socket?.emit('iceCandidate', { userId,socketId, candidate: event.candidate });
       }
     };
 
@@ -175,7 +176,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         }
       });
     }
-    // handleCall(userId,socketRef?.current?.id ?? '')
+    // sleep(1500).then(()=>handleCall(userId,socketId))
+    // handleCall(userId,socketId)
     return peerConnection;
   };
   const handleCall = (userId: string,socketId:string) => {
@@ -187,7 +189,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       peer.peerConnection.createOffer()
         .then((offer) => peer.peerConnection.setLocalDescription(offer))
         .then(() => {
-          socket.emit('offer', { userId,from:user._id,fromSocket:socket.id, socketId, offer: peer.peerConnection.localDescription });
+          socket.emit('offer', { userId,from:user._id,fromSocket:me, socketId, offer: peer.peerConnection.localDescription });
         })
         .catch((error) => {
           console.log('Error creating or setting local description:', error);

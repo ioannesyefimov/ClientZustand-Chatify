@@ -33,7 +33,7 @@ type ResponseFallbackType ={
             }
         },[serverResponse]
     )
-    if(!serverResponse || !isObj(serverResponse)) {
+    if(!serverResponse) {
         return content
     }
     let handleOnClick = serverResponse?.name === Errors.NOT_A_MEMBER ? ()=>{setServerResponse(null);navigate(`/chat/manage/join?search=${serverResponse?.arguments?.channel_id}`)} : 
