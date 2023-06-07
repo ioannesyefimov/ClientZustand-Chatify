@@ -29,7 +29,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
 
   useEffect(() => {
     socket.connect()
-    socket.on('connect',()=>{
+    socket.on('connect',async ()=>{
       setMe(socket.id)
       console.log(`${user?._id} connected to channelCall socket by ID: ${socket?.id}`)
       socket.emit('join_room', {userId:user._id,room:currentChannel?._id})
@@ -44,7 +44,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     ()=>{
     function onUsers (data: {user:{userId:string,socketId:string,}}[]) {
       console.log(`users`,data);
-      data=data.filter(userId=>userId?.user.userId!==user?._id && userId !== null)
+      data=data?.filter(userId=>userId?.user.userId!==user?._id && userId !== null)
       console.log(`filtered users`,data);
       if(!data) return console.log(`usersIDS IS ${data}`)
       const newPeers = data?.map((user) => ({
@@ -90,10 +90,10 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     function onJoinRoom(data:string){
       console.log(data)
     }
-    function onIceCandidate({ userId, candidate }: { userId: string; candidate: RTCIceCandidate }) {
-      const peer = peers.find((p) => p.userId === userId);
-      console.log(`ice candidate triggered`,candidate);
-      if(!peer?.peerConnection) return console.log(`PC IS ${peer?.peerConnection}`)
+    function onIceCandidate({ userId,socketId, candidate }: { userId: string;socketId:string; candidate: RTCIceCandidate }) {
+      const peer = peers.find((p) => p.socketId === socketId);
+      console.log(`ice candidate triggered for ${socketId}; id:${userId}`,candidate);
+      if(!peer) return console.log(`PC IS ${peer?.peerConnection}`)
         peer.peerConnection
           .addIceCandidate(candidate)
           .catch((error) => {
@@ -145,16 +145,15 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       }
     };
     initializeMediaStream();
-  }, [peers]);
+  }, [peers.length]);
 
   const initializePeerConnection = (userId: string,socketId:string) => {
     const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
     const peerConnection = new RTCPeerConnection(configuration);
 
     peerConnection.onicecandidate = (event) => {
-      
       if (event.candidate) {
-        socket?.emit('iceCandidate', { userId,socketId, candidate: event.candidate });
+        socket?.emit('iceCandidate', { userId:user._id,socketId, candidate: event.candidate });
       }
     };
 
