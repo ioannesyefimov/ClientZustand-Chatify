@@ -55,6 +55,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`new peers`, newPeers);
       
       setPeers(newPeers);
+      socket.emit('call-peer',newPeers)
     }
     function onOffer({ userId, offer,from ,fromSocket}: {from:string; userId: string; offer: RTCSessionDescriptionInit,fromSocket:string }) {
       const peer = peers.find((p) => p.userId === from);
@@ -74,6 +75,12 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             console.log('Error creating or setting local/remote description:', error);
           });
       }
+    }
+    function onCallPeer(data){
+      console.log(`on call peer triggered`,data);
+      
+      if(!data)return 
+      data?.every(user=>handleCall(user?.userId,user?.socketId))
     }
     function onAnswer  ({ userId, answer }: { userId: string; answer: RTCSessionDescriptionInit }) {
       const peer = peers.find((p) => p.userId === userId);
@@ -100,6 +107,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             console.log('Error adding ICE candidate:', error);
           });
     }
+    socket.on('call-peer',onCallPeer)
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
     socket.on('iceCandidate', onIceCandidate);
@@ -175,7 +183,6 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         }
       });
     }
-    // sleep(1500).then(()=>handleCall(userId,socketId))
     // handleCall(userId,socketId)
     return peerConnection;
   };
@@ -188,7 +195,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       peer.peerConnection.createOffer()
         .then((offer) => peer.peerConnection.setLocalDescription(offer))
         .then(() => {
-          socket.emit('offer', { userId,from:user._id,fromSocket:me, socketId, offer: peer.peerConnection.localDescription });
+          socket.emit('offer', { userId,from:user._id,fromSocket:socket.id,fromUserId:user?._id, socketId, offer: peer.peerConnection.localDescription });
         })
         .catch((error) => {
           console.log('Error creating or setting local description:', error);
