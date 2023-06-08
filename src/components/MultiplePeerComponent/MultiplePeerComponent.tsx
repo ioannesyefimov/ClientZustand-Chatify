@@ -40,16 +40,16 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     }
   }, []);
 
-  useEffect(
-    ()=>{
-      if(peers.length){
-       for (let peer of peers){
-         sleep(2000).then(()=>handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId))
+  // useEffect(
+  //   ()=>{
+  //     if(peers.length){
+  //      for (let peer of peers){
+  //        handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
 
-       }
-      }
-    },[peers]
-  )
+  //      }
+  //     }
+  //   },[peers?.length]
+  // )
   
   useEffect(
     ()=>{
@@ -65,6 +65,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         peerConnection: initializePeerConnection(user?.user.userId,user?.user?.socketId),
       }));
       console.log(`new peers`, newPeers);
+      socket.emit('call-peers',{room:currentChannel._id,peers:newPeers})
       setPeers(newPeers);
     }
     function onOffer({ userId, offer,from ,fromSocket}: {from:string; userId: string; offer: RTCSessionDescriptionInit,fromSocket:string }) {
@@ -98,8 +99,13 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         });
       }
     }
-    function onJoinRoom(data:string){
-      console.log(data)
+    function onJoinRoom(userId:string){
+      console.log(userId)
+      if(!userId)return
+      let peer = peers.find(peer=>peer.userId===userId)
+      if(!peer )return console.log(`peer is ${peer}`);
+      handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
+      
     }
     function onIceCandidate({ userId,socketId, candidate }: { userId: string;socketId:string; candidate: RTCIceCandidate }) {
       const peer = peers.find((p) => p.socketId === socketId);
@@ -111,6 +117,10 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             console.log('Error adding ICE candidate:', error);
           });
     }
+    socket.on('call-peers',(data:Peer[])=>{
+      if(!data)return
+      data?.every(peer=>handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!))
+    })
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
     socket.on('iceCandidate', onIceCandidate);
