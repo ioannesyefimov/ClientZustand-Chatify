@@ -39,10 +39,22 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       setMe('')
     }
   }, []);
+
+  useEffect(
+    ()=>{
+      if(peers.length){
+       for (let peer of peers){
+         sleep(2000).then(()=>handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId))
+
+       }
+      }
+    },[peers]
+  )
   
   useEffect(
     ()=>{
-    function onUsers (data: {user:{userId:string,socketId:string,}}[]) {
+    function onUsers (data: {user:{userId:string,socketId:string,}}[]){
+      if(!data) return
       console.log(`users`,data);
       data=data?.filter(userId=>userId?.user.userId!==user?._id && userId !== null)
       console.log(`filtered users`,data);
@@ -53,9 +65,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         peerConnection: initializePeerConnection(user?.user.userId,user?.user?.socketId),
       }));
       console.log(`new peers`, newPeers);
-      
       setPeers(newPeers);
-      socket.emit('call-peer',newPeers)
     }
     function onOffer({ userId, offer,from ,fromSocket}: {from:string; userId: string; offer: RTCSessionDescriptionInit,fromSocket:string }) {
       const peer = peers.find((p) => p.userId === from);
@@ -75,12 +85,6 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             console.log('Error creating or setting local/remote description:', error);
           });
       }
-    }
-    function onCallPeer(data){
-      console.log(`on call peer triggered`,data);
-      
-      if(!data)return 
-      data?.every(user=>handleCall(user?.userId,user?.socketId))
     }
     function onAnswer  ({ userId, answer }: { userId: string; answer: RTCSessionDescriptionInit }) {
       const peer = peers.find((p) => p.userId === userId);
@@ -107,7 +111,6 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             console.log('Error adding ICE candidate:', error);
           });
     }
-    socket.on('call-peer',onCallPeer)
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
     socket.on('iceCandidate', onIceCandidate);
@@ -185,6 +188,18 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     }
     // handleCall(userId,socketId)
     return peerConnection;
+  };
+  const handleCallingPeer = (peer:RTCPeerConnection, userId: string,socketId:string) => {
+    console.log(`CALLING ${userId}`);
+    console.log(`calling peer:`, peer);
+      peer.createOffer()
+        .then((offer) => peer.setLocalDescription(offer))
+        .then(() => {
+          socket.emit('offer', { userId,from:user._id,fromSocket:socket.id,fromUserId:user?._id, socketId, offer: peer.localDescription });
+        })
+        .catch((error) => {
+          console.log('Error creating or setting local description:', error);
+        });
   };
   const handleCall = (userId: string,socketId:string) => {
     console.log(`CALLING ${userId}`);
