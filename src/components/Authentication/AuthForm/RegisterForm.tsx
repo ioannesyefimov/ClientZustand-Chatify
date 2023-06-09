@@ -1,12 +1,13 @@
 import React, { ChangeEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { profileIco, mailIco, lockerIco } from '../../../assets'
+import { profileIco, mailIco, lockerIco, questionIco } from '../../../assets'
 import { useResponseContext } from '../../../hooks'
 import AuthSocialButtons from '../../AuthButtons/AuthSocialButtons'
 import FormInput from '../../FormInput/FormInput'
 import { initState } from '../../ProfileComponent/ProfileSettings/settingsReducer'
 import { validateInput, APIFetch, throwErr } from '../../utils'
 import { useAuthStore } from '../../../ZustandStore'
+import Button from '../../Button/Button'
 type PropsType = {
   redirectUrl?:string
   redirectType?:string
@@ -73,7 +74,19 @@ export default function RegisterForm({redirectUrl,redirectType,type}:PropsType) 
         }
         
       }
-    
+
+      const showPassword  = ()=>{
+        ()=>{
+           let passwordRef = document.getElementById('password') as HTMLInputElement
+           console.log(`password INPUT : `,passwordRef);
+       
+           if(passwordRef.type==='password'){
+               passwordRef.type = 'text'
+           } else if(passwordRef.type==='text'){
+               passwordRef.type='password'
+           }  
+       }
+      }
 
   return (
     <div className="input-wrapper">
@@ -88,7 +101,9 @@ export default function RegisterForm({redirectUrl,redirectType,type}:PropsType) 
           photo={profileIco} 
         />
         <FormInput value={form.email} onChange={(e)=>handleFormChange(e)} labelName='email' name="email" id="emailInput" type="email" placeholder='Type in email...' ref={EmailRef} photo={mailIco} />
-        <FormInput value={form.password} onChange={(e)=>handleFormChange(e)} name="password" labelName='Password' id="passwordInput" type="password" placeholder='Type in password...' ref={PasswordRef} photo={lockerIco} />
+        <FormInput value={form.password} onChange={(e)=>handleFormChange(e)} name="password" labelName='Password' id="passwordInput" type="password" placeholder='Type in password...' ref={PasswordRef} photo={lockerIco} >
+         <Button onHover={showPassword}  img={questionIco} name="show-password" onClick={showPassword}/>
+        </FormInput>
         <button className='submit-btn' onClick={(e)=>handleSubmit(e,'register')}>Register</button>
         <AuthSocialButtons authType='signin' />
 

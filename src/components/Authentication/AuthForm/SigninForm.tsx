@@ -1,5 +1,5 @@
 import React, { ChangeEvent, useState } from 'react'
-import { mailIco, lockerIco } from '../../../assets'
+import { mailIco, lockerIco, questionIco } from '../../../assets'
 import AuthSocialButtons from '../../AuthButtons/AuthSocialButtons'
 import FormInput from '../../FormInput/FormInput'
 import { initState } from '../../ProfileComponent/ProfileSettings/settingsReducer'
@@ -7,6 +7,7 @@ import { useResponseContext } from '../../../hooks'
 import { validateInput, APIFetch, throwErr } from '../../utils'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../../../ZustandStore'
+import Button from '../../Button/Button'
 type PropsType = {
     redirectUrl?:string
     redirectType?:string
@@ -71,12 +72,29 @@ export default function SigninForm({redirectUrl,redirectType,type,getToken}:Prop
     
   }
 
+
+  const showPassword  = ()=>{
+     ()=>{
+        let passwordRef = document.getElementById('password') as HTMLInputElement
+        console.log(`password INPUT : `,passwordRef);
+    
+        if(passwordRef.type==='password'){
+            passwordRef.type = 'text'
+        } else if(passwordRef.type==='text'){
+            passwordRef.type='password'
+        }  
+    }
+}
   return (
         <div className="input-wrapper">
             <form action="submit">
             <FormInput value={form.email} onChange={(e)=>handleFormChange(e)} labelName='email' name="email" id="emailInput" type="email" placeholder='Type in email...' ref={EmailRef} photo={mailIco} />
-            <FormInput value={form.password} onChange={(e)=>handleFormChange(e)} name="password" labelName='Password' id="passwordInput" type="password" placeholder='Type in password...' ref={PasswordRef} photo={lockerIco} />
+            <FormInput value={form.password} onChange={(e)=>handleFormChange(e)} name="password" labelName='Password' id="passwordInput" type="password" placeholder='Type in password...' ref={PasswordRef} photo={lockerIco}>
+            <Button onHover={showPassword}  img={questionIco} name="show-password" onClick={showPassword}/>
+                 </FormInput>
+            
             <button className='submit-btn' onClick={(e)=>handleSubmit(e, 'signin')}>Signin</button>
+            
             <AuthSocialButtons authType='signin' redirectUrl={redirectUrl} />
             </form>
          </div> 
