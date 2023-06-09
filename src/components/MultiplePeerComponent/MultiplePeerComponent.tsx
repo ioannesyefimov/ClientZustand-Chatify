@@ -40,16 +40,17 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     }
   }, []);
 
-  // useEffect(
-  //   ()=>{
-  //     if(peers.length){
-  //      for (let peer of peers){
-  //       socket.emit('call-peers',{room:currentChannel?._id, userId:user._id,socketId:me ?? socket.id})
+  useEffect(
+    ()=>{
+      if(peers.length){
+       for (let peer of peers){
+        sleep(Math.random() * 1000).then(()=>socket.emit('call-peers',{room:currentChannel?._id, userId:user._id,socketId:me ?? socket.id}))
+        
 
-  //      }
-  //     }
-  //   },[peers?.length]
-  // )
+       }
+      }
+    },[peers?.length]
+  )
   
   useEffect(
     ()=>{
@@ -73,7 +74,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`peer`,peer);
       console.log(`peers`,peers);
       
-      if (peer) {
+      if (peer && !peer.peerConnection.localDescription) {
         peer.peerConnection
           .setRemoteDescription(offer)
           .then(() => peer.peerConnection.createAnswer())
@@ -99,16 +100,17 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       }
     }
 
-    // function onJoinRoom(userId:string){
-    //   console.log(`joined room with id ${userId}`)
-    //   if(!userId)return
-    //   let peer = peers.find(peer=>peer.userId===userId)
-    //   if(!peer )return console.log(`peer is ${peer}`);
-    //   handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
+    function onJoinRoom(userId:string){
+      console.log(`joined room with id ${userId}`)
+      if(!userId)return
+      let peer = peers.find(peer=>peer.userId===userId)
+      if(!peer )return console.log(`peer is ${peer}`);
+      handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
       
-    // }
+    }
     function onIceCandidate({ userId,socketId, candidate }: { userId: string;socketId:string; candidate: RTCIceCandidate }) {
-      const peer = peers.find((p) => p.socketId === socketId);
+      const peer = peers.find((p) => p.userId === userId);
+      console.log(`peers`,peers);
       console.log(`ice candidate triggered for ${socketId}; id:${userId}`,candidate);
       if(!peer) return console.log(`PC IS ${peer?.peerConnection}`)
         peer.peerConnection
@@ -134,11 +136,11 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`USER ${userId} has been removed`)
     })
     socket.on('users', onUsers);
-    // socket.on('join_room',onJoinRoom)
+    socket.on('join_room',onJoinRoom)
     console.log(`initializing current channel call`);
     return () => {
       socket.off('offer',onOffer)
-      // socket.off('join_room',onJoinRoom)
+      socket.off('join_room',onJoinRoom)
       socket.off('call-peers',onCallPeers)
       socket.off('users',onUsers)
       socket.off('answer',onAnswer)
@@ -181,7 +183,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
 
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        socket?.emit('iceCandidate', { userId,socketId, candidate: event.candidate });
+        socket?.emit('iceCandidate', { userId:user._id,socketId, candidate: event.candidate });
       }
     };
 

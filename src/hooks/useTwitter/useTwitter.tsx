@@ -22,6 +22,7 @@ const useTwitter = (loginType:string) => {
     useEffect(
         ()=>{
             let btn = document.getElementById('twitterBtn') as HTMLButtonElement
+            if(!btn) return 
             btn.disabled = true
         },[]
     )

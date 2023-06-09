@@ -18,7 +18,7 @@ const AuthSocialButtons = ({authType, redirectUrl='',socialBtn=''}:{authType :st
 
     const content = (
       <>
-      <p className="hint">or continue with social:</p>
+      <p className="hint">continue with social:</p>
       <div className='social-btns-wrapper'>
       {socialBtn !== '' ? (
         socialBtn==='Google' ? (
