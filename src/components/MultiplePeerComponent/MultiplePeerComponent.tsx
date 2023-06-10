@@ -20,6 +20,7 @@ const socket = io(`${serverUrl}/current-channel-call`,{pfx: certOptions.pfx,pass
 
 const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) => {
   const [peers, setPeers] = useState<Peer[]>([]);
+  const [joinedPeers,setJoinedPeers]=useState<string[]>([])
   const [me,setMe]=useState('')
   const userVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRefs = useRef<{ [key: string]: HTMLVideoElement }>({});
@@ -39,17 +40,22 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     }
   }, []);
 
-  // useEffect(
-  //   ()=>{
-  //     if(peers.length){
-  //      for (let peer of peers){
-  //       sleep(Math.random() * 1000).then(()=>socket.emit('call-peers',{room:currentChannel?._id, userId:peer.userId,socketId:me ?? socket.id}))
+  useEffect(
+    ()=>{
+      console.log(`joinedPeers:`,joinedPeers);
+      console.log(`peers:`,peers);
+      if(joinedPeers?.length){
         
-
-  //      }
-  //     }
-  //   },[peers?.length]
-  // )
+        for (let userId of joinedPeers){
+         for (let peer of peers){
+            if(userId=== peer.userId){
+              handleCallingPeer(peer.peerConnection, peer.userId, peer.socketId!)
+            } 
+          }
+        }
+      }
+    },[joinedPeers]
+  )
   
   useEffect(
     ()=>{
@@ -102,33 +108,37 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     function onJoinRoom(userId:string){
       console.log(`peers`, peers)
       console.log(`joined room with id ${userId}`)
-      if(!userId)return
-      let peer = peers.find(peer=>peer.userId===userId)
-      if(!peer )return console.log(`peer is ${peer}`);
-      handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
+      setJoinedPeers(prev=>[...prev,userId])
+      // if(!userId)return
+      // let peer = peers.find(peer=>peer.userId===userId)
+      // if(!peer )return console.log(`peer is ${peer}`);
+      // handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
       
     }
     function onIceCandidate({ userId,socketId, candidate }: { userId: string;socketId:string; candidate: RTCIceCandidate }) {
       const peer = peers.find((p) => p.userId === userId);
       console.log(`peers`,peers);
       console.log(`ice candidate triggered for ${socketId}; id:${userId}`,candidate);
-      if(!peer) return console.log(`PC IS ${peer?.peerConnection}`)
+      if(peer) {
         peer.peerConnection
           .addIceCandidate(candidate)
           .catch((error) => {
             console.log('Error adding ICE candidate:', error);
           });
+      } else {
+        return console.log(`PC IS ${peer?.peerConnection}`)
+      }
         }
-    // function onCallPeers(userId:string){
-    //   console.log(`call-peers triggered`,userId);
-    //   if(!userId)return
-    //   let peer = peers.find(peer=>peer.userId===userId)
-    //   console.log(`peers `,peers);
-    //   console.log(`peer `,peer);
-    //   if(!peer)return
-    //   handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
-    // }
-    // socket.on('call-peers',onCallPeers)
+    function onCallPeers(userId:string){
+      console.log(`call-peers triggered`,userId);
+      if(!userId || userId === user._id)return
+      let peer = peers.find(peer=>peer.userId===userId)
+      console.log(`peers `,peers);
+      console.log(`peer `,peer);
+      if(!peer)return
+      handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
+    }
+    socket.on('call-peers',onCallPeers)
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
     socket.on('iceCandidate', onIceCandidate);
@@ -141,12 +151,12 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     return () => {
       socket.off('offer',onOffer)
       socket.off('join_room',onJoinRoom)
-      // socket.off('call-peers',onCallPeers)
+      socket.off('call-peers',onCallPeers)
       socket.off('users',onUsers)
       socket.off('answer',onAnswer)
       socket.off('iceCandidate',onIceCandidate)
     }
-    },[peers]
+    },[peers.length]
   )
   useEffect(() => {
     const initializeMediaStream = async () => {
@@ -157,14 +167,16 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         if (userVideoRef.current) {
           userVideoRef.current.srcObject = stream;
         }
-        console.log(`initializing media stream`);
         
         peers.forEach((peer) => {
+        console.log(`initializing media stream`);
+        // socket.emit('call-peers',peer.userId)
+
           const tracks = stream.getTracks();
           tracks.forEach((track) => {
             peer.peerConnection.addTrack(track, stream);
               const sender = peer.peerConnection.addTrack(track, stream);
-              sender.onremovetrack = () => {
+              (sender as any).onremovetrack  = () => {
                 console.log('Remote user stopped sending video');
             }
           });
@@ -175,7 +187,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       }
     };
     initializeMediaStream();
-  }, [peers.length]);
+  }, [peers]);
 
   const initializePeerConnection = (userId: string,socketId:string) => {
     const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
