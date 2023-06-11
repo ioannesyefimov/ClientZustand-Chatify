@@ -1,9 +1,18 @@
 @use '../utils/animations.scss' as *;
+@use '../../App.scss' as *;
 
 .video-chat-wrapper {
-
-    .hamburger-outer.messages {
+    display: flex;
+    flex:1;
+    .messages-wrapper-outer {
+        @extend .scrollbar;
+        flex:40%;
+        min-width: 250px;
+        outline: 1px solid red;
+        max-height: 95dvh;
+        order:1;
         padding: .2rem .7rem;
+        // overflow: scroll;
         right: 0;
         &[data-istoggled=untoggled]{
             animation-name: disapperToRight !important;
@@ -41,6 +50,8 @@
 
 .channel-webrtc{
     display: grid;
+    flex:70%;
+
     padding: .5rem 1rem;
     place-content: center;
     position: relative;

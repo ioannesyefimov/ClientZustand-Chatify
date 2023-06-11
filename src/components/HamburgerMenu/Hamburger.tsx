@@ -8,6 +8,7 @@ type PropsType = {
     children?: ReactNode
     type:string
     animation? : {"toggled":string,untoggled:string}
+    isHamburger:boolean
 }
 
 declare module 'react' {
@@ -16,7 +17,7 @@ declare module 'react' {
     }
 }
 
-const Hamburger = ({children,type,animation}:PropsType) => {
+const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
     const [isToggled, setIsToggled] = useState<'loaded'|'toggled'|'untoggled'|''>('loaded')
     const {width} = useWindowSize()
     let isShowed = width < 500 ? 'animate animate--fast animate--forwards' : ''
@@ -82,6 +83,6 @@ const Hamburger = ({children,type,animation}:PropsType) => {
         
     )
     
-    return  content
+    return isHamburger ?  content : children
     }
 export default Hamburger

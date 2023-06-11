@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import { useAuthStore } from '../../ZustandStore'
-import { useResponseContext, useCurrentChannel } from '../../hooks'
+import { useResponseContext, useCurrentChannel, useWindowSize } from '../../hooks'
 import Hamburger from '../HamburgerMenu/Hamburger'
 import MessagesProvider from '../MessagesWrapper/Context/MessagesContext'
 import MessagesWrapper from '../MessagesWrapper/MessagesWrapper'
@@ -13,10 +13,10 @@ function ChannelCallWrapper() {
     const {setServerResponse} = useResponseContext()
     const {channel_id}=useParams()
     const {currentChannel,setCurrentChannel,addCurrentChannelMessage,currentChannelMessages,deleteCurrentChannelMessage,isLoading}=useCurrentChannel(channel_id ?? '',user)
-  
+    const {width,height}=useWindowSize()
     const content = (
         <div className="video-chat-wrapper">
-            <Hamburger type='messages'>
+            <Hamburger type='messages' isHamburger={width > 500 ? false : true}>
                 <MessagesProvider>
                     <MessagesWrapper setCurrentChannel={setCurrentChannel} currentChannel={currentChannel} currentChannelMessages={currentChannel?.messages!}/>
                 </MessagesProvider>

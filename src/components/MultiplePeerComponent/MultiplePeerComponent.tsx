@@ -6,7 +6,7 @@ import './ChannelWebRTC.scss'
 import { useAuthStore, useChatStore } from '../../ZustandStore';
 import Button from '../Button/Button';
 import { callIco, declineIco } from '../../assets';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { sleep } from '../utils';
 
 const { io, certOptions, serverUrl } = SocketStore();
@@ -26,7 +26,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   const remoteVideoRefs = useRef<{ [key: string]: HTMLVideoElement }>({});
   const userStreamRef = useRef<MediaStream>();
   const user = useAuthStore(s=>s.user)
-
+  const navigate = useNavigate()
   useEffect(() => {
     socket.connect()
     socket.on('connect',async ()=>{
@@ -126,7 +126,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             console.log('Error adding ICE candidate:', error);
           });
       } else {
-        return console.log(`PC IS ${peer?.peerConnection}`)
+        return console.log(`PC IS undefined`)
       }
         }
     function onCallPeers(userId:string){
@@ -263,15 +263,26 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           return (
           <div className='remote-user' key={peer.userId}>
             <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
-            <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
+            {
+              peer.peerConnection.connectionState === 'connected' ? ( null) : (
+                <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
+
+              )
+            }
           </div>
           )
         }
         )}
       </div>
-      <Link className="decline" to={currentChannel?._id ? `/chat/${currentChannel?._id}` : '/chat'}>
+      <Button onClick={()=>{
+        navigate(currentChannel?._id ? `/chat/${currentChannel?._id}` : '/chat')
+        setPeers([])
+        setJoinedPeers([])
+        socket.disconnect()
+      }} name='decline' type="button" >
           <img src={declineIco} className='decline-img' alt="" />
-      </Link>
+      </Button>
+     
     </div>
   );
 };
