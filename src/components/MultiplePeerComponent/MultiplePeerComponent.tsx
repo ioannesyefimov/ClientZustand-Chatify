@@ -5,13 +5,14 @@ import { Socket } from 'socket.io-client';
 import './ChannelWebRTC.scss'
 import { useAuthStore, useChatStore } from '../../ZustandStore';
 import Button from '../Button/Button';
-import { callIco, declineIco } from '../../assets';
+import { callIco, cameraIco, declineIco } from '../../assets';
 import { Link, useNavigate } from 'react-router-dom';
 import { sleep } from '../utils';
+import CallNavigation from '../CallNavigation/CallNavigation';
 
 const { io, certOptions, serverUrl } = SocketStore();
 
-interface Peer {
+export interface Peer {
   socketId?:string
   userId: string;
   peerConnection: RTCPeerConnection
@@ -158,36 +159,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     }
     },[peers.length]
   )
-  useEffect(() => {
-    const initializeMediaStream = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        userStreamRef.current = stream;
-
-        if (userVideoRef.current) {
-          userVideoRef.current.srcObject = stream;
-        }
-        
-        peers.forEach((peer) => {
-        console.log(`initializing media stream`);
-        // socket.emit('call-peers',peer.userId)
-
-          const tracks = stream.getTracks();
-          tracks.forEach((track) => {
-            peer.peerConnection.addTrack(track, stream);
-              const sender = peer.peerConnection.addTrack(track, stream);
-              (sender as any).onremovetrack  = () => {
-                console.log('Remote user stopped sending video');
-            }
-          });
-
-        });
-      } catch (error) {
-        console.log('Error accessing media devices:', error);
-      }
-    };
-    initializeMediaStream();
-  }, [peers]);
+  
 
   const initializePeerConnection = (userId: string,socketId:string) => {
     const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
@@ -264,25 +236,17 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           <div className='remote-user' key={peer.userId}>
             <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
             {
-              peer.peerConnection.connectionState === 'connected' ? ( null) : (
+              peer.peerConnection.connectionState !== 'connected' ?   (
                 <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
 
-              )
+              ) : null
             }
           </div>
           )
         }
         )}
       </div>
-      <Button onClick={()=>{
-        navigate(currentChannel?._id ? `/chat/${currentChannel?._id}` : '/chat')
-        setPeers([])
-        setJoinedPeers([])
-        socket.disconnect()
-      }} name='decline' type="button" >
-          <img src={declineIco} className='decline-img' alt="" />
-      </Button>
-     
+      <CallNavigation peers={peers} userStreamRef={userStreamRef} remoteVideoRefs={remoteVideoRefs} userVideoRef={userVideoRef} socket={socket} setPeers={setPeers} setJoinedPeers={setJoinedPeers} channel={currentChannel}/> 
     </div>
   );
 };

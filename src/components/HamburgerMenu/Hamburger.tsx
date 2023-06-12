@@ -37,6 +37,16 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
             setIsToggled('toggled')
         } 
     }
+    // useEffect(
+    //     ()=>{
+    //         if(isHamburger){
+    //             setIsToggled('toggled')
+    //         }else if(!isHamburger){
+    //             setIsToggled('untoggled')
+
+    //         }
+    //     },[isHamburger]
+    // )
     useEffect(
         ()=>{
             if(location.pathname === '/chat' && !location.search ){
@@ -83,6 +93,6 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
         
     )
     
-    return isHamburger ?  content : children
+    return content
     }
 export default Hamburger
