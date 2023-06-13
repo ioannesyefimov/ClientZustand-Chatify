@@ -1,21 +1,29 @@
 .call-navigation{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap:1rem;
-    border:1px solid black;
-    background: #120F13;
-    padding: .25rem;
-    button {
-        width: 40px;
-        padding: 0;
+    display: grid;
+    place-content: center;
+    .wrapper {
+        display: flex;
+        flex-direction: column;
+        border-radius: 10px;
+        padding: 2rem .6rem;
 
+        background: #120F13;
+        gap:1rem;
+        border:1px solid rgba(0, 0, 0, 0.746);
+        align-items: center;
+        justify-content: center;
+        button {
+            width: 40px;
+            padding: 0;
+    
+        }
     }
+    
 
     position: fixed;
     left: 0;
-    right: 0;
-        bottom:0;
-    width: 100%;
+    top:0;
+    bottom:0;
+
     margin:auto;
 }

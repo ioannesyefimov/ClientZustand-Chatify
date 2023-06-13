@@ -4,7 +4,11 @@
 .video-chat-wrapper {
     display: flex;
     flex:1;
-    
+    .messages-wrapper-outer{
+        background: #120F13;
+        height: 100dvh;
+        flex:30%;
+    }
     .hamburger-outer.messages {
         right: 0;
         &[data-istoggled=untoggled]{
@@ -78,17 +82,14 @@
        }
     }
 
-    div[data-camera=off]{
+    video[data-camera=off]{
         position: relative;
+        background-size: contain;
+        background-color: none;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-image: url('../../assets/userIco.svg');
 
-        &::after{
-            position: absolute;
-            content: url('../../assets/disabledIco.svg');
-            width:100%;
-            height:100%;
-            inset:0;
-            margin: auto;
-        }
     }
 
     .remote-users {
@@ -99,7 +100,7 @@
     //    position: relative;
     display: grid;
     margin: auto;
-       z-index: 55;
+       z-index: 2;
 
         &-video{
              height: 160px;
@@ -127,16 +128,16 @@
     .focused-user {
         position: absolute;
         margin: auto;
-        z-index: 155;
+        z-index: 3;
         top:5%;
         border-radius: 20px !important;
         background-color: black;
         left: 0;
         right: 0;
-        width: 85%;
+        width: 65%;
         min-width: 330px;
         min-height:330px ;
-        height: 85%;
+        height: 60%;
 
         video {
             width: 100%;

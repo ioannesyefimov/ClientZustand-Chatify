@@ -64,19 +64,27 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
         socket.close()
         }
     const handleCamera = ()=>{
-      if(!userVideoRef?.current || userStreamRef?.current) return
-        console.log(userStreamRef?.current);
-        userVideoRef?.current.setAttribute('data-camera','off')
-         userStreamRef?.current!.getTracks().forEach(track=>{
+      console.log(userStreamRef?.current);
+
+      userStreamRef?.current!.getTracks().forEach(track=>{
           console.log(`track`,track);
           if(track.kind==='video') {
             track.enabled = !track.enabled
+          }
+          if(track.enabled){
+            userVideoRef.current.srcObject = null
+            userVideoRef?.current.setAttribute('data-camera','off')
+          } else {
+            userVideoRef?.current?.removeAttribute('data-camera')
+            userVideoRef.current.srcObject =userStreamRef?.current
+
           }
         })
     }
 
     const content = (
         <div className="call-navigation">
+          <div className="wrapper">
 
             <Button onClick={handleCamera} name='camera' type="button" >
                 <img src={cameraIco} className='camero-icon' alt="" />
@@ -84,6 +92,8 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
             <Button onClick={handleDecline} name='decline' type="button" >
                 <img src={declineIco} className='decline-icon' alt="" />
             </Button>
+          </div>
+
         </div>
 
     )

@@ -225,7 +225,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   };
 
   const handleFocusedStream = (e:React.MouseEvent<HTMLDivElement>)=>{
-  
+    console.log(`e:`,e);
+    
     if(!e?.currentTarget) return 
     e.currentTarget?.classList.toggle('focused-user')
    
@@ -246,6 +247,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             
             return (
             <div onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className={`remote-user `} key={peer.userId}>
+              
               <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
               {/* {
                 peer.peerConnection.connectionState !== 'connected' ?   (

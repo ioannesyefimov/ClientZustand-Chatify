@@ -93,6 +93,6 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
         
     )
     
-    return content
+    return isHamburger ? content : children
     }
 export default Hamburger
