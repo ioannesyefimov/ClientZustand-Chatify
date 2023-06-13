@@ -80,23 +80,38 @@
 
     }
     .remote-user{
-       
+    //    position: relative;
+       outline: 1px solid red;
+
         &-video{
              height: 160px;
         border-radius:50%;
         width: 160px;
         object-fit: cover;
-            outline: 1px solid red;
+        border:1px solid gray
+        }
+
+        &-call {
+            position:absolute;
+            padding:0;
+            width: 30px;
+            inset:0;
+            margin:auto;
         }
     }
 
     .focused-user {
         position: absolute;
         margin: auto;
+        z-index: 55;
         top:5%;
+        border-radius: 20px;
+        background-color: black;
         left: 0;
         right: 0;
         width: 85%;
+        min-width: 330px;
+        min-height:330px ;
         height: 85%;
 
         video {

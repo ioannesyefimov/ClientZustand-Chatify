@@ -21,6 +21,7 @@ const socket = io(`${serverUrl}/current-channel-call`,{pfx: certOptions.pfx,pass
 
 const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) => {
   const [peers, setPeers] = useState<Peer[]>([]);
+  
   const [joinedPeers,setJoinedPeers]=useState<string[]>([])
   const [me,setMe]=useState('')
   const userVideoRef = useRef<HTMLVideoElement>(null);
@@ -33,7 +34,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     socket.on('connect',async ()=>{
       setMe(socket.id)
       console.log(`${user?._id} connected to channelCall socket by ID: ${socket?.id}`)
-      socket.emit('join_room', {userId:user._id,room:currentChannel?._id})
+      socket.emit('join_room', {userId:user._id,room:currentChannel?._id,userName:user?.userName})
     })
     return()=>{
       socket.disconnect();
@@ -60,7 +61,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   
   useEffect(
     ()=>{
-    function onUsers (data: {user:{userId:string,socketId:string,}}[]){
+    function onUsers (data: {user:{userId:string,socketId:string,userName:string}}[]){
       if(!data) return
       console.log(`users`,data);
       data=data?.filter(userId=>userId?.user.userId!==user?._id && userId !== null)
@@ -70,6 +71,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         userId:user?.user.userId,
         socketId: user?.user.socketId,
         peerConnection: initializePeerConnection(user?.user.userId,user?.user?.socketId),
+        userName:user.user.userName
       }));
       console.log(`new peers`, newPeers);
       setPeers(newPeers);
@@ -221,26 +223,33 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     }
   };
 
-  const handleFocusedStream = ()=>{
-
+  const handleFocusedStream = (e:React.MouseEvent<HTMLDivElement>)=>{
+  
+    console.log(`target`,e);
+    if(!e?.target) return 
+    e.target?.classList.toggle('focused-user')
+   
+    
   }
   
   return (
-    <div className='channel-webrtc'>
-      <div className='local-user focused-user'>
-        <video className='local-user-video' ref={userVideoRef} playsInline autoPlay muted />
+    <div   className='channel-webrtc'>
+      <div onClick={(e)=>handleFocusedStream(e)}  id={user?._id} className='local-user '>
+        <video className='local-user-video ' ref={userVideoRef} playsInline autoPlay muted />
       </div>
-      <div className='remote-users'>
-        {peers.map((peer) => {
-          return (
-          <div className='remote-user' key={peer.userId}>
-            <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
-            {
-              peer.peerConnection.connectionState !== 'connected' ?   (
-                <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
-
-              ) : null
-            }
+      <div  className='remote-users'>
+        {
+        peers.map(
+          (peer) => {
+            return (
+            <div onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className='remote-user' key={peer.userId}>
+              <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
+              {/* {
+                peer.peerConnection.connectionState !== 'connected' ?   (
+                  <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
+                ) : null
+            } */}
+            <p className="user-name">{}</p>
           </div>
           )
         }

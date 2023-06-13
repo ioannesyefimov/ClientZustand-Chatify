@@ -53,7 +53,7 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
           }
         };
         initializeMediaStream();
-      }, [peers,trackRef?.current]);
+      }, [peers]);
 
     const handleDecline = ()=>{
         navigate(channel?._id ? `/chat/${channel?._id}` : '/chat')
