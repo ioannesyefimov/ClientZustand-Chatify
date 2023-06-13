@@ -6,6 +6,7 @@ import { ChannelType } from '../types'
 import { useNavigate } from 'react-router-dom'
 import { cameraIco, declineIco } from '../../assets'
 import './CallNavigation.scss'
+import { useAuthStore } from '../../ZustandStore'
 interface PropsType {
     socket: Socket
     setPeers: React.Dispatch<React.SetStateAction<Peer[]>>
@@ -22,7 +23,7 @@ interface PropsType {
 function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, userStreamRef,remoteVideoRefs,peers}:PropsType) {
     const trackRef = useRef<RTCRtpSender>()
     const navigate = useNavigate()
-
+  const user = useAuthStore(s=>s.user)
     useEffect(() => {
         const initializeMediaStream = async () => {
           try {
@@ -59,22 +60,19 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
         navigate(channel?._id ? `/chat/${channel?._id}` : '/chat')
         setPeers([])
         setJoinedPeers([])
-        socket.disconnect()
+        socket.emit('leave',user?._id)
+        socket.close()
         }
     const handleCamera = ()=>{
+      if(!userVideoRef?.current || userStreamRef?.current) return
         console.log(userStreamRef?.current);
-        
-        if(userVideoRef?.current?.srcObject){
-            userVideoRef.current.srcObject = null
-            userStreamRef?.current.getTracks().forEach(track=>{
-              if(track.kind==='video') {
-                track.enabled = false
-              }
-            })
-
-        }else if(!userVideoRef?.current?.srcObject){
-            userVideoRef.current.srcObject = userStreamRef?.current
-        }
+        userVideoRef?.current.setAttribute('data-camera','off')
+         userStreamRef?.current!.getTracks().forEach(track=>{
+          console.log(`track`,track);
+          if(track.kind==='video') {
+            track.enabled = !track.enabled
+          }
+        })
     }
 
     const content = (

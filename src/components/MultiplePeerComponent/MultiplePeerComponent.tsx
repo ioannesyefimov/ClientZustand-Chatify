@@ -16,6 +16,7 @@ export interface Peer {
   socketId?:string
   userId: string;
   peerConnection: RTCPeerConnection
+  userName: string
 }
 const socket = io(`${serverUrl}/current-channel-call`,{pfx: certOptions.pfx,passphrase:certOptions.passphrase,autoConnect:false}); // Replace with your Socket.IO server URL
 
@@ -225,9 +226,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
 
   const handleFocusedStream = (e:React.MouseEvent<HTMLDivElement>)=>{
   
-    console.log(`target`,e);
-    if(!e?.target) return 
-    e.target?.classList.toggle('focused-user')
+    if(!e?.currentTarget) return 
+    e.currentTarget?.classList.toggle('focused-user')
    
     
   }
@@ -236,20 +236,23 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     <div   className='channel-webrtc'>
       <div onClick={(e)=>handleFocusedStream(e)}  id={user?._id} className='local-user '>
         <video className='local-user-video ' ref={userVideoRef} playsInline autoPlay muted />
+        <p className="local-user-name">You</p>
       </div>
       <div  className='remote-users'>
         {
         peers.map(
           (peer) => {
+            console.log(`peer:`,peer);
+            
             return (
-            <div onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className='remote-user' key={peer.userId}>
+            <div onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className={`remote-user `} key={peer.userId}>
               <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
               {/* {
                 peer.peerConnection.connectionState !== 'connected' ?   (
                   <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
                 ) : null
             } */}
-            <p className="user-name">{}</p>
+            <p className="remote-user-name">{peer.userName}</p>
           </div>
           )
         }

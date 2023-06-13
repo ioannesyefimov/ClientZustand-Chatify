@@ -37,16 +37,16 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
             setIsToggled('toggled')
         } 
     }
-    // useEffect(
-    //     ()=>{
-    //         if(isHamburger){
-    //             setIsToggled('toggled')
-    //         }else if(!isHamburger){
-    //             setIsToggled('untoggled')
+    useEffect(
+        ()=>{
+            if(isHamburger){
+                setIsToggled('toggled')
+            }else if(!isHamburger){
+                setIsToggled('untoggled')
 
-    //         }
-    //     },[isHamburger]
-    // )
+            }
+        },[isHamburger]
+    )
     useEffect(
         ()=>{
             if(location.pathname === '/chat' && !location.search ){
