@@ -62,28 +62,18 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
         socket.disconnect()
         }
     const handleCamera = ()=>{
-        console.log(trackRef?.current);
         console.log(userStreamRef?.current);
         
         if(userVideoRef?.current?.srcObject){
             userVideoRef.current.srcObject = null
+            userStreamRef?.current.getTracks().forEach(track=>{
+              if(track.kind==='video') {
+                track.enabled = false
+              }
+            })
+
         }else if(!userVideoRef?.current?.srcObject){
             userVideoRef.current.srcObject = userStreamRef?.current
-            peers.forEach((peer) => {
-                console.log(`initializing media stream`);
-                // socket.emit('call-peers',peer.userId)
-        
-                  const tracks = userVideoRef.current.getTracks()!;
-                  tracks.forEach((track) => {
-                    peer.peerConnection.addTrack(track, stream);
-                      const sender = peer.peerConnection.addTrack(track, stream);
-                      trackRef.current = sender;
-                      (sender as any).onremovetrack  = () => {
-                        console.log('Remote user stopped sending video');
-                    }
-                  });
-        
-                });
         }
     }
 
