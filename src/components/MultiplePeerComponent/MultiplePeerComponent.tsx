@@ -133,21 +133,12 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         return console.log(`PC IS undefined`)
       }
         }
-    function onCallPeers(userId:string){
-      console.log(`call-peers triggered`,userId);
-      if(!userId || userId === user._id)return
-      let peer = peers.find(peer=>peer.userId===userId)
-      console.log(`peers `,peers);
-      console.log(`peer `,peer);
-      if(!peer)return
-      handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
-    }
-    socket.on('call-peers',onCallPeers)
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
     socket.on('iceCandidate', onIceCandidate);
     socket.on('userRemoved',(userId)=>{
       console.log(`USER ${userId} has been removed`)
+      setPeers(prev=>prev.filter(peer=>peer.userId !== userId))
     })
     socket.on('users', onUsers);
     socket.on('join_room',onJoinRoom)
@@ -155,14 +146,31 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     return () => {
       socket.off('offer',onOffer)
       socket.off('join_room',onJoinRoom)
-      socket.off('call-peers',onCallPeers)
       socket.off('users',onUsers)
       socket.off('answer',onAnswer)
       socket.off('iceCandidate',onIceCandidate)
     }
-    },[peers.length]
+    },[peers]
   )
   
+    useEffect(
+      ()=>{
+        const checkPeerConnection = async ()=>{
+          console.log(`checking peer connection status...`);
+          if(!peers?.length) return
+          peers.forEach(peer=>{
+            console.log(`peerConnection ${peer.userId} = ${peer.peerConnection.connectionState}`)
+            if(peer.peerConnection.connectionState === 'connecting' || 'failed'){
+              // handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
+            }
+          })
+          
+        } 
+        let interval = setInterval(checkPeerConnection,12000)
+
+        return ()=>{clearInterval(interval)}
+      },[peers.length]
+    )
 
   const initializePeerConnection = (userId: string,socketId:string) => {
     const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
@@ -186,7 +194,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         stream.onremovetrack = ({track})=>{
           console.log(`${track.kind} was removed userId: ${userId}`)
           if(!stream.getTracks().length){
-            console.log(`stream ${stream.id} emptied (effectively removed).`);          }
+            console.log(`stream ${stream.id} emptied (effectively removed).`);      
+          }
         }
       }
     };

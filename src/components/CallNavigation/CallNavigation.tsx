@@ -61,7 +61,7 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
         setPeers([])
         setJoinedPeers([])
         socket.emit('leave',user?._id)
-        socket.close()
+        socket.disconnect()
         }
     const handleCamera = ()=>{
       console.log(userStreamRef?.current);
@@ -76,12 +76,8 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
           }
           if(track.enabled){
             userVideoRef?.current?.removeAttribute('data-camera')
-            // userVideoRef.current.srcObject = null
           } else if(!track.enabled) {
             userVideoRef?.current.setAttribute('data-camera','off')
-
-            // userVideoRef.current.srcObject =userStreamRef?.current
-
           }
          
         })

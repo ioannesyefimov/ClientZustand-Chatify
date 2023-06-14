@@ -1,4 +1,4 @@
-import {  useCallback, useEffect} from "react"
+import {  useCallback, useEffect, useMemo} from "react"
 import useSWR from 'swr'
 import { APIFetch, Errors } from "../../components/utils"
 import SocketStore from "../../components/SocketStore"
@@ -59,8 +59,8 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                 setLoading(false)      
                 
                 return ()=>{
-                    let USER = user?.email ? user : channel?.data?.user
-                    channelSocket?.emit('leave_channel',{USER,id:current?._id})}
+                    let USER = user?.email ? user.email : channel?.data?.user?.email
+                    channelSocket?.emit('leave_channel',{user:USER,id:current?._id})}
             }
 
         },[channel?.data,location.pathname]
@@ -129,6 +129,9 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
         },[currentChannel?._id]
       )
     
+      const value = useMemo(()=>{
+        currentChannel
+      },[currentChannel,currentChannelMessages,])
     
 
     return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading}

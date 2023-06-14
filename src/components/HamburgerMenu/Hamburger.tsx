@@ -37,16 +37,7 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
             setIsToggled('toggled')
         } 
     }
-    useEffect(
-        ()=>{
-            if(isHamburger){
-                setIsToggled('toggled')
-            }else if(!isHamburger){
-                setIsToggled('untoggled')
-
-            }
-        },[isHamburger]
-    )
+   
     useEffect(
         ()=>{
             if(location.pathname === '/chat' && !location.search ){
@@ -56,6 +47,18 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
 
             }
         },[location.pathname,location.search]
+    )
+
+    useEffect(
+        ()=>{
+            const onEscape = (e)=>{
+                if(e.code==='Escape'){
+                    setIsToggled('untoggled')
+                }
+            }
+            window.addEventListener('keydown', onEscape)
+            return ()=>{window.removeEventListener('keydown',onEscape)}
+        },[]
     )
     // let content = (
     //     <div className={`hamburger bar `} data-istoggled={isToggled}  >
