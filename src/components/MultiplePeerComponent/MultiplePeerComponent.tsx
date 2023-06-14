@@ -174,14 +174,20 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       }
     };
 
-    peerConnection.ontrack = (event) => {
+    peerConnection.ontrack = ({track,streams:[stream]}) => {
       console.log(`peer video triggered`);
       
       if (remoteVideoRefs.current[userId]) {
-        console.log(`triggered remote video ref`,event.streams[0]);
+
+        console.log(`triggered remote video ref`,stream);
         console.log(`peer:`,remoteVideoRefs.current[userId]);
-        remoteVideoRefs.current[userId].srcObject = event.streams[0];
+        remoteVideoRefs.current[userId].srcObject = stream;
         console.log(remoteVideoRefs.current[userId].srcObject, 'THIS IS SRC OBJ OF THE REF ' + userId)
+        stream.onremovetrack = ({track})=>{
+          console.log(`${track.kind} was removed userId: ${userId}`)
+          if(!stream.getTracks().length){
+            console.log(`stream ${stream.id} emptied (effectively removed).`);          }
+        }
       }
     };
 

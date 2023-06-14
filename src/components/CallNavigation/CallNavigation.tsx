@@ -67,18 +67,23 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
       console.log(userStreamRef?.current);
 
       userStreamRef?.current!.getTracks().forEach(track=>{
+        console.log(`track:`,trackRef);
+        console.log(`trackRef:`,trackRef?.current);
+        
           console.log(`track`,track);
           if(track.kind==='video') {
             track.enabled = !track.enabled
           }
           if(track.enabled){
-            userVideoRef.current.srcObject = null
-            userVideoRef?.current.setAttribute('data-camera','off')
-          } else {
             userVideoRef?.current?.removeAttribute('data-camera')
-            userVideoRef.current.srcObject =userStreamRef?.current
+            // userVideoRef.current.srcObject = null
+          } else if(!track.enabled) {
+            userVideoRef?.current.setAttribute('data-camera','off')
+
+            // userVideoRef.current.srcObject =userStreamRef?.current
 
           }
+         
         })
     }
 

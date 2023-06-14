@@ -99,7 +99,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
           
                 }
                 let onDisconnect = ()=>{
-                  console.log(`Disconnected from server`)
+                  console.log(`${user?._id} disconnected from server`)
                 }
                 let onJoinChannel=(data:SocketResponse)=>{
                   if(!data?.success) setServerResponse(data?.err)
