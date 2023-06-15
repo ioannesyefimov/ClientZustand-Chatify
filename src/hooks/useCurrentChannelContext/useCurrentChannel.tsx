@@ -68,65 +68,62 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
 
     useEffect(
         ()=>{
-            if(currentChannel?._id){
-              
-                let onConnect = ()=>{
-                  console.log(`CONNECTED BY ID ${channelSocket.id}`)
-                }
-                let onMessage = (data:SocketResponse)=>{
-                  if(!data?.success) setServerResponse(data?.err)
-                  console.log(`received message`, data);
-                  
-                  if(data?.data?.messages){
-                    addCurrentChannelMessage(data?.data?.message)
-                    // scrollToRef?.current?.scrollIntoView({behavior:'smooth'}) 
-                  }
-                  setLoading(false)
-                }
-                let onOnlineUsers = (data:SocketResponse)=>{
-                  setOnlineUsers(data?.online)
-                }
-                let onDeleteMessage = (data:SocketResponse)=>{
-                  if(!data?.success) setServerResponse(data?.err)
-                  console.log(`DELETING  MESSAGE RESPONSE`,data);
-                  if(data?.success){
-                    console.log(`SUCCESS DELETE`, data);
-                    deleteCurrentChannelMessage(data?.data?.message?._id)
-                  } else {
-                    setServerResponse(data?.err)
-                  }
-                  setLoading(false)
-          
-                }
-                let onDisconnect = ()=>{
-                  console.log(`${user?._id} disconnected from server`)
-                }
-                let onJoinChannel=(data:SocketResponse)=>{
-                  if(!data?.success) setServerResponse(data?.err)
-                  console.log(`JOINED CHANNEL ${data.data.room}`);
-                }
-                channelSocket.on('get_online_users',onOnlineUsers)
-                channelSocket.on('disconnect',onDisconnect)
-                channelSocket.on('connect',onConnect)
-                channelSocket.on('receive_message',onMessage)
-                channelSocket.on('delete_message',onDeleteMessage)
-                channelSocket.on('join_channel',onJoinChannel)
-                return ()=>{
-                  channelSocket.off('delete_message',onDeleteMessage);
-                  channelSocket.off('receive_message',onMessage);
-                  channelSocket.off('connect',onConnect);
-                  channelSocket.off('disconnect',onDisconnect)
-                  channelSocket.disconnect()
-                  // channelSocket.off('get_channel',onGetChannel);
-                  if(currentChannel?._id){
-                    channelSocket.emit('leave_channel',{user:user.email,id:currentChannel?._id})
-                    console.log(`LEAVING CHANNEL: ${currentChannel?._id}`);
-                      setCurrentChannel(null)
-                  }
-              }
+            let onConnect = ()=>{
+              console.log(`CONNECTED BY ID ${channelSocket.id}`)
             }
+            let onMessage = (data:SocketResponse)=>{
+              if(!data?.success) setServerResponse(data?.err)
+              console.log(`received message`, data);
+              
+              if(data?.data?.messages){
+                addCurrentChannelMessage(data?.data?.message)
+                // scrollToRef?.current?.scrollIntoView({behavior:'smooth'}) 
+              }
+              setLoading(false)
+            }
+            let onOnlineUsers = (data:SocketResponse)=>{
+              setOnlineUsers(data?.online)
+            }
+            let onDeleteMessage = (data:SocketResponse)=>{
+              if(!data?.success) setServerResponse(data?.err)
+              console.log(`DELETING  MESSAGE RESPONSE`,data);
+              if(data?.success){
+                console.log(`SUCCESS DELETE`, data);
+                deleteCurrentChannelMessage(data?.data?.message?._id)
+              } else {
+                setServerResponse(data?.err)
+              }
+              setLoading(false)
+      
+            }
+            let onDisconnect = ()=>{
+              console.log(`${user?._id} disconnected from server`)
+            }
+            let onJoinChannel=(data:SocketResponse)=>{
+              if(!data?.success) setServerResponse(data?.err)
+              console.log(`JOINED CHANNEL ${data.data.room}`);
+            }
+            channelSocket.on('get_online_users',onOnlineUsers)
+            channelSocket.on('disconnect',onDisconnect)
+            channelSocket.on('connect',onConnect)
+            channelSocket.on('receive_message',onMessage)
+            channelSocket.on('delete_message',onDeleteMessage)
+            channelSocket.on('join_channel',onJoinChannel)
+            return ()=>{
+              channelSocket.off('delete_message',onDeleteMessage);
+              channelSocket.off('receive_message',onMessage);
+              channelSocket.off('connect',onConnect);
+              channelSocket.off('disconnect',onDisconnect)
+              channelSocket.disconnect()
+              // channelSocket.off('get_channel',onGetChannel);
+              if(currentChannel?._id){
+                channelSocket.emit('leave_channel',{user:user.email,id:currentChannel?._id})
+                console.log(`LEAVING CHANNEL: ${currentChannel?._id}`);
+                  setCurrentChannel(null)
+              }
+          }
          
-        },[currentChannel?._id]
+        },[]
       )
     
       const value = useMemo(()=>{

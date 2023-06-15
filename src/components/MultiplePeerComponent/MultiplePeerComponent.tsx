@@ -119,11 +119,12 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       // handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
       
     }
-    function onIceCandidate({ userId,socketId, candidate }: { userId: string;socketId:string; candidate: RTCIceCandidate }) {
+    function onIceCandidate({ userId,socketId, candidate,fromUserId }: { userId: string;socketId:string; candidate: RTCIceCandidate; fromUserId:string }) {
       const peer = peers.find((p) => p.userId === userId);
       console.log(`peers`,peers);
       console.log(`ice candidate triggered for ${socketId}; id:${userId}`,candidate);
       if(peer) {
+        if(!peer.peerConnection.remoteDescription) return socket.emit('call-peer',{userId:user?._id})
         peer.peerConnection
           .addIceCandidate(candidate)
           .catch((error) => {
@@ -150,7 +151,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       socket.off('answer',onAnswer)
       socket.off('iceCandidate',onIceCandidate)
     }
-    },[peers]
+    },[peers?.length]
   )
   
     useEffect(
@@ -160,8 +161,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           if(!peers?.length) return
           peers.forEach(peer=>{
             console.log(`peerConnection ${peer.userId} = ${peer.peerConnection.connectionState}`)
-            if(peer.peerConnection.connectionState === 'connecting' || 'failed'){
-              // handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
+            if(peer.peerConnection.connectionState ===  'failed'){
+              handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
             }
           })
           
@@ -222,22 +223,22 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           console.log('Error creating or setting local description:', error);
         });
   };
-  const handleCall = (userId: string,socketId:string) => {
-    console.log(`CALLING ${userId}`);
+  // const handleCall = (userId: string,socketId:string) => {
+  //   console.log(`CALLING ${userId}`);
     
-    const peer = peers.find((p) => p.userId === userId);
-    console.log(`calling peer:`, peer);
-    if (peer) {
-      peer.peerConnection.createOffer()
-        .then((offer) => peer.peerConnection.setLocalDescription(offer))
-        .then(() => {
-          socket.emit('offer', { userId,from:user._id,fromSocket:socket.id,fromUserId:user?._id, socketId, offer: peer.peerConnection.localDescription });
-        })
-        .catch((error) => {
-          console.log('Error creating or setting local description:', error);
-        });
-    }
-  };
+  //   const peer = peers.find((p) => p.userId === userId);
+  //   console.log(`calling peer:`, peer);
+  //   if (peer) {
+  //     peer.peerConnection.createOffer()
+  //       .then((offer) => peer.peerConnection.setLocalDescription(offer))
+  //       .then(() => {
+  //         socket.emit('offer', { userId,from:user._id,fromSocket:socket.id,fromUserId:user?._id, socketId, offer: peer.peerConnection.localDescription });
+  //       })
+  //       .catch((error) => {
+  //         console.log('Error creating or setting local description:', error);
+  //       });
+  //   }
+  // };
 
   const handleFocusedStream = (e:React.MouseEvent<HTMLDivElement>)=>{
     console.log(`e:`,e);
@@ -258,12 +259,10 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         {
         peers.map(
           (peer) => {
-            console.log(`peer:`,peer);
-            
             return (
             <div onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className={`remote-user `} key={peer.userId}>
               
-              <video className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
+              <video  className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
               {/* {
                 peer.peerConnection.connectionState !== 'connected' ?   (
                   <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
