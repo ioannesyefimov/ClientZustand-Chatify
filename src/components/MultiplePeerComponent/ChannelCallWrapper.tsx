@@ -12,7 +12,7 @@ function ChannelCallWrapper() {
     const user = useAuthStore(state=>state.user)
     const {setServerResponse} = useResponseContext()
     const {channel_id}=useParams()
-    const {currentChannel,setCurrentChannel,addCurrentChannelMessage,currentChannelMessages,deleteCurrentChannelMessage,isLoading}=useCurrentChannel(channel_id ?? '',user)
+    const {currentChannel,setCurrentChannel,addCurrentChannelMessage,currentChannelMessages,deleteCurrentChannelMessage,isLoading}=useCurrentChannel(channel_id!,user)
     const {width,height}=useWindowSize()
     const content = (
         <div className="video-chat-wrapper">

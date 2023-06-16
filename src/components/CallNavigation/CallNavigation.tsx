@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Socket } from 'socket.io-client'
 import { Peer } from '../MultiplePeerComponent/MultiplePeerComponent'
 import Button from '../Button/Button'
@@ -23,6 +23,7 @@ interface PropsType {
 function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, userStreamRef,remoteVideoRefs,peers}:PropsType) {
     const trackRef = useRef<RTCRtpSender>()
     const navigate = useNavigate()
+    const [isCameraOn,setIsCameraOn]=useState(true)
   const user = useAuthStore(s=>s.user)
     useEffect(() => {
         const initializeMediaStream = async () => {
@@ -63,24 +64,38 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
         socket.emit('leave',user?._id)
         socket.disconnect()
         }
-    const handleCamera = ()=>{
+    const handleCamera = async()=>{
       console.log(userStreamRef?.current);
-
-      userStreamRef?.current!.getTracks().forEach(track=>{
-        console.log(`track:`,trackRef);
-        console.log(`trackRef:`,trackRef?.current);
+        let stream = userStreamRef?.current
         
-          console.log(`track`,track);
-          if(track.kind==='video') {
-            track.enabled = !track.enabled
-          }
-          if(track.enabled){
-            userVideoRef?.current?.removeAttribute('data-camera')
-          } else if(!track.enabled) {
-            userVideoRef?.current.setAttribute('data-camera','off')
-          }
+        if(stream) {
+          stream.getTracks().forEach((track)=>{
+            track.stop()
+          })
+        }
+        let mediaDevices = navigator.mediaDevices
+        const constraints = {video:isCameraOn}
+        try {
+          stream = await mediaDevices.getUserMedia(constraints)
+          userVideoRef.current!.srcObject = stream
+        } catch (error) {
+          console.error(`Error accessing camera:`,error)
+        }
+        // userStreamRef?.current!.getTracks().forEach(track=>{
+        // console.log(`track:`,trackRef);
+        // console.log(`trackRef:`,trackRef?.current);
+        
+        //   console.log(`track`,track);
+        //   if(track.kind==='video') {
+        //     track.enabled = !track.enabled
+        //   }
+        //   if(track.enabled){
+        //     userVideoRef?.current?.removeAttribute('data-camera')
+        //   } else if(!track.enabled) {
+        //     userVideoRef?.current.setAttribute('data-camera','off')
+        //   }
          
-        })
+        // })
     }
 
     const content = (

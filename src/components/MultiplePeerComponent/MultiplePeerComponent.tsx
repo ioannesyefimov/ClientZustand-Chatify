@@ -43,22 +43,22 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     }
   }, []);
 
-  useEffect(
-    ()=>{
-      console.log(`joinedPeers:`,joinedPeers);
-      console.log(`peers:`,peers);
-      if(joinedPeers?.length){
+  // useEffect(
+  //   ()=>{
+  //     console.log(`joinedPeers:`,joinedPeers);
+  //     console.log(`peers:`,peers);
+  //     if(joinedPeers?.length){
         
-        for (let userId of joinedPeers){
-         for (let peer of peers){
-            if(userId=== peer.userId){
-              handleCallingPeer(peer.peerConnection, peer.userId, peer.socketId!)
-            } 
-          }
-        }
-      }
-    },[joinedPeers]
-  )
+  //       for (let userId of joinedPeers){
+  //        for (let peer of peers){
+  //           if(userId=== peer.userId){
+  //             handleCallingPeer(peer.peerConnection, peer.userId, peer.socketId!)
+  //           } 
+  //         }
+  //       }
+  //     }
+  //   },[joinedPeers]
+  // )
   
   useEffect(
     ()=>{
@@ -112,7 +112,13 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     function onJoinRoom(userId:string){
       console.log(`peers`, peers)
       console.log(`joined room with id ${userId}`)
-      setJoinedPeers(prev=>[...prev,userId])
+      // setJoinedPeers(prev=>[...prev,userId])
+      for(let peer of peers){
+        if(peer.userId===userId){
+          handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
+          
+        }
+      }
       // if(!userId)return
       // let peer = peers.find(peer=>peer.userId===userId)
       // if(!peer )return console.log(`peer is ${peer}`);

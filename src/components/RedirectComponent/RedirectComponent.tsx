@@ -27,6 +27,7 @@ const RedirectComponent = () => {
     const {handleGitHubLogin}=useGithub('')
     const {setCookie} = useAuthCookies()
     const {setServerResponse} = useResponseContext() 
+    const setUser = useAuthStore(s=>s.setUser)
     let location = useLocation()
     let navigate = useNavigate()
     const fetcher = async function handleRedirect() {
@@ -57,9 +58,11 @@ const RedirectComponent = () => {
     const {data,isLoading,error}=useSWR(location?.search ? `/api/auth/user`:null , fetcher)
     useEffect(
         ()=>{
+            sleep(2000).then(()=>{console.log()})
             if(data?.data?.user){
                 setCookie('user',data?.data?.user,{path:'/',maxAge:2000})
-                navigate('/chat')
+                setUser(data?.data?.user)
+                // navigate('/chat')
             }
             if(data?.data?.accessToken){
                 setCookie('accessToken',data?.data?.accessToken,{path:'/',maxAge:2500})
@@ -67,9 +70,9 @@ const RedirectComponent = () => {
             if(data?.data?.channels){
                 setCookie('channels',data?.data?.channels,{path:'/',maxAge:2000})
             }
-            if(data?.data?.redirectUrl){
-                navigate(data?.data?.redirectUrl)
-            }
+            // if(data?.data?.redirectUrl){
+            //     navigate(data?.data?.redirectUrl)
+            // }
         },[data]
     )
     const content = (
