@@ -65,37 +65,43 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
         socket.disconnect()
         }
     const handleCamera = async()=>{
-      console.log(userStreamRef?.current);
-        let stream = userStreamRef?.current
+      // console.log(userStreamRef?.current);
+      //   let stream = userStreamRef?.current
+      //   if(stream && isCameraOn) {
+      //     stream.getTracks().forEach((track)=>{
+      //       console.log(`track:`,track);
+      //       track.stop()
+      //    })
+      //     userStreamRef.current = undefined
+      //     setIsCameraOn(false)
+      //   }else if(!stream && !isCameraOn){
+      //     let mediaDevices = navigator.mediaDevices
+      //     const constraints = {video:isCameraOn}
+      //     try {
+      //       stream = await mediaDevices.getUserMedia(constraints);
+      //       userStreamRef.current = stream
+      //       userVideoRef.current!.srcObject = stream
+      //       setIsCameraOn(true)
+      //     } catch (error) {
+      //       console.error(`Error accessing camera:`,error)
+      //     }
+
+      //   }
+        userStreamRef?.current!.getTracks().forEach(track=>{
+        console.log(`track:`,trackRef);
+        console.log(`trackRef:`,trackRef?.current);
         
-        if(stream) {
-          stream.getTracks().forEach((track)=>{
-            track.stop()
-          })
-        }
-        let mediaDevices = navigator.mediaDevices
-        const constraints = {video:isCameraOn}
-        try {
-          stream = await mediaDevices.getUserMedia(constraints)
-          userVideoRef.current!.srcObject = stream
-        } catch (error) {
-          console.error(`Error accessing camera:`,error)
-        }
-        // userStreamRef?.current!.getTracks().forEach(track=>{
-        // console.log(`track:`,trackRef);
-        // console.log(`trackRef:`,trackRef?.current);
-        
-        //   console.log(`track`,track);
-        //   if(track.kind==='video') {
-        //     track.enabled = !track.enabled
-        //   }
-        //   if(track.enabled){
-        //     userVideoRef?.current?.removeAttribute('data-camera')
-        //   } else if(!track.enabled) {
-        //     userVideoRef?.current.setAttribute('data-camera','off')
-        //   }
+          console.log(`track`,track);
+          if(track.kind==='video') {
+            track.enabled = !track.enabled
+          }
+          if(track.enabled){
+            userVideoRef?.current?.removeAttribute('data-camera')
+          } else if(!track.enabled) {
+            userVideoRef?.current.setAttribute('data-camera','off')
+          }
          
-        // })
+        })
     }
 
     const content = (

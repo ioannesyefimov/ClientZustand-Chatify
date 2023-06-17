@@ -130,7 +130,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`peers`,peers);
       console.log(`ice candidate triggered for ${socketId}; id:${userId}`,candidate);
       if(peer) {
-        if(!peer.peerConnection.remoteDescription) return socket.emit('call-peer',{userId:user?._id})
+        if(!peer.peerConnection.remoteDescription) return socket.emit('call-peer',{userId:user?._id,fromUserId})
         peer.peerConnection
           .addIceCandidate(candidate)
           .catch((error) => {
