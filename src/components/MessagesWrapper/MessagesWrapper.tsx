@@ -1,4 +1,4 @@
-import React, { SetStateAction, useEffect, useState } from 'react'
+import React, { RefObject, SetStateAction, useEffect, useState } from 'react'
 import { sleep, sortMessagesByDate } from '../utils'
 import { ChannelType, MessageType } from '../types'
 import Messages from './Messages/Messages'
@@ -6,6 +6,8 @@ import { useMessagesContext } from '../../hooks'
 import SubmitInput from '../SubmitInput/SubmitInput'
 import './MessagesWrapper.scss'
 import { useChatStore } from '../../ZustandStore'
+import { downArrowIco } from '../../assets'
+import Button from '../Button/Button'
 type PropsType ={
     currentChannel: ChannelType | null
     currentChannelMessages: MessageType[] | null
@@ -36,7 +38,8 @@ export default function MessagesWrapper({currentChannel,currentChannelMessages,s
   
   useEffect(
     ()=>{
-        initMessages()    
+        initMessages()  
+        scrollToRef.current?.scrollIntoView({behavior:'smooth'})  
       
     },[currentChannelMessages]
   )
@@ -54,7 +57,7 @@ export default function MessagesWrapper({currentChannel,currentChannelMessages,s
               let messages:unknown = sortedMessages[arrays as keyof typeof sortedMessages]![key]
               // and return Messages with divider for day and time
               return(
-                    <Messages scrollToRef={scrollToRef} messages={messages as MessageType[]} date={date} key={key ?? 'newkey'}   />
+                    <Messages messages={messages as MessageType[]} date={date} key={key ?? 'newkey'}   />
                 )
                 }) 
         }) 
@@ -69,6 +72,12 @@ export default function MessagesWrapper({currentChannel,currentChannelMessages,s
       <SubmitInput  handleClick={handleSubmitMessage} setPropsValue={setCurrentChannel} propsValue={currentChannel} name="message-input" placeholder="Type a message here" e={undefined} value= {undefined} setValue={function (value: any): void {
       throw new Error('Function not implemented.')
     } } />
+    <Button onClick={()=>{
+      scrollToRef.current?.scrollIntoView({behavior:'smooth'})
+      console.log('scrooling into view')
+    }} img={downArrowIco} name='into-view-div'/>
+    <div  ref={scrollToRef as RefObject<HTMLDivElement>}  >
+    </div>
     </div>
   )
   return content

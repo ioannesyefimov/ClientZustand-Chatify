@@ -1,0 +1,10 @@
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+<svg fill="#ff0a0a" width="64px" height="64px" viewBox="0 0 24 24" id="down-arrow-circle" data-name="Line Color" xmlns="http://www.w3.org/2000/svg" class="icon line-color" stroke="#ff0a0a" transform="matrix(-1, 0, 0, 1, 0, 0)">
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.096"/>
+<g id="SVGRepo_iconCarrier">
+<path id="secondary" d="M12,7v5m.69,4.63,2.14-3.13a1,1,0,0,0-.69-1.5H9.86a1,1,0,0,0-.69,1.5l2.14,3.12A.82.82,0,0,0,12.69,16.63Z" style="fill: none; stroke: #00ddff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"/>
+<circle id="primary" cx="12" cy="12" r="9" style="fill: none; stroke: #00ddff; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"/>
+</g>
+</svg>

@@ -88,17 +88,30 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
 
       //   }
         userStreamRef?.current!.getTracks().forEach(track=>{
-        console.log(`track:`,trackRef);
-        console.log(`trackRef:`,trackRef?.current);
-        
           console.log(`track`,track);
           if(track.kind==='video') {
             track.enabled = !track.enabled
           }
           if(track.enabled){
+            peers.forEach(peer=>{
+              let senders =  peer.peerConnection.getSenders()
+              let currentSender = senders.find(sender=>sender.track===track);
+              console.log(`currentSender`,currentSender);
+              
+              if(!currentSender){
+                peer.peerConnection.addTrack(track,userStreamRef.current!)
+              }
+            })
             userVideoRef?.current?.removeAttribute('data-camera')
           } else if(!track.enabled) {
             userVideoRef?.current.setAttribute('data-camera','off')
+             peers.forEach(peer=>{
+              let senders =  peer.peerConnection.getSenders()
+              let currentSender = senders.find(sender=>sender.track===track);
+              console.log(`currentSender`,currentSender);
+
+              currentSender?.replaceTrack(new MediaStream().getTracks()[0])
+            })
           }
          
         })
