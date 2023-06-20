@@ -142,9 +142,23 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         }
     function onUserDisconnected(userId:string){
       console.log(`user disconnected id:`,userId)
-      setPeers(prev=>prev.filter(peer=>peer.userId===userId))
+      setPeers(prev=>prev.filter(peer=>peer.userId!==userId))
     }
-    socket.on('user-disconneted',onUserDisconnected)
+    function onMediaTrack(data:{room:string,userId:string,track:MediaStreamTrack}){
+      console.log(`mediaTrack triggered:`,data);
+      const currentPeer= peers.find(peer=>peer.userId===data.userId)
+      console.log(`peers:`,peers);
+      console.log(`current PEER:`,currentPeer);
+      if(!currentPeer)return
+      let senders = currentPeer.peerConnection.getSenders()
+      console.log(`senders:`,senders);
+      
+
+      
+      
+    }
+    socket.on('media-track',onMediaTrack)
+    socket.on('user-disconnected',onUserDisconnected)
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
     socket.on('iceCandidate', onIceCandidate);

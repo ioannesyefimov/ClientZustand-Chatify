@@ -66,14 +66,19 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
         }
     const handleCamera = async()=>{
       console.log(userStreamRef?.current);
-      let videoTrack = userStreamRef?.current.getTracks().find(track=>track.kind === 'video')
-      console.log(`videoTrack`,videoTrack);
-
-      if(videoTrack?.enabled){
-        videoTrack.enabled = false
-      } else if(videoTrack?.enabled === false) {
-        videoTrack.enabled = true
-      }     
+       userStreamRef?.current!.getTracks().forEach(track=>{
+        console.log(`track:`,track);
+        
+        if(track.kind==='video'){
+          if(track?.enabled){
+            track.enabled = false 
+            
+          } else if(track?.enabled === false) {
+            track.enabled = true
+          } 
+          socket.emit('media-track',{room:channel?._id,userId:user?._id,track:track})
+        }
+       })
     }
 
     const content = (
