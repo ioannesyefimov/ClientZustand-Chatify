@@ -65,56 +65,15 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
         socket.disconnect()
         }
     const handleCamera = async()=>{
-      // console.log(userStreamRef?.current);
-      //   let stream = userStreamRef?.current
-      //   if(stream && isCameraOn) {
-      //     stream.getTracks().forEach((track)=>{
-      //       console.log(`track:`,track);
-      //       track.stop()
-      //    })
-      //     userStreamRef.current = undefined
-      //     setIsCameraOn(false)
-      //   }else if(!stream && !isCameraOn){
-      //     let mediaDevices = navigator.mediaDevices
-      //     const constraints = {video:isCameraOn}
-      //     try {
-      //       stream = await mediaDevices.getUserMedia(constraints);
-      //       userStreamRef.current = stream
-      //       userVideoRef.current!.srcObject = stream
-      //       setIsCameraOn(true)
-      //     } catch (error) {
-      //       console.error(`Error accessing camera:`,error)
-      //     }
+      console.log(userStreamRef?.current);
+      let videoTrack = userStreamRef?.current.getTracks().find(track=>track.kind === 'video')
+      console.log(`videoTrack`,videoTrack);
 
-      //   }
-        userStreamRef?.current!.getTracks().forEach(track=>{
-          console.log(`track`,track);
-          if(track.kind==='video') {
-            track.enabled = !track.enabled
-          }
-          if(track.enabled){
-            peers.forEach(peer=>{
-              let senders =  peer.peerConnection.getSenders()
-              let currentSender = senders.find(sender=>sender.track===track);
-              console.log(`currentSender`,currentSender);
-              
-              if(!currentSender){
-                peer.peerConnection.addTrack(track,userStreamRef.current!)
-              }
-            })
-            userVideoRef?.current?.removeAttribute('data-camera')
-          } else if(!track.enabled) {
-            userVideoRef?.current.setAttribute('data-camera','off')
-             peers.forEach(peer=>{
-              let senders =  peer.peerConnection.getSenders()
-              let currentSender = senders.find(sender=>sender.track===track);
-              console.log(`currentSender`,currentSender);
-
-              currentSender?.replaceTrack(new MediaStream().getTracks()[0])
-            })
-          }
-         
-        })
+      if(videoTrack?.enabled){
+        videoTrack.enabled = false
+      } else if(videoTrack?.enabled === false) {
+        videoTrack.enabled = true
+      }     
     }
 
     const content = (

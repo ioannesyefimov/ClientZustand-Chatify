@@ -140,6 +140,11 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         return console.log(`PC IS undefined`)
       }
         }
+    function onUserDisconnected(userId:string){
+      console.log(`user disconnected id:`,userId)
+      setPeers(prev=>prev.filter(peer=>peer.userId===userId))
+    }
+    socket.on('user-disconneted',onUserDisconnected)
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
     socket.on('iceCandidate', onIceCandidate);
@@ -160,20 +165,34 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     },[peers?.length]
   )
   
+  const checkingPeerConnectionRefCount = useRef(0)
     useEffect(
       ()=>{
         const checkPeerConnection = async ()=>{
           console.log(`checking peer connection status...`);
+          console.log(`checking count`,checkingPeerConnectionRefCount.current);
+          
           if(!peers?.length) return
           peers.forEach(peer=>{
             console.log(`peerConnection ${peer.userId} = ${peer.peerConnection.connectionState}`)
-            if(peer.peerConnection.connectionState ===  'failed'){
+            let {connectionState} = peer.peerConnection
+            // if(checkingPeerConnectionRefCount?.current > 2){
+            //   handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
+            //   console.log(`connection count is ${checkingPeerConnectionRefCount.current}`);
+              
+            // } else 
+            if(connectionState ===  'failed'){
               handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
+            } 
+            if(connectionState === 'new' || connectionState=== 'closed' ||connectionState=== 'connecting' ){
+              checkingPeerConnectionRefCount.current++
+            } else if (connectionState ==='connected'){
+              checkingPeerConnectionRefCount.current = 0
             }
           })
           
         } 
-        let interval = setInterval(checkPeerConnection,12000)
+        let interval = setInterval(checkPeerConnection,20000)
 
         return ()=>{clearInterval(interval)}
       },[peers.length]
