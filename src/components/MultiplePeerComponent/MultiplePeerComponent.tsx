@@ -144,15 +144,22 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`user disconnected id:`,userId)
       setPeers(prev=>prev.filter(peer=>peer.userId!==userId))
     }
-    function onMediaTrack(data:{room:string,userId:string,track:MediaStreamTrack}){
+    function onMediaTrack(data:{room:string,userId:string,trackId:string}){
+      const {trackId,userId}=data
       console.log(`mediaTrack triggered:`,data);
-      const currentPeer= peers.find(peer=>peer.userId===data.userId)
+      const currentPeer= peers.find(peer=>peer.userId===userId)
       console.log(`peers:`,peers);
       console.log(`current PEER:`,currentPeer);
       if(!currentPeer)return
       let senders = currentPeer.peerConnection.getSenders()
       console.log(`senders:`,senders);
-      
+      let currentSender = senders.find((sender)=>{
+        console.log(`senderTrack id:`,sender?.track?.id);
+        console.log(`trackId:`,trackId);
+        
+        return sender.track?.id===trackId
+      })
+      console.log(`currentSender:`,currentSender);
 
       
       

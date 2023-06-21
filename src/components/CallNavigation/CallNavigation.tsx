@@ -67,16 +67,21 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
     const handleCamera = async()=>{
       console.log(userStreamRef?.current);
        userStreamRef?.current!.getTracks().forEach(track=>{
-        console.log(`track:`,track);
         
         if(track.kind==='video'){
           if(track?.enabled){
             track.enabled = false 
+         console.log(`typeof:` ,typeof track);
+         console.log(`track:`,track);
+
+            socket.emit('media-track',{room:channel?._id,userId:user?._id,trackId:track.id, enabled:track.enabled})
+
             
           } else if(track?.enabled === false) {
             track.enabled = true
+            socket.emit('media-track',{room:channel?._id,userId:user?._id,track:track, enabled:track.enabled})
+
           } 
-          socket.emit('media-track',{room:channel?._id,userId:user?._id,track:track})
         }
        })
     }
