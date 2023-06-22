@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import { cameraIco, declineIco } from '../../assets'
 import './CallNavigation.scss'
 import { useAuthStore } from '../../ZustandStore'
+import { throwErr } from '../utils'
 interface PropsType {
     socket: Socket
     setPeers: React.Dispatch<React.SetStateAction<Peer[]>>
@@ -66,6 +67,7 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
         }
     const handleCamera = async()=>{
       console.log(userStreamRef?.current);
+      let stream = userStreamRef.current
        userStreamRef?.current!.getTracks().forEach(track=>{
         
         if(track.kind==='video'){
@@ -84,6 +86,9 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
           } 
         }
        })
+      
+
+
     }
 
     const content = (

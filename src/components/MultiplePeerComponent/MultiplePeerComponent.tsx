@@ -30,6 +30,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   const userStreamRef = useRef<MediaStream>();
   const user = useAuthStore(s=>s.user)
   const navigate = useNavigate()
+  const [reload,setReload]=useState(false)
+  const localUserRef = useRef<HTMLDivElement>()
+  const remoteUsersRef = useRef<{ [key: string]: HTMLDivElement }>({})
   useEffect(() => {
     socket.connect()
     socket.on('connect',async ()=>{
@@ -41,25 +44,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       socket.disconnect();
       setMe('')
     }
-  }, []);
+  }, [reload]);
 
-  // useEffect(
-  //   ()=>{
-  //     console.log(`joinedPeers:`,joinedPeers);
-  //     console.log(`peers:`,peers);
-  //     if(joinedPeers?.length){
-        
-  //       for (let userId of joinedPeers){
-  //        for (let peer of peers){
-  //           if(userId=== peer.userId){
-  //             handleCallingPeer(peer.peerConnection, peer.userId, peer.socketId!)
-  //           } 
-  //         }
-  //       }
-  //     }
-  //   },[joinedPeers]
-  // )
-  
   useEffect(
     ()=>{
     function onUsers (data: {user:{userId:string,socketId:string,userName:string}}[]){
@@ -113,17 +99,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`peers`, peers)
       console.log(`joined room with id ${userId}`)
       // setJoinedPeers(prev=>[...prev,userId])
-      for(let peer of peers){
-        if(peer.userId===userId){
-          handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
-          
-        }
-      }
-      // if(!userId)return
-      // let peer = peers.find(peer=>peer.userId===userId)
-      // if(!peer )return console.log(`peer is ${peer}`);
-      // handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId!)
-      
+      let Peer = peers.find(peer=>peer.userId===userId)
+      if(!Peer) return
+      handleCallingPeer(Peer.peerConnection,Peer.userId,Peer.socketId)
     }
     function onIceCandidate({ userId,socketId, candidate,fromUserId }: { userId: string;socketId:string; candidate: RTCIceCandidate; fromUserId:string }) {
       const peer = peers.find((p) => p.userId === userId);
@@ -153,13 +131,14 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       if(!currentPeer)return
       let senders = currentPeer.peerConnection.getSenders()
       console.log(`senders:`,senders);
-      let currentSender = senders.find((sender)=>{
-        console.log(`senderTrack id:`,sender?.track?.id);
-        console.log(`trackId:`,trackId);
+      // let currentSender = senders.find((sender)=>{
+      //   console.log(`senderTrack id:`,sender?.track?.id);
+      //   console.log(`trackId:`,trackId);
         
-        return sender.track?.id===trackId
-      })
-      console.log(`currentSender:`,currentSender);
+      //   return sender.track?.id===trackId
+      // })
+      
+      // console.log(`currentSender:`,currentSender);
 
       
       
@@ -185,39 +164,60 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     }
     },[peers?.length]
   )
+
+  useEffect(
+    ()=>{
+      let unFocusUser = (e:any)=>{
+        console.log(`e:`,e);
+        
+        if(e.code!=='Enter')return
+        let localUser =localUserRef?.current
+        let remoteUsers = remoteUsersRef.current
+        // if(localUser?.classList.contains)
+        console.log(`localuserRef classlist:`,localUser?.classList)
+        console.log(`localuserRef:`,localUser)
+        console.log(`remoteuserRef:`,remoteUsers)
+
+      }
+      window.addEventListener('keydown',unFocusUser)
+      return ()=>{window.removeEventListener('keydown',unFocusUser)}
+    },[]
+  )
   
   const checkingPeerConnectionRefCount = useRef(0)
-    useEffect(
-      ()=>{
-        const checkPeerConnection = async ()=>{
-          console.log(`checking peer connection status...`);
-          console.log(`checking count`,checkingPeerConnectionRefCount.current);
-          
-          if(!peers?.length) return
-          peers.forEach(peer=>{
-            console.log(`peerConnection ${peer.userId} = ${peer.peerConnection.connectionState}`)
-            let {connectionState} = peer.peerConnection
-            // if(checkingPeerConnectionRefCount?.current > 2){
-            //   handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
-            //   console.log(`connection count is ${checkingPeerConnectionRefCount.current}`);
-              
-            // } else 
-            if(connectionState ===  'failed'){
-              handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
-            } 
-            if(connectionState === 'new' || connectionState=== 'closed' ||connectionState=== 'connecting' ){
-              checkingPeerConnectionRefCount.current++
-            } else if (connectionState ==='connected'){
-              checkingPeerConnectionRefCount.current = 0
-            }
-          })
-          
-        } 
-        let interval = setInterval(checkPeerConnection,20000)
+  useEffect(
+    ()=>{
+      const checkPeerConnection = async ()=>{
+        console.log(`checking peer connection status...`);
+        console.log(`checking count`,checkingPeerConnectionRefCount.current);
+        
+        if(!peers?.length) return
+        peers.forEach(peer=>{
+          console.log(`peerConnection ${peer.userId} = ${peer.peerConnection.connectionState}`)
+          let {connectionState} = peer.peerConnection
+          if(checkingPeerConnectionRefCount?.current > 2 && connectionState !=='connected'){
+            handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
+            setReload(prev=>!prev)
+            checkingPeerConnectionRefCount.current = 0
+          } else 
+          if(connectionState ===  'failed'){
+            // handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
+            setReload(prev=>!prev)
 
-        return ()=>{clearInterval(interval)}
-      },[peers.length]
-    )
+          } 
+          if(connectionState === 'new' || connectionState=== 'closed' ||connectionState=== 'connecting' ){
+            checkingPeerConnectionRefCount.current++
+          } else if (connectionState ==='connected'){
+            checkingPeerConnectionRefCount.current = 0
+          }
+        })
+        
+      } 
+      let interval = setInterval(checkPeerConnection,20000)
+
+      return ()=>{clearInterval(interval)}
+    },[peers.length]
+  )
 
   const initializePeerConnection = (userId: string,socketId:string) => {
     const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
@@ -269,22 +269,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           console.log('Error creating or setting local description:', error);
         });
   };
-  // const handleCall = (userId: string,socketId:string) => {
-  //   console.log(`CALLING ${userId}`);
-    
-  //   const peer = peers.find((p) => p.userId === userId);
-  //   console.log(`calling peer:`, peer);
-  //   if (peer) {
-  //     peer.peerConnection.createOffer()
-  //       .then((offer) => peer.peerConnection.setLocalDescription(offer))
-  //       .then(() => {
-  //         socket.emit('offer', { userId,from:user._id,fromSocket:socket.id,fromUserId:user?._id, socketId, offer: peer.peerConnection.localDescription });
-  //       })
-  //       .catch((error) => {
-  //         console.log('Error creating or setting local description:', error);
-  //       });
-  //   }
-  // };
+ 
 
   const handleFocusedStream = (e:React.MouseEvent<HTMLDivElement>)=>{
     console.log(`e:`,e);
@@ -294,10 +279,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
    
     
   }
-  
   return (
     <div   className='channel-webrtc'>
-      <div onClick={(e)=>handleFocusedStream(e)}  id={user?._id} className='local-user '>
+      <div ref={localUserRef} onClick={(e)=>handleFocusedStream(e)}  id={user?._id} className='local-user '>
         <video className='local-user-video ' ref={userVideoRef} playsInline autoPlay muted />
         <p className="local-user-name">You</p>
       </div>
@@ -306,9 +290,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         peers.map(
           (peer) => {
             return (
-            <div onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className={`remote-user `} key={peer.userId}>
+            <div ref={(ref)=>remoteUsersRef.current[peer.userId] = ref} onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className={`remote-user `} key={peer.userId}>
               
-              <video  className={`remote-user-video`}  data-id={peer.userId} ref={(ref) =>  remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
+              <video  className={`remote-user-video`}  data-id={peer.userId} ref={(ref) => remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
               {/* {
                 peer.peerConnection.connectionState !== 'connected' ?   (
                   <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
