@@ -16,7 +16,7 @@ function ChannelCallWrapper() {
     const {width,height}=useWindowSize()
     const content = (
         <div className="video-chat-wrapper">
-            <Hamburger type='messages' isHamburger={width > 700 ? false : true}>
+            <Hamburger type='messages' animation={{toggled:'appearFromRight',untoggled:'disappearToRight'}} isHamburger={width > 700 ? false : true}>
                 <MessagesProvider>
                     <MessagesWrapper setCurrentChannel={setCurrentChannel} currentChannel={currentChannel} currentChannelMessages={currentChannel?.messages!}/>
                 </MessagesProvider>

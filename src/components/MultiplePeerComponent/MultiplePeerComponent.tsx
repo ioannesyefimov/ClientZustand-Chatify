@@ -38,6 +38,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     socket.on('connect',async ()=>{
       setMe(socket.id)
       console.log(`${user?._id} connected to channelCall socket by ID: ${socket?.id}`)
+      await sleep(2000)
       socket.emit('join_room', {userId:user._id,room:currentChannel?._id,userName:user?.userName})
     })
     return()=>{
@@ -54,6 +55,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       data=data?.filter(userId=>userId?.user.userId!==user?._id && userId !== null)
       console.log(`filtered users`,data);
       if(!data) return console.log(`usersIDS IS ${data}`)
+      
       const newPeers = data?.map((user) => ({
         userId:user?.user.userId,
         socketId: user?.user.socketId,
@@ -87,7 +89,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`ON answer is triggered`);
       
       if (peer) {
-        if(peer.peerConnection.signalingState === 'stable') return console.log(`CONNECTION SIGNAL IS ${peer.peerConnection.signalingState}`);
+        // if(peer.peerConnection.signalingState === 'stable') return console.log(`CONNECTION SIGNAL IS ${peer.peerConnection.signalingState}`);
         
         peer.peerConnection.setRemoteDescription(answer).catch((error) => {
           console.log('Error setting remote description:', error);
@@ -162,22 +164,25 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       socket.off('answer',onAnswer)
       socket.off('iceCandidate',onIceCandidate)
     }
-    },[peers?.length]
+    },[peers]
   )
 
   useEffect(
     ()=>{
       let unFocusUser = (e:any)=>{
-        console.log(`e:`,e);
-        
-        if(e.code!=='Enter')return
+        if(e.code!=='Escape')return
         let localUser =localUserRef?.current
         let remoteUsers = remoteUsersRef.current
-        // if(localUser?.classList.contains)
-        console.log(`localuserRef classlist:`,localUser?.classList)
-        console.log(`localuserRef:`,localUser)
-        console.log(`remoteuserRef:`,remoteUsers)
-
+        if(localUser?.classList.contains('focused-user')) {
+          localUser.classList.toggle('focused-user')
+          return
+        }
+        for(let remoteUser in remoteUsers){
+          if(remoteUsers[remoteUser].classList.contains('focused-user')){
+            remoteUsers[remoteUser].classList.toggle('focused-user')
+            return
+          }
+        }
       }
       window.addEventListener('keydown',unFocusUser)
       return ()=>{window.removeEventListener('keydown',unFocusUser)}
@@ -192,12 +197,14 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         console.log(`checking count`,checkingPeerConnectionRefCount.current);
         
         if(!peers?.length) return
-        peers.forEach(peer=>{
+        peers.forEach( peer=>{
           console.log(`peerConnection ${peer.userId} = ${peer.peerConnection.connectionState}`)
           let {connectionState} = peer.peerConnection
           if(checkingPeerConnectionRefCount?.current > 2 && connectionState !=='connected'){
-            handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
-            setReload(prev=>!prev)
+            // handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
+             sleep(Math.random() *5000).then(()=>{
+              setReload(prev=>!prev)
+             })
             checkingPeerConnectionRefCount.current = 0
           } else 
           if(connectionState ===  'failed'){
@@ -219,6 +226,37 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     },[peers.length]
   )
 
+  useEffect(() => {
+    const initializeMediaStream = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        userStreamRef.current = stream;
+
+        if (userVideoRef.current) {
+          userVideoRef.current.srcObject = stream;
+        }
+        
+        peers.forEach((peer) => {
+        console.log(`initializing media stream`);
+        // socket.emit('call-peers',peer.userId)
+
+          const tracks = stream.getTracks();
+          tracks.forEach((track) => {
+              const sender = peer.peerConnection.addTrack(track, stream);
+              console.log(`sender:`,sender);
+              (sender as any).onremovetrack  = () => {
+                console.log('Remote user stopped sending video');
+            }
+          });
+
+        });
+      } catch (error) {
+        console.log('Error accessing media devices:', error);
+      }
+    };
+    initializeMediaStream();
+  }, [peers]);
+
   const initializePeerConnection = (userId: string,socketId:string) => {
     const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
     const peerConnection = new RTCPeerConnection(configuration);
@@ -230,7 +268,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     };
 
     peerConnection.ontrack = ({track,streams:[stream]}) => {
-      console.log(`peer video triggered`);
+      console.log(`peer video triggered`,track);
       
       if (remoteVideoRefs.current[userId]) {
 

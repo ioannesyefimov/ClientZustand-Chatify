@@ -61,8 +61,10 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                 return ()=>{
                     let USER = user?.email ? user.email : channel?.data?.user?.email
                     channelSocket?.emit('leave_channel',{user:USER,id:current?._id})}
+                    channelSocket.disconnect()
             }
 
+            
         },[channel?.data,location.pathname]
     )
 
@@ -114,7 +116,6 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
               channelSocket.off('receive_message',onMessage);
               channelSocket.off('connect',onConnect);
               channelSocket.off('disconnect',onDisconnect)
-              channelSocket.disconnect()
               // channelSocket.off('get_channel',onGetChannel);
               if(currentChannel?._id){
                 channelSocket.emit('leave_channel',{user:user.email,id:currentChannel?._id})
@@ -123,7 +124,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
               }
           }
          
-        },[]
+        },[currentChannel?._id]
       )
     
       const value = useMemo(()=>{

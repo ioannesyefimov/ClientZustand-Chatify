@@ -22,42 +22,10 @@ interface PropsType {
 }
 
 function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, userStreamRef,remoteVideoRefs,peers}:PropsType) {
-    const trackRef = useRef<RTCRtpSender>()
     const navigate = useNavigate()
     const [isCameraOn,setIsCameraOn]=useState(true)
   const user = useAuthStore(s=>s.user)
-    useEffect(() => {
-        const initializeMediaStream = async () => {
-          try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-            userStreamRef.current = stream;
-    
-            if (userVideoRef.current) {
-              userVideoRef.current.srcObject = stream;
-            }
-            
-            peers.forEach((peer) => {
-            console.log(`initializing media stream`);
-            // socket.emit('call-peers',peer.userId)
-    
-              const tracks = stream.getTracks();
-              tracks.forEach((track) => {
-                peer.peerConnection.addTrack(track, stream);
-                  const sender = peer.peerConnection.addTrack(track, stream);
-                  trackRef.current = sender;
-                  (sender as any).onremovetrack  = () => {
-                    console.log('Remote user stopped sending video');
-                }
-              });
-    
-            });
-          } catch (error) {
-            console.log('Error accessing media devices:', error);
-          }
-        };
-        initializeMediaStream();
-      }, [peers]);
-
+   
     const handleDecline = ()=>{
         navigate(channel?._id ? `/chat/${channel?._id}` : '/chat')
         setPeers([])
@@ -68,27 +36,13 @@ function CallNavigation({socket,setPeers,setJoinedPeers,channel,userVideoRef, us
     const handleCamera = async()=>{
       console.log(userStreamRef?.current);
       let stream = userStreamRef.current
-       userStreamRef?.current!.getTracks().forEach(track=>{
-        
-        if(track.kind==='video'){
-          if(track?.enabled){
-            track.enabled = false 
-         console.log(`typeof:` ,typeof track);
-         console.log(`track:`,track);
+       userStreamRef?.current!.getVideoTracks().forEach(track=>{
+          track.enabled = !track.enabled 
+           console.log(`track:`,track);
 
-            socket.emit('media-track',{room:channel?._id,userId:user?._id,trackId:track.id, enabled:track.enabled})
+            socket.emit('media-track',{room:channel?._id,userId:user?._id, enabled:track.enabled},{enabled:track.enabled,id:track.id,kind:track.kind,label:track.label})
 
-            
-          } else if(track?.enabled === false) {
-            track.enabled = true
-            socket.emit('media-track',{room:channel?._id,userId:user?._id,track:track, enabled:track.enabled})
-
-          } 
-        }
        })
-      
-
-
     }
 
     const content = (
