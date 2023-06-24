@@ -1,6 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import { closeIco, hamburgerIco } from '../../assets'
 import './Hamburger.scss'
+import '../utils/animations.scss';
 import { ChildrenType } from '../types'
 import { useWindowSize } from '../../hooks'
 import { useLocation } from 'react-router-dom'
@@ -82,11 +83,11 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
     //     </div>  
     // ) 
     let content = (
-        <div className={`hamburger-outer ${type}`}data-istoggled={isToggled}>
+        <div className={`hamburger-outer ${type} animate animate--normal transition--slow ${isToggled==='toggled' ? animation?.toggled : isToggled==='untoggled' ? animation?.untoggled : ''}`}data-istoggled={isToggled}>
             <button onClick={toggle} className='hamburger-btn'>
             <img src={img} alt="hamburgerIco" />
                 </button>
-            <div className={`hamburger channel-navigation`} data-istoggled={isToggled} >
+            <div className={`hamburger channel-navigation animate animate--normal transition--slow ${isToggled==='toggled' ? animation?.toggled : isToggled==='untoggled' ? animation?.untoggled : ''}`} data-istoggled={isToggled} >
                 <div   className={`hamburger-children ${isToggled==='toggled' ? animation?.toggled : isToggled==='untoggled' ? animation?.untoggled : ''}  ${isShowed}`}>
                     {children}
                 </div> 

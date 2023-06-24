@@ -41,7 +41,7 @@ const ChannelsBar = ({user}:{user:UserType}) => {
   const userChannels = searchedChannels!== null  ?  searchedChannels : channels?.length ? channels:  user?.channels?.map(channel=>channel.channel)
   
   let content = showedBar ? (
-    <Hamburger type='channels'>
+    <Hamburger animation={{toggled:'appearFromLeft',untoggled:'disappearToLeft'}} type='channels'>
        <div className={`left-wrapper`} data-showedbar={showedBar}  >
           <div className="left-wrapper-inner"  id="leftWrapperInner">
             <Button onClick={()=>setShowedBar(false)}  text='All channels' name='back' img={backIco} />
@@ -62,7 +62,7 @@ const ChannelsBar = ({user}:{user:UserType}) => {
       <UserBar user={user} />
     </Hamburger>
   ): (
-     <Hamburger  type='channels'>
+     <Hamburger animation={{toggled:'appearFromLeft',untoggled:'disappearToLeft'}}  type='channels'>
       <div className={`left-wrapper  `}  >
           <div className="left-wrapper-inner" data-showedbar={showedBar}  id="leftWrapperInner">
           {currentChannel?._id ? (

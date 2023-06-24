@@ -1,5 +1,6 @@
 @use '../utils/utils.scss' as * ;
 @use '../../App.scss' as * ;
+@use '../utils/animations.scss' as *;
 
 // .dashboard-component:has(.hamburger.navbar[data-istoggled=toggled]){
 //     &::after{
@@ -81,11 +82,11 @@
         
         &[data-istoggled=toggled] {
             // clip-path: inset(0 0 100% 0) !important;
-            @extend .appearFromTop;
+            // @extend .appearFromTop;
         }
 
         &[data-istoggled=untoggled]{
-            @extend .disappearToTop ;
+            // @extend .disappearToTop ;
             // clip-path: inset(0 0 99% 0) !important;
             // opacity: 0 !important;
         }
@@ -165,8 +166,8 @@
         }
        
         // @extend .appearFromLeft;
-        animation-name: appearFromLeft;
-        animation-duration: 1s;
+        // animation-name: appearFromLeft;
+        // animation-duration: 1s;
         animation-fill-mode: forwards;
         width: 100%;
         .left-wrapper {
@@ -176,8 +177,8 @@
     
     &[data-istoggled=untoggled]{
         // @extend .disappearToLeft;
-        animation-name: disappearToLeft;
-        animation-duration: 1s;
+        // animation-name: disappearToLeft;
+        // animation-duration: 1s;
         animation-fill-mode: forwards;
         .hamburger {
             z-index: -5;
