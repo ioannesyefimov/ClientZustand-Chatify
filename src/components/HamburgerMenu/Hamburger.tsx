@@ -88,7 +88,7 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
             <img src={img} alt="hamburgerIco" />
                 </button>
             <div className={`hamburger channel-navigation animate animate--normal transition--slow ${isToggled==='toggled' ? animation?.toggled : isToggled==='untoggled' ? animation?.untoggled : ''}`} data-istoggled={isToggled} >
-                <div   className={`hamburger-children ${isToggled==='toggled' ? animation?.toggled : isToggled==='untoggled' ? animation?.untoggled : ''}  ${isShowed}`}>
+                <div   className={`hamburger-children animate--normal ${isToggled==='toggled' ? animation?.toggled : isToggled==='untoggled' ? animation?.untoggled : ''}  ${isShowed}`}>
                     {children}
                 </div> 
             </div>

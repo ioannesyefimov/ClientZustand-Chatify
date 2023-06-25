@@ -3,6 +3,7 @@ import { ChildrenType, MessageType } from "../../types";
 import { useResponseContext } from "../../../hooks";
 import { channelSocket } from "../../../hooks/useCurrentChannelContext/useCurrentChannel";
 import { useAuthStore, useChatStore } from "../../../ZustandStore";
+import { getCurrentDay } from "../../utils";
 
 export type HandleClickType = {
     e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<any> | MouseEvent  | KeyboardEvent | undefined, 
@@ -38,6 +39,7 @@ const useMessagesStore = ()=>{
           console.log(`SUBMITTING MESSAGE`)
           setLoading(true)
           channelSocket.emit('send_message',{message:value,channel_id: propsValue?._id,user,room:propsValue?._id})
+        
         } catch (error) {
           setServerResponse(error)
           console.error(`error:`, error)

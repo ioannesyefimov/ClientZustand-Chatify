@@ -24,22 +24,22 @@ export default function MessagesWrapper({currentChannel,currentChannelMessages,s
   }=useMessagesContext()!
 
    let initMessages = async()=>{
-    await sleep(1000);
+    // await sleep(1000);
     let messages=currentChannel?.messages ?? []
     if(!messages?.length) return
     let sorted = sortMessagesByDate(messages)
     if(sorted===null) return 
     if(sorted?.fullMessageArray?.length){
       setSortedMessages(sorted.fullMessageArray)
-      setSortedMessages(sorted.fullMessageArray)
+      // setSortedMessages(sorted.fullMessageArray)
     }
-
+    console.log(`sorted.fullMessageArray`,sorted.fullMessageArray);
    }
   
   useEffect(
     ()=>{
         initMessages()  
-        scrollToRef.current?.scrollIntoView({behavior:'smooth'})  
+        scrollToRef?.current?.scrollIntoView({behavior:'smooth'})  
       
     },[currentChannelMessages]
   )
