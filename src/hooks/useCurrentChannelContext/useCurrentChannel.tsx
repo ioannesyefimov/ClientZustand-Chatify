@@ -1,14 +1,14 @@
-import {  useCallback, useEffect, useMemo} from "react"
+import {  useCallback, useEffect, useMemo, useRef} from "react"
 import useSWR from 'swr'
 import { APIFetch, Errors } from "../../components/utils"
 import SocketStore from "../../components/SocketStore"
 import { ChannelType, RoleType, SocketResponse, UserType } from "../../components/types"
 import { useAuthStore, useChatStore } from "../../ZustandStore"
 import { useLocation } from "react-router-dom"
+import { Socket } from "socket.io-client"
 const {certOptions,io,serverUrl} = SocketStore()
- export const channelSocket = io(`${serverUrl}/currentChannel`,{
-  pfx:certOptions.pfx,passphrase:certOptions.passphrase,reconnection:true,reconnectionDelayMax:5000,reconnectionAttempts:Infinity, autoConnect:false});
-
+export const channelSocket = io(`${serverUrl}/currentChannel`,{
+  pfx:certOptions.pfx,passphrase:certOptions.passphrase,reconnection:true,reconnectionDelayMax:5000,reconnectionAttempts:Infinity});
 
 export default function useCurrentChannel(channel_id:string,user:UserType) {
     const currentChannel=useChatStore(state=>state.currentChannel)
@@ -19,7 +19,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
     const setOnlineUsers = useAuthStore(s=>s.setOnlineUsers)
     const setServerResponse = useAuthStore(s=>s.setServerResponse)
     const setLoading = useAuthStore(s=>s.setLoading)
-    
+    const socketRef = useRef<Socket>()
     const location = useLocation()
       const fetcher = useCallback(
         ()=>APIFetch({
@@ -32,7 +32,8 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
   
     useEffect(
         ()=>{
-            console.log(`channelid`,channel_id);
+            console.log(`data current channel:`,channel);
+            console.log(`channelid`,channel_id   );
             if(location.pathname ==='/chat') {
                 setCurrentChannel(null)
                 return
@@ -48,11 +49,10 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                 ?.roles?.some((role:RoleType)=>role.permissions.description === 'everything')
                 console.log(`HAS admin permissionsm, ${hasAdminPermissions}`);
                 current.hasAdminPermissions = hasAdminPermissions
-
-                console.log(`Current channel: `, currentChannel);
-                
+               
+                socketRef.current = channelSocket
                 setCurrentChannel(current)
-                channelSocket.connect()
+                // channelSocket.connect()
 
                 channelSocket.emit('join_channel',{room:current?._id,user:user})
                 channelSocket.emit('get_online_users',{})
@@ -65,13 +65,15 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
           }
 
             
-        },[channel?.data,location.pathname]
+        },[channel]
     )
 
     useEffect(
         ()=>{
+          console.log(`curent channel socket use effect`);
+          
             let onConnect = ()=>{
-              console.log(`CONNECTED BY ID ${channelSocket.id}`)
+              console.log(`CONNECTED BY ID ${socketRef?.current!.id}`)
             }
             let onMessage = (data:SocketResponse)=>{
               if(!data?.success) setServerResponse(data?.err)
@@ -107,31 +109,24 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
             }
             channelSocket.on('get_online_users',onOnlineUsers)
             channelSocket.on('disconnect',onDisconnect)
+            channelSocket.on('join_channel',onJoinChannel)
             channelSocket.on('connect',onConnect)
             channelSocket.on('receive_message',onMessage)
             channelSocket.on('delete_message',onDeleteMessage)
-            channelSocket.on('join_channel',onJoinChannel)
             return ()=>{
+              channelSocket.off('disconnect',onDisconnect)
               channelSocket.off('delete_message',onDeleteMessage);
               channelSocket.off('receive_message',onMessage);
               channelSocket.off('connect',onConnect);
-              channelSocket.off('disconnect',onDisconnect)
               if(currentChannel?._id){
-                channelSocket.emit('leave_channel',{user:user.email,id:currentChannel?._id})
+                socketRef.current?.emit('leave_channel',{user:user.email,id:currentChannel?._id})
                 console.log(`LEAVING CHANNEL: ${currentChannel?._id}`);
                   setCurrentChannel(null)
               }
           }
          
-        },[currentChannel?._id]
+        },[socketRef.current]
       )
-    
-      const value = useMemo(()=>({
-        currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading      
-      
-      }),[currentChannel,currentChannelMessages,])
-    
-
-    // return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading}
-    return value
+    return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading}
+    // return value
 }

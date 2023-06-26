@@ -1,10 +1,9 @@
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { ChildrenType, MessageType } from "../../types";
 import { useResponseContext } from "../../../hooks";
-import { channelSocket } from "../../../hooks/useCurrentChannelContext/useCurrentChannel";
+// import { channelSocket } from "../../../hooks/useCurrentChannelContext/useCurrentChannel";
 import { useAuthStore, useChatStore } from "../../../ZustandStore";
-import { getCurrentDay } from "../../utils";
-
+import { channelSocket } from "../../../hooks/useCurrentChannelContext/useCurrentChannel";
 export type HandleClickType = {
     e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<any> | MouseEvent  | KeyboardEvent | undefined, 
     value: any, 
@@ -26,17 +25,18 @@ const initMessagesContextState= {
 type SortedStateType = {
   [index:number | string]: MessageType[] |undefined  
 }
+
 const useMessagesStore = ()=>{
     const [sortedMessages,setSortedMessages]=useState<SortedStateType>()
     const user=useAuthStore(s=>s.user)
-  const scrollToRef = useRef<HTMLDivElement>()
-
+    const scrollToRef = useRef<HTMLDivElement>()
     const setLoading=useAuthStore(s=>s.setLoading)
     const {setServerResponse} = useResponseContext()
     const currentChannel=useChatStore(s=>s.currentChannel)
     const handleSubmitMessage=async({e,value,setValue,propsValue,setPropsValue}:HandleClickType): Promise<void> =>{
         try {
           console.log(`SUBMITTING MESSAGE`)
+          console.log(`channelSocket`,channelSocket)
           setLoading(true)
           channelSocket.emit('send_message',{message:value,channel_id: propsValue?._id,user,room:propsValue?._id})
         
