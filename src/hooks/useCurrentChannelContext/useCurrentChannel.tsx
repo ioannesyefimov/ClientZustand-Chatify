@@ -1,4 +1,4 @@
-import {  useCallback, useEffect, useMemo, useRef} from "react"
+import {  useCallback, useEffect, useMemo, useRef, useState} from "react"
 import useSWR from 'swr'
 import { APIFetch, Errors } from "../../components/utils"
 import SocketStore from "../../components/SocketStore"
@@ -6,6 +6,7 @@ import { ChannelType, RoleType, SocketResponse, UserType } from "../../component
 import { useAuthStore, useChatStore } from "../../ZustandStore"
 import { useLocation } from "react-router-dom"
 import { Socket } from "socket.io-client"
+import useMessagesContext from "../useMessagesContext/useMessagesContext"
 const {certOptions,io,serverUrl} = SocketStore()
 export const channelSocket = io(`${serverUrl}/currentChannel`,{
   pfx:certOptions.pfx,passphrase:certOptions.passphrase,reconnection:true,reconnectionDelayMax:5000,reconnectionAttempts:Infinity});
@@ -19,8 +20,10 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
     const setOnlineUsers = useAuthStore(s=>s.setOnlineUsers)
     const setServerResponse = useAuthStore(s=>s.setServerResponse)
     const setLoading = useAuthStore(s=>s.setLoading)
+    const scrollToRef=useMessagesContext()?.scrollToRef
     const socketRef = useRef<Socket>()
     const location = useLocation()
+    const [isInView,setIsInView]=useState(false)
       const fetcher = useCallback(
         ()=>APIFetch({
                 url:`${serverUrl}/api/channels/channel/${channel_id}?userEmail=${user?.email}`,method:'GET'
@@ -30,6 +33,29 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
     const {data:channel,error,isLoading}=useSWR(()=>channel_id ? `/api/channels/channel/${channel_id}` : null,fetcher    )
     
   
+    useEffect(() => {
+      const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5 // Adjust this value to change when the div is considered "in view"
+      };
+    
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          setIsInView(entry.isIntersecting);
+        });
+      }, options);
+    
+      if (scrollToRef?.current) {
+        observer.observe(scrollToRef?.current);
+      }
+    
+      return () => {
+        if (scrollToRef?.current) {
+          observer.unobserve(scrollToRef?.current);
+        }
+      };
+    }, []);
     useEffect(
         ()=>{
             console.log(`data current channel:`,channel);
@@ -49,10 +75,9 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                 ?.roles?.some((role:RoleType)=>role.permissions.description === 'everything')
                 console.log(`HAS admin permissionsm, ${hasAdminPermissions}`);
                 current.hasAdminPermissions = hasAdminPermissions
-               
                 socketRef.current = channelSocket
                 setCurrentChannel(current)
-                // channelSocket.connect()
+                channelSocket.connect()
 
                 channelSocket.emit('join_channel',{room:current?._id,user:user})
                 channelSocket.emit('get_online_users',{})
@@ -125,7 +150,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
               }
           }
          
-        },[socketRef.current]
+        },[]
       )
     return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading}
     // return value

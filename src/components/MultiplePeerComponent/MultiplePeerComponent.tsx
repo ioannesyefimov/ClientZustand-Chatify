@@ -38,11 +38,12 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     socket.on('connect',async ()=>{
       setMe(socket.id)
       console.log(`${user?._id} connected to channelCall socket by ID: ${socket?.id}`)
-      await sleep(2000)
       socket.emit('join_room', {userId:user._id,room:currentChannel?._id,userName:user?.userName})
     })
     return()=>{
-      socket.disconnect();
+      if(socket.connected){
+        socket.disconnect();
+      }
       setMe('')
     }
   }, [reload]);
@@ -328,9 +329,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         peers.map(
           (peer) => {
             return (
-            <div ref={(ref)=>remoteUsersRef.current[peer.userId] = ref} onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className={`remote-user `} key={peer.userId}>
+            <div ref={(ref)=>remoteUsersRef.current[peer.userId] = ref!} onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className={`remote-user `} key={peer.userId}>
               
-              <video  className={`remote-user-video`}  data-id={peer.userId} ref={(ref) => remoteVideoRefs.current[peer.userId] = ref} playsInline autoPlay />
+              <video  className={`remote-user-video`}  data-id={peer.userId} ref={(ref) => remoteVideoRefs.current[peer.userId] = ref!} playsInline autoPlay />
               {/* {
                 peer.peerConnection.connectionState !== 'connected' ?   (
                   <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>

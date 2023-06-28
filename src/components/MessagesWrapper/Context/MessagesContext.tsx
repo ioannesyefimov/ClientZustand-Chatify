@@ -1,7 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { ChildrenType, MessageType } from "../../types";
 import { useResponseContext } from "../../../hooks";
-// import { channelSocket } from "../../../hooks/useCurrentChannelContext/useCurrentChannel";
 import { useAuthStore, useChatStore } from "../../../ZustandStore";
 import { channelSocket } from "../../../hooks/useCurrentChannelContext/useCurrentChannel";
 export type HandleClickType = {
@@ -37,6 +36,9 @@ const useMessagesStore = ()=>{
         try {
           console.log(`SUBMITTING MESSAGE`)
           console.log(`channelSocket`,channelSocket)
+          if(!channelSocket.connected){
+            await channelSocket.connect()
+          }
           setLoading(true)
           channelSocket.emit('send_message',{message:value,channel_id: propsValue?._id,user,room:propsValue?._id})
         
