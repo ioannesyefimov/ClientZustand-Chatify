@@ -23,7 +23,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
     const scrollToRef=useMessagesContext()?.scrollToRef
     const socketRef = useRef<Socket>()
     const location = useLocation()
-    const [reload,setReload]=useState(false)
+    // const [reload,setReload]=useState(false)
     const [isInView,setIsInView]=useState(false)
       const fetcher = useCallback(
         ()=>APIFetch({
@@ -31,7 +31,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
             })
         ,[channel_id,user?.email]
     )
-    const {data:channel,error,isLoading}=useSWR(()=>channel_id ? `/api/channels/channel/${channel_id}` : null,fetcher    )
+    const {data:channel,error,isLoading}=useSWR(()=>channel_id ? `/api/channels/channel/${channel_id}` : null,fetcher ,{refreshInterval:1000}   )
     
   
     useEffect(() => {
@@ -44,6 +44,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
       const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
           setIsInView(entry.isIntersecting);
+          console.log(`entry`,entry)
         });
       }, options);
     
@@ -91,7 +92,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
           }
 
             
-        },[channel,reload]
+        },[channel]
     )
 
     useEffect(
@@ -104,7 +105,11 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
             let onMessage = (data:SocketResponse)=>{
               if(!data?.success) setServerResponse(data?.err)
               console.log(`received message`, data);
-              
+              if(!isInView){
+                console.log(`scroll ref`,scrollToRef?.current);
+                
+                // scrollToRef?.current
+              }
               if(data?.data?.messages){
                 addCurrentChannelMessage(data?.data?.message)
                 // scrollToRef?.current?.scrollIntoView({behavior:'smooth'}) 
@@ -154,16 +159,16 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
         },[]
       )
 
-      useEffect(
-        ()=>{
-          let timer = setInterval(()=>{
-            console.log(`checking useCurrentChannel data`);
+      // useEffect(
+      //   ()=>{
+      //     let timer = setInterval(()=>{
+      //       console.log(`checking useCurrentChannel data`);
             
-            setReload(prev=>!prev)
-          },20000)
-          return ()=>{clearInterval(timer)}
-        },[]
-      )
+      //       setReload(prev=>!prev)
+      //     },20000)
+      //     return ()=>{clearInterval(timer)}
+      //   },[]
+      // )
     return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading}
     // return value
 }
