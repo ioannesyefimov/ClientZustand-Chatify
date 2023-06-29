@@ -23,6 +23,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
     const scrollToRef=useMessagesContext()?.scrollToRef
     const socketRef = useRef<Socket>()
     const location = useLocation()
+    const [reload,setReload]=useState(false)
     const [isInView,setIsInView]=useState(false)
       const fetcher = useCallback(
         ()=>APIFetch({
@@ -90,7 +91,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
           }
 
             
-        },[channel]
+        },[channel,reload]
     )
 
     useEffect(
@@ -150,6 +151,17 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
               }
           }
          
+        },[]
+      )
+
+      useEffect(
+        ()=>{
+          let timer = setInterval(()=>{
+            console.log(`checking useCurrentChannel data`);
+            
+            setReload(prev=>!prev)
+          },20000)
+          return ()=>{clearInterval(timer)}
         },[]
       )
     return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading}
