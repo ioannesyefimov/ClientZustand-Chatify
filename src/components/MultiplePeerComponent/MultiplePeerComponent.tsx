@@ -33,6 +33,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   const [reload,setReload]=useState(false)
   const localUserRef = useRef<HTMLDivElement>()
   const remoteUsersRef = useRef<{ [key: string]: HTMLDivElement }>({})
+  const senders = useRef<{[key:string]: RTCRtpSender}>({})
   useEffect(() => {
     socket.connect()
     socket.on('connect',async ()=>{
@@ -243,10 +244,12 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
 
           const tracks = stream.getTracks();
           tracks.forEach((track) => {
-              const sender = peer.peerConnection.addTrack(track, stream);
-              console.log(`sender:`,sender);
-              (sender as any).onremovetrack  = () => {
-                console.log('Remote user stopped sending video');
+          const sender = peer.peerConnection.addTrack(track, stream);
+          senders.current[peer.userId] = sender
+            console.log(`senders:`,senders.current);
+            console.log(`sender:`,sender);
+            (sender as any).onremovetrack  = () => {
+              console.log('Remote user stopped sending video');
             }
           });
 
@@ -343,7 +346,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         }
         )}
       </div>
-      <CallNavigation peers={peers} userStreamRef={userStreamRef} remoteVideoRefs={remoteVideoRefs} userVideoRef={userVideoRef} socket={socket} setPeers={setPeers} setJoinedPeers={setJoinedPeers} channel={currentChannel}/> 
+      <CallNavigation senders={senders.current} peers={peers} userStreamRef={userStreamRef} remoteVideoRefs={remoteVideoRefs} userVideoRef={userVideoRef} socket={socket} setPeers={setPeers} setJoinedPeers={setJoinedPeers} channel={currentChannel}/> 
     </div>
   );
 };
