@@ -1,11 +1,10 @@
 .call-navigation{
-    display: grid;
     place-content: center;
+    display:grid;
     .wrapper {
         display: flex;
-        flex-direction: column;
         border-radius: 10px;
-        padding: 2rem .6rem;
+        padding: .5rem .8rem;
 
         background: #120F13;
         gap:1rem;
@@ -19,11 +18,10 @@
         }
     }
     
-
-    position: fixed;
+ 
+    position: absolute;
     left: 0;
     top:0;
-    bottom:0;
-
-    margin:auto;
+    right:0;
+   
 }

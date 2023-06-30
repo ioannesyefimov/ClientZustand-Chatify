@@ -204,9 +204,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           let {connectionState} = peer.peerConnection
           if(checkingPeerConnectionRefCount?.current > 2 && connectionState !=='connected'){
             // handleCallingPeer(peer.peerConnection,peer.userId,peer.socketId)
-             sleep(Math.random() *5000).then(()=>{
               setReload(prev=>!prev)
-             })
             checkingPeerConnectionRefCount.current = 0
           } else 
           if(connectionState ===  'failed'){
@@ -231,7 +229,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   useEffect(() => {
     const initializeMediaStream = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         userStreamRef.current = stream;
 
         if (userVideoRef.current) {
@@ -287,8 +285,45 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           }
         }
       }
+
+      let audioTrack = stream
+      let audioContext = new AudioContext()
+      const source = audioContext.createMediaStreamSource(stream)
+      const analyser = audioContext.createAnalyser()
+      source.connect(analyser)
+      const bufferLength = analyser.frequencyBinCount
+      const dataArray = new Uint8Array(bufferLength)
+      function checkIfUserIsSpeaking() {
+        console.log(`checking for microphone use`);
+        
+        function calculateAverageVolume(dataArray:Uint8Array
+          ) {
+          const sum = dataArray.reduce((acc:any, val:any) => acc + val, 0);
+          const average = sum / dataArray.length;
+          return average;
+        }
+        analyser.getByteFrequencyData(dataArray);
+          // Analyze the data to determine if the user is speaking
+        // For example, you can calculate the average volume level
+        const averageVolume = calculateAverageVolume(dataArray);
+        console.log(`average:`,averageVolume)
+        // Make a decision based on the average volume level
+        // if (averageVolume > threshold) {
+        //   console.log('User is speaking');
+        // } else {
+        //   console.log('User is not speaking');
+        // }
+
+        // Call the function again to continuously monitor the audio
+        requestAnimationFrame(checkIfUserIsSpeaking);
+      }
+
+// Start monitoring the audio
+        checkIfUserIsSpeaking();
+
     };
 
+  
     if (userStreamRef?.current) {
       userStreamRef.current.getTracks().forEach((track) => {
         if(track ){
