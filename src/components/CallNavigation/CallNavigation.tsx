@@ -47,12 +47,17 @@ function CallNavigation({senders, socket,setPeers,setJoinedPeers,channel,userVid
 
     const handleShareScreen =async()=>{
       if(userShareState==='screen'){
-        let videoTrack = userStreamRef.current?.getTracks()[0]
+        let videoTrack = userStreamRef.current?.getVideoTracks()[0]
         if(!videoTrack) return
         Object.keys(senders)?.forEach(sender=>{
-          if(senders[sender].track){
+          if(senders[sender]?.track?.kind==='video'){
+            console.log(`senders:`,senders)
+            if(!userStreamRef.current) return console.log('user stream is ', userStreamRef.current)
             senders[sender].replaceTrack(videoTrack)
           }
+          // if(senders[sender].track){
+          //   senders[sender].replaceTrack(videoTrack)
+          // }
         })
         userVideoRef.current.srcObject=userStreamRef.current
         setUserShareState('video')

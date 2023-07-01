@@ -34,6 +34,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   const localUserRef = useRef<HTMLDivElement>()
   const remoteUsersRef = useRef<{ [key: string]: HTMLDivElement }>({})
   const senders = useRef<{[key:string]: RTCRtpSender}>({})
+  const audioSources = useRef<{[key:string]:MediaStreamAudioSourceNode}>({})
   useEffect(() => {
     socket.connect()
     socket.on('connect',async ()=>{
@@ -289,12 +290,14 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       let audioTrack = stream
       let audioContext = new AudioContext()
       const source = audioContext.createMediaStreamSource(stream)
+      audioSources.current[userId] = source
       const analyser = audioContext.createAnalyser()
       source.connect(analyser)
+      source
       const bufferLength = analyser.frequencyBinCount
       const dataArray = new Uint8Array(bufferLength)
+      let threshold = 0.4
       function checkIfUserIsSpeaking() {
-        console.log(`checking for microphone use`);
         
         function calculateAverageVolume(dataArray:Uint8Array
           ) {
@@ -306,13 +309,12 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           // Analyze the data to determine if the user is speaking
         // For example, you can calculate the average volume level
         const averageVolume = calculateAverageVolume(dataArray);
-        console.log(`average:`,averageVolume)
         // Make a decision based on the average volume level
-        // if (averageVolume > threshold) {
-        //   console.log('User is speaking');
-        // } else {
-        //   console.log('User is not speaking');
-        // }
+        if (averageVolume > threshold) {
+          console.log(`User ${userId} is speaking`);
+        } else {
+          console.log('User is not speaking');
+        }
 
         // Call the function again to continuously monitor the audio
         requestAnimationFrame(checkIfUserIsSpeaking);
