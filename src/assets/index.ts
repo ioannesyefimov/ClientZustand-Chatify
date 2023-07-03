@@ -1,4 +1,5 @@
 import downArrowIco from './downArrowIco.svg'
+import microIco from './microIco.svg'
 import onlineStatusIco from './onlineStatusIco.svg'
 import callIco from './callIco.svg'
 import declineIco from './declineIco.svg'
@@ -46,5 +47,5 @@ export  {
       groupIco, hamburgerIco,trashIco,
         facebookIco, GithubIco, GoogleIco,
         TwitterIco, mailIco, lockerIco,profileIco,notFoundIco,
-        chatifyIco,sendIco,userIco,joinIco,settingIco,landingBg,disabledIco,closeIco,callIco,screenIco,declineIco,videoIco,downArrowIco
+        chatifyIco,sendIco,userIco,joinIco,settingIco,landingBg,disabledIco,closeIco,callIco,screenIco,declineIco,videoIco,downArrowIco,microIco
 } 

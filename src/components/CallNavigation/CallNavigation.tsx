@@ -4,7 +4,7 @@ import { Peer } from '../MultiplePeerComponent/MultiplePeerComponent'
 import Button from '../Button/Button'
 import { ChannelType } from '../types'
 import { useNavigate } from 'react-router-dom'
-import { cameraIco, declineIco, screenIco } from '../../assets'
+import { cameraIco, declineIco, microIco, screenIco } from '../../assets'
 import './CallNavigation.scss'
 import { useAuthStore } from '../../ZustandStore'
 import { throwErr } from '../utils'
@@ -53,7 +53,7 @@ function CallNavigation({senders, socket,setPeers,setJoinedPeers,channel,userVid
           if(senders[sender]?.track?.kind==='video'){
             console.log(`senders:`,senders)
             if(!userStreamRef.current) return console.log('user stream is ', userStreamRef.current)
-            senders[sender].replaceTrack(videoTrack)
+            senders[sender].replaceTrack(videoTrack                                                                                                                                                                                                                                                                                                                                                                                         )
           }
           // if(senders[sender].track){
           //   senders[sender].replaceTrack(videoTrack)
@@ -98,12 +98,26 @@ function CallNavigation({senders, socket,setPeers,setJoinedPeers,channel,userVid
 
     }
 
+    const handleMuteMicro = ()=>{
+      
+      if(!userStreamRef.current) return console.log(`user stream ref is ${userStreamRef.current }`)
+      let audioTracks = userStreamRef.current.getAudioTracks()!
+      audioTracks.forEach(track=>{
+      console.log(`toggling micro: ${track}`);
+
+        track.enabled = !track.enabled
+      })
+    }
+
     const content = (
         <div className="call-navigation">
           <div className="wrapper">
 
             <Button onClick={handleCamera} name='camera' type="button" >
                 <img src={cameraIco} className='camero-icon' alt="" />
+            </Button>
+            <Button onClick={handleMuteMicro} name='micro' type="button" >
+                <img src={microIco} className='micro-icon' alt="" />
             </Button>
             <Button onClick={handleShareScreen} name='screen' type="button" >
                 <img src={screenIco} className='screen-icon' alt="" />

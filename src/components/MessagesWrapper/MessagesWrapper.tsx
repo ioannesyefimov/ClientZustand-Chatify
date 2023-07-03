@@ -31,7 +31,6 @@ export default function MessagesWrapper({currentChannel,currentChannelMessages,s
     if(sorted===null) return 
     if(sorted?.fullMessageArray?.length){
       setSortedMessages(sorted.fullMessageArray)
-      // setSortedMessages(sorted.fullMessageArray)
     }
     console.log(`sorted.fullMessageArray`,sorted.fullMessageArray);
    }

@@ -35,6 +35,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   const remoteUsersRef = useRef<{ [key: string]: HTMLDivElement }>({})
   const senders = useRef<{[key:string]: RTCRtpSender}>({})
   const audioSources = useRef<{[key:string]:MediaStreamAudioSourceNode}>({})
+  const userAudioSource =useRef<MediaStreamAudioSourceNode>()
+  const checkingPeerConnectionRefCount = useRef(0)
+
   useEffect(() => {
     socket.connect()
     socket.on('connect',async ()=>{
@@ -127,28 +130,17 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       console.log(`user disconnected id:`,userId)
       setPeers(prev=>prev.filter(peer=>peer.userId!==userId))
     }
-    function onMediaTrack(data:{room:string,userId:string,trackId:string}){
-      const {trackId,userId}=data
-      console.log(`mediaTrack triggered:`,data);
-      const currentPeer= peers.find(peer=>peer.userId===userId)
-      console.log(`peers:`,peers);
-      console.log(`current PEER:`,currentPeer);
-      if(!currentPeer)return
-      let senders = currentPeer.peerConnection.getSenders()
-      console.log(`senders:`,senders);
-      // let currentSender = senders.find((sender)=>{
-      //   console.log(`senderTrack id:`,sender?.track?.id);
-      //   console.log(`trackId:`,trackId);
-        
-      //   return sender.track?.id===trackId
-      // })
-      
-      // console.log(`currentSender:`,currentSender);
-
-      
-      
-    }
-    socket.on('media-track',onMediaTrack)
+    // function onMediaTrack(data:{room:string,userId:string,trackId:string}){
+    //   const {trackId,userId}=data
+    //   console.log(`mediaTrack triggered:`,data);
+    //   const currentPeer= peers.find(peer=>peer.userId===userId)
+    //   console.log(`peers:`,peers);
+    //   console.log(`current PEER:`,currentPeer);
+    //   if(!currentPeer)return
+    //   let senders = currentPeer.peerConnection.getSenders()
+    //   console.log(`senders:`,senders);
+    // }
+    // socket.on('media-track',onMediaTrack)
     socket.on('user-disconnected',onUserDisconnected)
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
@@ -192,7 +184,6 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     },[]
   )
   
-  const checkingPeerConnectionRefCount = useRef(0)
   useEffect(
     ()=>{
       const checkPeerConnection = async ()=>{
@@ -257,7 +248,45 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         console.log('Error accessing media devices:', error);
       }
     };
+
+    
+  
+    function checkIfUserIsSpeaking() {
+      // if(!userStreamRef.current || userVideoRef.current) return console.log(`stream ref:${userStreamRef.current}, video ref :${userVideoRef.current}`)
+      let audioContext = new AudioContext()
+      const source = audioContext.createMediaStreamSource(userStreamRef.current)
+      userAudioSource.current = source
+      const analyser = audioContext.createAnalyser()
+      source.connect(analyser)
+      const bufferLength = analyser.frequencyBinCount
+      const dataArray = new Uint8Array(bufferLength)
+      let threshold = 0.9
+      function calculateAverageVolume(dataArray:Uint8Array
+        ) {
+        const sum = dataArray.reduce((acc:any, val:any) => acc + val, 0);
+        const average = sum / dataArray.length;
+        return average;
+      }
+      analyser.getByteFrequencyData(dataArray);
+        // Analyze the data to determine if the user is speaking
+      // For example, you can calculate the average volume level
+      const averageVolume = calculateAverageVolume(dataArray);
+      // Make a decision based on the average volume level
+      if (averageVolume > threshold) {
+        console.log(`User ${user._id} is speaking`);
+        userVideoRef.current?.classList?.add('speaking')
+      } else {
+        userVideoRef.current?.classList?.remove('speaking')
+
+      }
+
+      // Call the function again to continuously monitor the audio
+      requestAnimationFrame(checkIfUserIsSpeaking);
+    }
     initializeMediaStream();
+    checkIfUserIsSpeaking()
+
+      console.log(`user video ref:`,userVideoRef.current?.classList)
   }, [peers]);
 
   const initializePeerConnection = (userId: string,socketId:string) => {
@@ -287,18 +316,18 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         }
       }
 
-      let audioTrack = stream
-      let audioContext = new AudioContext()
-      const source = audioContext.createMediaStreamSource(stream)
-      audioSources.current[userId] = source
-      const analyser = audioContext.createAnalyser()
-      source.connect(analyser)
-      source
-      const bufferLength = analyser.frequencyBinCount
-      const dataArray = new Uint8Array(bufferLength)
-      let threshold = 0.4
       function checkIfUserIsSpeaking() {
         
+        let audioTrack = stream
+        let audioContext = new AudioContext()
+        const source = audioContext.createMediaStreamSource(stream)
+        audioSources.current[userId] = source
+        const analyser = audioContext.createAnalyser()
+        source.connect(analyser)
+        // source
+        const bufferLength = analyser.frequencyBinCount
+        const dataArray = new Uint8Array(bufferLength)
+        let threshold = 0.9
         function calculateAverageVolume(dataArray:Uint8Array
           ) {
           const sum = dataArray.reduce((acc:any, val:any) => acc + val, 0);

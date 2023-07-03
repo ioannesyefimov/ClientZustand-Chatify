@@ -78,6 +78,10 @@
     // flex:45%; 
     border-right: 1px solid black;
     gap:1rem;  
+
+    .speaking {
+        outline: 1px solid green;
+    }
     .local-user{
         // margin:auto;
         padding: .5rem;
@@ -93,7 +97,7 @@
             width: 160px;
 
             object-fit: cover;
-            border:2px solid rgb(58, 255, 173);
+            // border:2px solid rgb(58, 255, 173);
        }
        &-name{
         text-align: center;
