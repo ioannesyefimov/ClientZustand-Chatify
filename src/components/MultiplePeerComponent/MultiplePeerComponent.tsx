@@ -251,83 +251,51 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
 
     
   
-    // function checkIfUserIsSpeaking() {
-    //   if(!userStreamRef.current || userVideoRef.current) return console.log(`stream ref:${userStreamRef.current}, video ref :${userVideoRef.current}`)
-    //   let audioContext = new AudioContext()
-    //   const source = audioContext.createMediaStreamSource(userStreamRef.current)
-    //   userAudioSource.current = source
-    //   const analyser = audioContext.createAnalyser()
-    //   source.connect(analyser)
-    //   const bufferLength = analyser.frequencyBinCount
-    //   const dataArray = new Uint8Array(bufferLength)
-    //   let threshold = 0.9
-    //   function calculateAverageVolume(dataArray:Uint8Array
-    //     ) {
-    //     const sum = dataArray.reduce((acc:any, val:any) => acc + val, 0);
-    //     const average = sum / dataArray.length;
-    //     return average;
-    //   }
-    //   analyser.getByteFrequencyData(dataArray);
-    //     // Analyze the data to determine if the user is speaking
-    //   // For example, you can calculate the average volume level
-    //   const averageVolume = calculateAverageVolume(dataArray);
-    //   // Make a decision based on the average volume level
-    //   if (averageVolume > threshold) {
-    //     console.log(`User ${user._id} is speaking`);
-    //     userVideoRef.current?.classList?.add('speaking')
-    //   } else {
-    //     userVideoRef.current?.classList?.remove('speaking')
-
-    //   }
-
-    //   // Call the function again to continuously monitor the audio
-    //   requestAnimationFrame(checkIfUserIsSpeaking);
-    // }
-    initializeMediaStream();
-    // checkIfUserIsSpeaking()
+    initializeMediaStream()
 
   }, [peers]);
 
 
-  // useEffect(
-  //   ()=>{
-  //     function checkIfUserIsSpeaking() {
-  //       if(!userStreamRef.current ||!userVideoRef.current) return console.log(`stream ref:${userStreamRef.current}, video ref :${userVideoRef.current}`)
-  //       let audioContext = new AudioContext()
-  //       const source = audioContext.createMediaStreamSource(userStreamRef.current)
-  //       userAudioSource.current = source
-  //       const analyser = audioContext.createAnalyser()
-  //       source.connect(analyser)
-  //       const bufferLength = analyser.frequencyBinCount
-  //       const dataArray = new Uint8Array(bufferLength)
-  //       let threshold = 0.5
-  //       function calculateAverageVolume(dataArray:Uint8Array
-  //         ) {   
-  //         const sum = dataArray.reduce((acc:any, val:any) => acc + val, 0);
-  //         const average = sum / dataArray.length;
-  //         return average;
-  //       }
-  //       analyser.getByteFrequencyData(dataArray);
-  //         // Analyze the data to determine if the user is speaking
-  //       // For example, you can calculate the average volume level
-  //       const averageVolume = calculateAverageVolume(dataArray);
-  //       // Make a decision based on the average volume level
-  //       if (averageVolume > threshold) {
-  //         console.log(`User ${user._id} is speaking`);
-  //         userVideoRef.current?.classList?.add('speaking')
-  //       } else {
+  useEffect(
+    ()=>{
+      let audioContext = new AudioContext()
+      const source = audioContext.createMediaStreamSource(userStreamRef.current)
+      userAudioSource.current = source
+      const analyser = audioContext.createAnalyser()
+      source.connect(analyser)
+      const bufferLength = analyser.frequencyBinCount
+      const dataArray = new Uint8Array(bufferLength)
+      let threshold = 0.5
+      function checkIfUserIsSpeaking() {
+        if(!userStreamRef.current ||!userVideoRef.current) return console.log(`stream ref:${userStreamRef.current}, video ref :${userVideoRef.current}`)
+        function calculateAverageVolume(dataArray:Uint8Array
+          ) {   
+          const sum = dataArray.reduce((acc:any, val:any) => acc + val, 0);
+          const average = sum / dataArray.length;
+          return average;
+        }
+        analyser.getByteFrequencyData(dataArray);
+          // Analyze the data to determine if the user is speaking
+        // For example, you can calculate the average volume level
+        const averageVolume = calculateAverageVolume(dataArray);
+        // Make a decision based on the average volume level
+        // if (averageVolume > threshold) {
+        //   console.log(`User ${user._id} is speaking`);
+        //   userVideoRef.current?.classList?.add('speaking')
+        // } else {
 
-  //         userVideoRef.current?.classList?.remove('speaking')
+        //   userVideoRef.current?.classList?.remove('speaking')
   
-  //       }
-  
-  //       // Call the function again to continuously monitor the audio
-  //       requestAnimationFrame(checkIfUserIsSpeaking);
-  //     }
+        // }
+        console.log(`average volume: ${averageVolume}`);
+        
+        // Call the function again to continuously monitor the audio
+        requestAnimationFrame(checkIfUserIsSpeaking);
+      }
 
-  //     checkIfUserIsSpeaking()
-  //   },[userStreamRef.current]
-  // )
+      checkIfUserIsSpeaking()
+    },[userStreamRef.current]
+  )
   const initializePeerConnection = (userId: string,socketId:string) => {
     const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
     const peerConnection = new RTCPeerConnection(configuration);
@@ -356,7 +324,6 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
       }
 
       function checkIfUserIsSpeaking() {
-        
         let audioTrack = stream
         let audioContext = new AudioContext()
         const source = audioContext.createMediaStreamSource(stream)
@@ -387,13 +354,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         // Call the function again to continuously monitor the audio
         requestAnimationFrame(checkIfUserIsSpeaking);
       }
-
-// Start monitoring the audio
+        // Start monitoring the audio
         checkIfUserIsSpeaking();
-
     };
-
-  
     if (userStreamRef?.current) {
       userStreamRef.current.getTracks().forEach((track) => {
         if(track ){
