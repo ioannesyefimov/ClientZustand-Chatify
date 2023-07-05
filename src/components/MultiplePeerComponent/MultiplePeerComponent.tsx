@@ -42,8 +42,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     socket.connect()
     socket.on('connect',async ()=>{
       setMe(socket.id)
-      console.log(`${user?._id} connected to channelCall socket by ID: ${socket?.id}`)
-      socket.emit('join_room', {userId:user._id,room:currentChannel?._id,userName:user?.userName})
+      console.log(user,` connected to channelCall socket by ID: ${socket?.id}`)
+      socket.emit('join_room', {user,room:currentChannel?._id})
     })
     return()=>{
       if(socket.connected){
@@ -260,6 +260,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   const initializePeerConnection = (userId: string,socketId:string) => {
     const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
     const peerConnection = new RTCPeerConnection(configuration);
+    console.log("🚀 ~ file: MultiplePeerComponent.tsx:263 ~ initializePeerConnection ~ peerConnection:", peerConnection)
 
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
@@ -293,6 +294,8 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         const bufferLength = analyser.frequencyBinCount
         const dataArray = new Uint8Array(bufferLength)
         let threshold = 0.5
+          console.log("🚀 ~ file: MultiplePeerComponent.tsx:313 ~ checkIfUserIsSpeaking ~ remoteVideoRefs:", remoteVideoRefs)
+
       function checkIfUserIsSpeaking() {
       
         function calculateAverageVolume(dataArray:Uint8Array
@@ -307,11 +310,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         const averageVolume = calculateAverageVolume(dataArray);
         // Make a decision based on the average volume level
         if (averageVolume > threshold) {
-          // console.log(`User ${userId} is speaking`);
-          remoteVideoRefs[userId]?.current?.classList.add('speaking')
+          remoteVideoRefs?.current[userId]?.classList.add('speaking')
         } else {
-          // console.log('User is not speaking');
-          remoteVideoRefs[userId]?.current?.classList.remove('speaking')
+          remoteVideoRefs?.current[userId]?.classList.remove('speaking')
 
         }
 
@@ -366,7 +367,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
             return (
             <div ref={(ref)=>remoteUsersRef.current[peer.userId] = ref!} onClick={(e)=>handleFocusedStream(e)} id={peer.userId} className={`remote-user `} key={peer.userId}>
               
-              <video  className={`remote-user-video`}  data-id={peer.userId} ref={(ref) => remoteVideoRefs.current[peer.userId] = ref!} playsInline autoPlay />
+              <video style={{backgroundImage:`url()`}} className={`remote-user-video`}  data-id={peer.userId} ref={(ref) => remoteVideoRefs.current[peer.userId] = ref!} playsInline autoPlay />
               {/* {
                 peer.peerConnection.connectionState !== 'connected' ?   (
                   <Button img={callIco} name="remote-user-call" onClick={()=>handleCall(peer.userId,peer.socketId!)}/>
