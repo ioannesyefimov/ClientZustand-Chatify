@@ -256,46 +256,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
   }, [peers]);
 
 
-  useEffect(
-    ()=>{
-      let audioContext = new AudioContext()
-      const source = audioContext.createMediaStreamSource(userStreamRef.current)
-      userAudioSource.current = source
-      const analyser = audioContext.createAnalyser()
-      source.connect(analyser)
-      const bufferLength = analyser.frequencyBinCount
-      const dataArray = new Uint8Array(bufferLength)
-      let threshold = 0.5
-      function checkIfUserIsSpeaking() {
-        if(!userStreamRef.current ||!userVideoRef.current) return console.log(`stream ref:${userStreamRef.current}, video ref :${userVideoRef.current}`)
-        function calculateAverageVolume(dataArray:Uint8Array
-          ) {   
-          const sum = dataArray.reduce((acc:any, val:any) => acc + val, 0);
-          const average = sum / dataArray.length;
-          return average;
-        }
-        analyser.getByteFrequencyData(dataArray);
-          // Analyze the data to determine if the user is speaking
-        // For example, you can calculate the average volume level
-        const averageVolume = calculateAverageVolume(dataArray);
-        // Make a decision based on the average volume level
-        // if (averageVolume > threshold) {
-        //   console.log(`User ${user._id} is speaking`);
-        //   userVideoRef.current?.classList?.add('speaking')
-        // } else {
-
-        //   userVideoRef.current?.classList?.remove('speaking')
   
-        // }
-        console.log(`average volume: ${averageVolume}`);
-        
-        // Call the function again to continuously monitor the audio
-        requestAnimationFrame(checkIfUserIsSpeaking);
-      }
-
-      checkIfUserIsSpeaking()
-    },[userStreamRef.current]
-  )
   const initializePeerConnection = (userId: string,socketId:string) => {
     const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
     const peerConnection = new RTCPeerConnection(configuration);
@@ -322,9 +283,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
           }
         }
       }
-
-      function checkIfUserIsSpeaking() {
-        let audioTrack = stream
+  let audioTrack = stream
         let audioContext = new AudioContext()
         const source = audioContext.createMediaStreamSource(stream)
         audioSources.current[userId] = source
@@ -333,7 +292,9 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         // source
         const bufferLength = analyser.frequencyBinCount
         const dataArray = new Uint8Array(bufferLength)
-        let threshold = 0.9
+        let threshold = 0.5
+      function checkIfUserIsSpeaking() {
+      
         function calculateAverageVolume(dataArray:Uint8Array
           ) {
           const sum = dataArray.reduce((acc:any, val:any) => acc + val, 0);
@@ -346,9 +307,12 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         const averageVolume = calculateAverageVolume(dataArray);
         // Make a decision based on the average volume level
         if (averageVolume > threshold) {
-          console.log(`User ${userId} is speaking`);
+          // console.log(`User ${userId} is speaking`);
+          remoteVideoRefs[userId]?.current?.classList.add('speaking')
         } else {
-          console.log('User is not speaking');
+          // console.log('User is not speaking');
+          remoteVideoRefs[userId]?.current?.classList.remove('speaking')
+
         }
 
         // Call the function again to continuously monitor the audio
@@ -414,7 +378,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
         }
         )}
       </div>
-      <CallNavigation senders={senders.current} peers={peers} userStreamRef={userStreamRef} remoteVideoRefs={remoteVideoRefs} userVideoRef={userVideoRef} socket={socket} setPeers={setPeers} setJoinedPeers={setJoinedPeers} channel={currentChannel}/> 
+      <CallNavigation userAudioSource={userAudioSource} senders={senders.current} peers={peers} userStreamRef={userStreamRef} remoteVideoRefs={remoteVideoRefs} userVideoRef={userVideoRef} socket={socket} setPeers={setPeers} setJoinedPeers={setJoinedPeers} channel={currentChannel}/> 
     </div>
   );
 };

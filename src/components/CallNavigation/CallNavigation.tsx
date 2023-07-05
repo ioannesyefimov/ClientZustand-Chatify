@@ -20,18 +20,60 @@ interface PropsType {
     userStreamRef:React.MutableRefObject<MediaStream | undefined>
     peers:Peer[]
     senders: {[key:string]:RTCRtpSender}
+    userAudioSource: MediaStreamAudioSourceNode
 }
 
-function CallNavigation({senders, socket,setPeers,setJoinedPeers,channel,userVideoRef, userStreamRef,remoteVideoRefs,peers}:PropsType) {
+function CallNavigation({userAudioSource,senders, socket,setPeers,setJoinedPeers,channel,userVideoRef, userStreamRef,remoteVideoRefs,peers}:PropsType) {
     const navigate = useNavigate()
   const user = useAuthStore(s=>s.user)
-   const [userShareState,setUserShareState]=useState<"video"|'screen'|'none'>('video')
+   const [userShareState,setUserShareState]=useState<"video"|'screen'|'none'|'audio-on'|'audio-off'>('video')
+
+   useEffect(
+    ()=>{
+        if(!userStreamRef.current || userShareState==='audio-off') return console.log(`audio-state: ${userShareState} stream ref:` + userStreamRef.current + `video ref :`+userVideoRef.current)
+
+      let audioContext = new AudioContext()
+      const source = audioContext.createMediaStreamSource(userStreamRef.current)
+      userAudioSource = source
+      const analyser = audioContext.createAnalyser()
+      source.connect(analyser)
+      
+      const bufferLength = analyser.frequencyBinCount
+      const dataArray = new Uint8Array(bufferLength)
+      let threshold = 0.9
+      function checkIfUserIsSpeaking() {
+        function calculateAverageVolume(dataArray:Uint8Array
+          ) {   
+          const sum = dataArray.reduce((acc:any, val:any) => acc + val, 0);
+          const average = sum / dataArray.length;
+          return average;
+        }
+        analyser.getByteFrequencyData(dataArray);
+          // Analyze the data to determine if the user is speaking
+        // For example, you can calculate the average volume level
+        const averageVolume = calculateAverageVolume(dataArray);
+        // Make a decision based on the average volume level
+        if (averageVolume > threshold) {
+          userVideoRef.current?.classList?.add('speaking')
+        } else {
+          userVideoRef.current?.classList?.remove('speaking')
+        }
+        // Call the function again to continuously monitor the audio
+        requestAnimationFrame(checkIfUserIsSpeaking);
+      }
+
+      checkIfUserIsSpeaking()
+    },[userStreamRef.current,userShareState]
+  )
     const handleDecline = ()=>{
         navigate(channel?._id ? `/chat/${channel?._id}` : '/chat')
         setPeers([])
         setJoinedPeers([])
         socket.emit('leave',user?._id)
         socket.disconnect()
+        if(userAudioSource){
+          userAudioSource?.disconnect()
+        }
         }
     const handleCamera = async()=>{
       console.log(userStreamRef?.current);
@@ -100,13 +142,19 @@ function CallNavigation({senders, socket,setPeers,setJoinedPeers,channel,userVid
 
     const handleMuteMicro = ()=>{
       
-      if(!userStreamRef.current) return console.log(`user stream ref is ${userStreamRef.current }`)
+      if(!userStreamRef.current) return console.log(`user stream ref is`+userStreamRef.current)
       let audioTracks = userStreamRef.current.getAudioTracks()!
       audioTracks.forEach(track=>{
-      console.log(`toggling micro: ${track}`);
-
+        console.log(`toggling micro:`,track);
         track.enabled = !track.enabled
+        if(track.enabled){
+          setUserShareState('audio-on')
+        }else {
+          setUserShareState('audio-off')
+          userVideoRef.current?.classList?.remove('speaking')
+        }
       })
+      
     }
 
     const content = (
