@@ -156,7 +156,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
               }
           }
          
-        },[]
+        },[currentChannel?._id]
       )
 
       // useEffect(

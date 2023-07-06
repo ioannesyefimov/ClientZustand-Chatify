@@ -28,7 +28,6 @@ export default function MessagesWrapper({currentChannel,currentChannelMessages,s
     let messages=currentChannel?.messages ?? []
     if(!messages?.length) return
     let sorted = sortMessagesByDate(messages)
-    if(sorted===null) return 
     if(sorted?.fullMessageArray?.length){
       setSortedMessages(sorted.fullMessageArray)
     }
@@ -43,7 +42,6 @@ export default function MessagesWrapper({currentChannel,currentChannelMessages,s
     },[currentChannelMessages]
   )
   let messages=
-    sortedMessages !== null &&
     sortedMessages?.length ? (
       
       // loop through array of every message

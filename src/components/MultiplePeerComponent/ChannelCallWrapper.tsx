@@ -22,7 +22,7 @@ function ChannelCallWrapper() {
                 </MessagesProvider>
             </Hamburger>
 
-            <MultiplePeerComponent currentChannel={currentChannel !}/>
+            <MultiplePeerComponent channel_id={channel_id} currentChannel={currentChannel !}/>
         </div>
     )
   return content

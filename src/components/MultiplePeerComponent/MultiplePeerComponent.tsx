@@ -20,7 +20,7 @@ export interface Peer {
 }
 const socket = io(`${serverUrl}/current-channel-call`,{pfx: certOptions.pfx,passphrase:certOptions.passphrase,autoConnect:false}); // Replace with your Socket.IO server URL
 
-const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) => {
+const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:ChannelType; channel_id:string}) => {
   const [peers, setPeers] = useState<Peer[]>([]);
   
   const [joinedPeers,setJoinedPeers]=useState<string[]>([])
@@ -43,7 +43,7 @@ const MultiplePeerComponent = ({currentChannel}:{currentChannel:ChannelType}) =>
     socket.on('connect',async ()=>{
       setMe(socket.id)
       console.log(user,` connected to channelCall socket by ID: ${socket?.id}`)
-      socket.emit('join_room', {user,room:currentChannel?._id})
+      socket.emit('join_room', {user,room:channel_id})
     })
     return()=>{
       if(socket.connected){
