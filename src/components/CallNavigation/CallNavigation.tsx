@@ -149,9 +149,9 @@ function CallNavigation({userAudioSource,senders, socket,setPeers,setJoinedPeers
         track.enabled = !track.enabled
         if(track.enabled){
           setUserShareState('audio-on')
-        }else {
-          setUserShareState('audio-off')
+        }else if(!track.enabled) {
           userVideoRef.current?.classList?.remove('speaking')
+          setUserShareState('audio-off')
         }
       })
       
