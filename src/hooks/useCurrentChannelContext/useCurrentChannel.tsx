@@ -31,7 +31,8 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
             })
         ,[channel_id,user?.email]
     )
-    const {data:channel,error,isLoading}=useSWR(()=>channel_id ? `/api/channels/channel/${channel_id}` : null,fetcher ,{refreshInterval:1000}   )
+    // const {data:channel,error,isLoading}=useSWR(()=>channel_id ? `/api/channels/channel/${channel_id}` : null,fetcher ,{refreshInterval:1000}   )
+    const {data:channel,error,isLoading}=useSWR(()=>channel_id ? `/api/channels/channel/${channel_id}` : null,fetcher)
     
   
     useEffect(() => {
@@ -75,7 +76,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                 let current:ChannelType = channel?.data?.channel
                 let hasAdminPermissions = current?.members?.find((member:UserType)=>member?.member?._id===channel?.data?.user?._id)
                 ?.roles?.some((role:RoleType)=>role.permissions.description === 'everything')
-                console.log(`HAS admin permissionsm, ${hasAdminPermissions}`);
+                console.log(`HAS admin permissions, ${hasAdminPermissions}`);
                 current.hasAdminPermissions = hasAdminPermissions
                 socketRef.current = channelSocket
                 setCurrentChannel(current)

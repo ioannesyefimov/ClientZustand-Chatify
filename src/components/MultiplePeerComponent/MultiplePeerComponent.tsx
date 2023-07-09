@@ -43,7 +43,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
     socket.on('connect',async ()=>{
       setMe(socket.id)
       console.log(user,` connected to channelCall socket by ID: ${socket?.id}`)
-      socket.emit('join_room', {user,room:channel_id})
+      socket.emit('join_room', {user,room:currentChannel._id})
     })
     return()=>{
       if(socket.connected){
