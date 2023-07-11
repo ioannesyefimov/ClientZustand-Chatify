@@ -14,8 +14,7 @@ export const userSocket = io(`${serverUrl}/user`,{
   pfx:certOptions.pfx,passphrase:certOptions.passphrase,reconnection:true,reconnectionDelayMax:5000,reconnectionAttempts:Infinity, autoConnect:false});
 
 const ProtectedRoute = () => {
-  const setChannels =useChatStore(s=>s.setChannels)
-  const {cookies,clearState} = useAuthCookies()
+  const {cookies} = useAuthCookies()
   const setUser=useAuthStore(s=>s.setUser)
   const setOnlineUsers=useAuthStore(s=>s.setOnlineUsers)
   const user=useAuthStore(s=>s.user)

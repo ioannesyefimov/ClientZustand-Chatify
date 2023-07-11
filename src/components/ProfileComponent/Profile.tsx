@@ -6,7 +6,6 @@ import { useAuthStore, useChatStore } from '../../ZustandStore'
 import { ChannelType, UserType } from '../types'
 
 const ProfileInformation = ({user,channels}:{user:UserType,channels:ChannelType[]})=>{
-
     const content = (
         <div className='profile-information'>
             <h3>About acount:</h3>
@@ -25,9 +24,7 @@ const ProfileInformation = ({user,channels}:{user:UserType,channels:ChannelType[
 const Profile = () => {
     const user = useAuthStore(s=>s.user)
     const channels=useChatStore(s=>s.channels)   
-  
     let content = (
-
         <div className='profile-component' >
             <div className='wrapper'>
                 <Link className='link' to='settings'>Settings</Link>

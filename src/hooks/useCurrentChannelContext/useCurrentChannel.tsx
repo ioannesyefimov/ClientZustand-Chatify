@@ -159,17 +159,5 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
          
         },[currentChannel?._id]
       )
-
-      // useEffect(
-      //   ()=>{
-      //     let timer = setInterval(()=>{
-      //       console.log(`checking useCurrentChannel data`);
-            
-      //       setReload(prev=>!prev)
-      //     },20000)
-      //     return ()=>{clearInterval(timer)}
-      //   },[]
-      // )
     return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading}
-    // return value
 }

@@ -22,7 +22,7 @@ const ProfileSettings = () => {
     const [state,dispatch] = useReducer(settingsReducer,initState);
     const {setServerResponse} = useResponseContext()
     const {file,handleUpload}=useUpload()
-    const {cookies,clearState,setCookie} = useAuthCookies()
+    const {cookies,setCookie} = useAuthCookies()
     const user = useAuthStore(s=>s.user)
     const setUser = useAuthStore(s=>s.setUser)
     const navigate =useNavigate()
@@ -34,15 +34,10 @@ const ProfileSettings = () => {
     const emailRef= useRef<HTMLLabelElement>()
     const bioRef= useRef<HTMLLabelElement>()
     const avatarRef= useRef<HTMLLabelElement>()
-    // if(!isTrue(cookies?.accessToken).is) {
-    //   return <PromptLogin redirect='/profile/settings' redirectType=''/>
-    // }
-    
     const handleSubmit = async(e:React.FormEvent<HTMLFormElement>)=>{
       e.preventDefault(); 
       console.log(`submitting`);
       console.log(`state:`, state);
-      
       try {
         setLoading(true)
    
@@ -90,7 +85,6 @@ const ProfileSettings = () => {
               <FormInput  labelName='username' ref={userNameRef} type='text' name='username' id='username-input' onChange={(e)=>dispatch({type:ACTIONS.SET_USERNAME,payload:e?.target?.value})} value={state.userName}/>
   
               <FormInput labelName='email'  ref={emailRef} type='text' name='email' id='email-input' onChange={(e)=>dispatch({type:ACTIONS.SET_EMAIL,payload:e?.target?.value})} value={state.email}/>
-              
               
               <FormInput labelName='bio'  ref={bioRef} type='text' name='bio' id='bio-input' onChange={(e)=>dispatch({type:ACTIONS.SET_BIO,payload:e?.target?.value})} value={state.bio}/>
               

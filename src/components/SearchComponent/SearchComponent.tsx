@@ -4,7 +4,6 @@ import NavigationBar from '../NavigationBar/NavigationBar'
 
 
 const SearchComponent = () => {
-    // const [search,setSearch] = useState('')
     const location = useLocation()
     let content = (
         <div className='search-component flex'>

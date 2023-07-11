@@ -7,13 +7,9 @@ import { chatifyIco } from '../../assets'
 // import Hamburger from '../HamburgerMenu/Hamburger'
 import { useAuthStore } from '../../ZustandStore'
 const NavigationBar = () => {
-  // const {clearState,user} = useAuth()
-  const windowSize= useWindowSize()
-
   const user = useAuthStore(s=>s.user)
   const clearState = useAuthCookies().clearState
   const navBar = user.email ? (
-
     <div className="flex">
        <button className='nav-btn link' onClick={()=>clearState('/auth', navigate)}>Logout</button>
       <button className='nav-btn back-btn link' onClick={()=>navigate(-1)}>Back</button>
@@ -31,14 +27,6 @@ const NavigationBar = () => {
           <img  src={chatifyIco} alt="logo" />
         </button>
       <div className="navbar-inner" id='navBarInner'>
-        {/* {windowSize?.width < 500 ? (
-           <Hamburger type='navbar'>
-           {navBar}
-         </Hamburger>
-        ) : (
-           (navBar)
-        )}
-      */}
       {navBar}
       </div>
     </div>

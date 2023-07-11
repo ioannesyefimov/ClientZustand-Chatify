@@ -10,7 +10,6 @@ const NavLink = ({text,href,img}:PropsType) => {
   const navigate = useNavigate()
     return (
         <>
-        
             <li className='nav-link' onClick={()=>navigate(href)} >
         <span>{text}</span>
         {img ? (

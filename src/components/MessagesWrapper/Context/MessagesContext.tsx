@@ -3,6 +3,7 @@ import { ChildrenType, MessageType } from "../../types";
 import { useResponseContext } from "../../../hooks";
 import { useAuthStore, useChatStore } from "../../../ZustandStore";
 import { channelSocket } from "../../../hooks/useCurrentChannelContext/useCurrentChannel";
+import { sleep } from "../../utils";
 export type HandleClickType = {
     e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<any> | MouseEvent  | KeyboardEvent | undefined, 
     value: any, 
@@ -28,25 +29,25 @@ type SortedStateType = {
 const useMessagesStore = ()=>{
     const [sortedMessages,setSortedMessages]=useState<SortedStateType>()
     const user=useAuthStore(s=>s.user)
+    const loading = useAuthStore(s=>s.loading)
     const scrollToRef = useRef<HTMLDivElement>()
     const setLoading=useAuthStore(s=>s.setLoading)
     const {setServerResponse} = useResponseContext()
     const currentChannel=useChatStore(s=>s.currentChannel)
     const handleSubmitMessage=async({e,value,setValue,propsValue,setPropsValue}:HandleClickType): Promise<void> =>{
         try {
+          if(loading) return 
+          setLoading(true)
           console.log(`SUBMITTING MESSAGE`)
           console.log(`channelSocket`,channelSocket)
           if(!channelSocket.connected){
-            await channelSocket.connect()
+             channelSocket.connect()
           }
-          setLoading(true)
           channelSocket.emit('send_message',{message:value,channel_id: propsValue?._id,user,room:propsValue?._id})
-        
         } catch (error) {
           setServerResponse(error)
           console.error(`error:`, error)
         } finally{
-          setLoading(false)
           setValue('')
           scrollToRef?.current?.scrollIntoView({behavior:'smooth'})
         }

@@ -83,6 +83,7 @@ export type UserType = {
     userName:string
     email:string
     picture?:string
+    phone?:string
     _id?:string
     loggedThrough?: string
     channels:ChannelType[]

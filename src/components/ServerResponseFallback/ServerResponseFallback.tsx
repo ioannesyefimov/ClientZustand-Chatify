@@ -36,14 +36,16 @@ type ResponseFallbackType ={
     if(!serverResponse) {
         return content
     }
-    let handleOnClick = serverResponse?.name === Errors.NOT_A_MEMBER ? ()=>{setServerResponse(null);navigate(`/chat/manage/join?search=${serverResponse?.arguments?.channel_id}`)} : 
-    serverResponse?.message===Errors.JWT_MALFORMED ? (()=>{
-        clearState('/auth/signin', navigate)
-    }) : serverResponse?.name === Errors.MISSING_ARGUMENTS ? ()=>setServerResponse(null):
-    ()=> {
-        setServerResponse(null);
-        navigate("/chat");
-    }
+    // let handleOnClick = serverResponse?.name === Errors.NOT_A_MEMBER ? ()=>{setServerResponse(null);navigate(`/chat/manage/join?search=${serverResponse?.arguments?.channel_id}`)} : 
+    // serverResponse?.message===Errors.JWT_MALFORMED ? (()=>{
+    //     clearState('/auth/signin', navigate)
+    // }) : serverResponse?.name === Errors.MISSING_ARGUMENTS ? ()=>setServerResponse(null):
+    // ()=> {
+    //     setServerResponse(null);
+    //     navigate("/chat");
+    // }
+    let handleOnClick =()=>{setServerResponse(null)}
+
 
     let btnText = serverResponse?.name === Errors.NOT_A_MEMBER ? 'Join' : serverResponse?.message===Errors.JWT_MALFORMED ? (
         'signin'
@@ -52,11 +54,8 @@ type ResponseFallbackType ={
     let responseArguments 
     if(isObj(serverResponse?.arguments)){
         if(typeof serverResponse?.arguments === 'string'){
-
             responseArguments = <span className='response-type'>{ serverResponse.arguments }</span>
-
         }else if (typeof serverResponse?.arguments === 'object'){
-            
             responseArguments =  Object.keys(serverResponse?.arguments)?.map((key,i)=>{
                 return (
                     <span className='response-type' key={i}>{key}: { serverResponse.arguments[key] }</span>

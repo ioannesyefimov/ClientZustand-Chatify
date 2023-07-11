@@ -8,20 +8,6 @@ import './RedirectComponent.scss'
 import { useAuthStore } from '../../ZustandStore'
 import useSWR from 'swr'
 import { LoadingFallback } from '../LoadingFallback/LoadingFallback'
-type StateType = {
-    user:UserType | null,accessToken:string|null
-    redirect: string | null
-    channels?:ChannelType[] | null
-}
-
-let initDataState = {user:null,accessToken:null,redirect:null,channels:null}
-type HandleLoginProps = {
-    accessToken: string
-    type: string
-    loggedThrough: string
-    signal?: AbortSignal
-    redirectUrl:string | null
-}
 const RedirectComponent = () => {
     const {loading,serverUrl}=useAuthStore()
     const {handleGitHubLogin}=useGithub('')
@@ -29,14 +15,12 @@ const RedirectComponent = () => {
     const {setServerResponse} = useResponseContext() 
     const setUser = useAuthStore(s=>s.setUser)
     let location = useLocation()
-    let navigate = useNavigate()
     const fetcher = async function handleRedirect() {
         let query = new URLSearchParams(location.search)
         let type = query.get('type')
         let loggedThrough = query.get('loggedThrough')
         let accessToken = query.get('accessToken')
         let code = query.get("code")
-        let redirectUrl = query.get("redirectUrl")
         await sleep(2000);
         if(code){
             return  handleGitHubLogin(code);
@@ -70,9 +54,6 @@ const RedirectComponent = () => {
             if(data?.data?.channels){
                 setCookie('channels',data?.data?.channels,{path:'/',maxAge:2000})
             }
-            // if(data?.data?.redirectUrl){
-            //     navigate(data?.data?.redirectUrl)
-            // }
         },[data]
     )
     const content = (
