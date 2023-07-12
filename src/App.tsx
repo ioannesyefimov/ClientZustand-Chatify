@@ -1,8 +1,12 @@
 import './App.scss'
 import './components/Themes/Themes.scss'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
-import {ProtectedRoute,Landing,ChatContainer,UserComponent, Authentication,NotFound,AuthForm, RedirectComponent, MemberInfo, SearchComponent, ChannelSearch, Profile, ProfileSettings, ServerResponseFallback,ChannelsSettings, ChannelManager, ChannelJoin, ChannelCreate, ChannelCallWrapper} from './components'
+// import {ProtectedRoute,Landing,ChatContainer,UserComponent, Authentication,NotFound,AuthForm, RedirectComponent, MemberInfo, SearchComponent, ChannelSearch, Profile, ProfileSettings, ServerResponseFallback,ChannelsSettings, ChannelManager, ChannelJoin, ChannelCreate, ChannelCallWrapper} from './components'
 import ErrorBoundary from './components/ErrorProvider/ErrorProvider'
+import React from 'react'
+const {
+  ProtectedRoute,Landing,ChatContainer,UserComponent, Authentication,NotFound,AuthForm, RedirectComponent, MemberInfo, SearchComponent, ChannelSearch, Profile, ProfileSettings, ServerResponseFallback,ChannelsSettings, ChannelManager, ChannelJoin, ChannelCreate, ChannelCallWrapper
+} = React.lazy(()=>import('./components'))
 
 
 
