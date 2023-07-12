@@ -273,9 +273,9 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
         const averageVolume = calculateAverageVolume(dataArray);
         // Make a decision based on the average volume level
         if (averageVolume > threshold) {
-          remoteVideoRefs?.current[userId]?.classList.add('speaking')
-        } else {
-          remoteVideoRefs?.current[userId]?.classList.remove('speaking')
+          remoteVideoRefs.current[userId]?.classList.add('speaking')
+        } else if(averageVolume < threshold) {
+          remoteVideoRefs.current[userId]?.classList.remove('speaking')
         }
         // Call the function again to continuously monitor the audio
         requestAnimationFrame(checkIfUserIsSpeaking);

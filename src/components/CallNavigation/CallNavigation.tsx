@@ -30,8 +30,7 @@ function CallNavigation({userAudioSource,senders, socket,setPeers,setJoinedPeers
 
    useEffect(
     ()=>{
-        if(!userStreamRef.current || userShareState==='audio-off') return console.log(`audio-state: ${userShareState} stream ref:` + userStreamRef.current + `video ref :`+userVideoRef.current)
-
+      if(!userStreamRef.current || userShareState==='audio-off') return console.log(`audio-state: ${userShareState} stream ref:` + userStreamRef.current + `video ref :`+userVideoRef.current)
       let audioContext = new AudioContext()
       const source = audioContext.createMediaStreamSource(userStreamRef.current)
       userAudioSource = source
@@ -55,14 +54,15 @@ function CallNavigation({userAudioSource,senders, socket,setPeers,setJoinedPeers
         // Make a decision based on the average volume level
         if (averageVolume > threshold) {
           userVideoRef.current?.classList?.add('speaking')
-        } else {
+        } else if(averageVolume < threshold){
           userVideoRef.current?.classList?.remove('speaking')
         }
-        // Call the function again to continuously monitor the audio
+      // Call the function again to continuously monitor the audio
         requestAnimationFrame(checkIfUserIsSpeaking);
       }
-
       checkIfUserIsSpeaking()
+      return ()=>{source.disconnect()}
+
     },[userStreamRef.current,userShareState]
   )
     const handleDecline = ()=>{
@@ -77,7 +77,6 @@ function CallNavigation({userAudioSource,senders, socket,setPeers,setJoinedPeers
         }
     const handleCamera = async()=>{
       console.log(userStreamRef?.current);
-      let stream = userStreamRef.current
        userStreamRef?.current!.getVideoTracks().forEach(track=>{
           track.enabled = !track.enabled 
            console.log(`track:`,track);
@@ -95,13 +94,11 @@ function CallNavigation({userAudioSource,senders, socket,setPeers,setJoinedPeers
           if(senders[sender]?.track?.kind==='video'){
             console.log(`senders:`,senders)
             if(!userStreamRef.current) return console.log('user stream is ', userStreamRef.current)
-            senders[sender].replaceTrack(videoTrack                                                                                                                                                                                                                                                                                                                                                                                         )
+            senders[sender].replaceTrack(videoTrack ?? null)
           }
-          // if(senders[sender].track){
-          //   senders[sender].replaceTrack(videoTrack)
-          // }
+     
         })
-        userVideoRef.current.srcObject=userStreamRef.current
+        userVideoRef.current.srcObject=userStreamRef.current!
         setUserShareState('video')
         return
       }
@@ -110,26 +107,21 @@ function CallNavigation({userAudioSource,senders, socket,setPeers,setJoinedPeers
       
 
       let screenTrack= stream.getTracks()[0]
-      // peers.forEach(peer=>{
-        console.log(`senders:`,senders)
+        console.log(`senders:cd`,senders)
         setUserShareState('screen')
 
         Object.keys(senders).forEach(sender=>{
           console.log(`sender:`,senders[sender])
-
           if(!senders[sender]) return console.log(`sender`,sender,'senders',senders)
-          // if(senders[sender]?.track?.kind==='video'){
             senders[sender].replaceTrack(screenTrack)
-          // }
         })
         userVideoRef.current.srcObject = stream
-      // })
       screenTrack.onended = ()=>{
         console.log(`senders`,senders);
         console.log(`screen track is ended`);
         
         userVideoRef.current.srcObject = userStreamRef.current 
-        Object.keys(senders).forEach(sender=>{
+        Object.keys(senders)?.forEach(sender=>{
           console.log(`sender:`,senders[sender])
           if(senders[sender]?.track?.kind==='video'){
             if(!userStreamRef.current) return console.log('user stream is ', userStreamRef.current)
@@ -147,10 +139,16 @@ function CallNavigation({userAudioSource,senders, socket,setPeers,setJoinedPeers
       audioTracks.forEach(track=>{
         console.log(`toggling micro:`,track);
         track.enabled = !track.enabled
+        console.log(`track.enabled:`,track.enabled);
+
         if(track.enabled){
+          console.log(`user is  speaking.`);
+
           setUserShareState('audio-on')
         }else if(!track.enabled) {
-          userVideoRef.current?.classList?.remove('speaking')
+          userVideoRef.current?.classList.remove('speaking')
+          console.log(`user is not speaking .`,userVideoRef.current);
+
           setUserShareState('audio-off')
         }
       })

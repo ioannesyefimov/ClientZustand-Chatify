@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import AuthSocialButtons from "../AuthButtons/AuthSocialButtons";
 import Button from "../Button/Button";
-import { Errors, isObj } from "../utils";
+import { Errors, isObj, sleep } from "../utils";
 import {  useAuthCookies, useResponseContext } from "../../hooks";
 import NavigationBar from "../NavigationBar/NavigationBar";
 import { LoadingFallback } from "../LoadingFallback/LoadingFallback";
@@ -32,6 +32,14 @@ type ResponseFallbackType ={
                 console.error(serverResponse)
             }
         },[serverResponse]
+    )
+
+    useEffect(
+        ()=>{
+            if(loading){
+                sleep(10000).then(()=>{setLoading(false)})
+            }
+        },[loading]
     )
     if(!serverResponse) {
         return content
