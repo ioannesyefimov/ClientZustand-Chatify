@@ -1,0 +1,208 @@
+@use '../utils/utils.scss' as * ;
+@use '../../App.scss' as * ;
+@use '../utils/animations.scss' as *;
+
+// .dashboard-component:has(.hamburger.navbar[data-istoggled=toggled]){
+//     &::after{
+//         @include gradient(to bottom right,(#e01c3371,#acabb0e9));
+//         opacity: .2;
+//         position: absolute;
+//         content: '';
+//         width: 70%;
+//         height: 100%;
+//         animation: normal appearFromTop 1s forwards;
+//         z-index: 5555;
+//        }
+// }
+// .dashboard-component:has(.hamburger.navbar[data-istoggled=untoggled]){
+//     &::after{
+//         @include gradient(to bottom right,(#e01c3371,#acabb0e9));
+//         position: absolute;
+//         content: '';
+//         width: 70%;
+//         height: 100%;
+//         animation: normal disappearToTop 1s forwards;
+//         z-index: 5555;
+//        }
+// }
+
+.hamburger-btn {
+    filter:brightness(100%) invert(100%);
+    position: absolute;
+    background: none;
+    padding: .25rem;
+    z-index: 1555;
+    width: 28px !important;
+    height: 28px;
+
+    &:hover{
+        background-color: darkgrey;
+
+    }
+}
+
+.hamburger.bar {
+   position: fixed;                                  
+   display: grid;
+   align-items: center;
+   top:0;
+   right: 0;
+   bottom:0;
+   width: 50%;
+   max-width: 300px;
+   z-index:414 !important;
+   
+
+    .hamburger-btn {
+        padding: 0rem;
+        width: 25px;
+        right: 5px;
+        top:5px;
+        z-index: 100;
+
+        img{
+            width: 100%;
+        }
+       
+
+    }
+    .hamburger-children{
+        @extend .scrollbar;
+
+        position: relative;
+        
+        background-color: #242424;
+        padding:0.4rem .7rem;        // @include gradient(to bottom right,(#E01C34,#ACABB0));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        width: 100%;
+        z-index:99 ;
+        
+        &[data-istoggled=toggled] {
+            // clip-path: inset(0 0 100% 0) !important;
+            // @extend .appearFromTop;
+        }
+
+        &[data-istoggled=untoggled]{
+            // @extend .disappearToTop ;
+            // clip-path: inset(0 0 99% 0) !important;
+            // opacity: 0 !important;
+        }
+        &[data-istoggled=loaded-bar]{
+            clip-path: inset(0 0 99% 0) ;
+            opacity: 0;
+        }
+   }
+   .flex {
+    display: grid;
+
+}
+    
+}
+
+
+.hamburger-outer{
+    $barWidth: 100%;
+    position: fixed  ;
+    height: 100%;
+    z-index: 5;
+    display: grid;
+    // align-items: center;
+    .hamburger-btn {
+        left: 88% ;
+        top:3.5rem;
+    }
+    &[data-istoggled=toggled]{
+        @extend .scrollbar;
+        @include respond-to(littleHeight){
+            overflow-y: scroll;
+            overflow-x: hidden;
+            // min-width: 60%;
+        }
+        @include respond-to(small){
+            // clip-path: inset(0 0 99% 0) ;
+            position: relative ;
+            inset: 0;
+            width: $barWidth !important;
+            z-index: 100;
+        }
+        @include respond-to(smallHeight){
+            position: fixed !important;
+            // clip-path: inset(0 0 99% 0) ;
+            
+            inset: 0;
+            width:calc($barWidth - 15% );
+            z-index: 100;
+        }
+        .hamburger-btn {
+            left: 88% !important;
+            top:1%;
+        }
+        .darkening-div{
+            position: fixed;
+            width:calc($barWidth);
+            background-color: rgba(0, 0, 0, 0.359);
+            height: 100%;
+            right: 0;
+        }
+        // width:calc($barWidth - 70%) ;
+        max-width: 400px;
+        min-width:230px;
+    }    
+    transition: all .5s ease-in-out;
+    .hamburger.channel-navigation {
+        
+        transition: .3s all ease-in-out;
+        
+    &[data-istoggled=loaded]{
+        position: absolute;
+        transform: translateX(-120%);
+    }
+    &[data-istoggled=toggled] {
+        @include respond-to(medium){
+            position:relative;
+        }
+       
+        // @extend .appearFromLeft;
+        // animation-name: appearFromLeft;
+        // animation-duration: 1s;
+        animation-fill-mode: forwards;
+        width: 100%;
+        .left-wrapper {
+            width: 100%;
+        }
+    }
+    
+    &[data-istoggled=untoggled]{
+        // @extend .disappearToLeft;
+        // animation-name: disappearToLeft;
+        // animation-duration: 1s;
+        animation-fill-mode: forwards;
+        .hamburger {
+            z-index: -5;
+        }
+
+        .hamburger-children {
+            z-index: -5;
+        }
+        z-index: -5;
+    }
+   
+    left:0px;
+    position: absolute;
+    top:0px;
+    bottom: 0;
+    .hamburger-children{
+        width: 100%;
+     }
+
+ }
+
+}
+
+
+
+
+ 

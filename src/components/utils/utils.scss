@@ -1,0 +1,70 @@
+@use 'sass:list';
+@use './animations.scss';
+
+$breakpoints: (
+    'small' : (max-width:501px),
+    "max750": (max-width:750px),
+    'medium': (min-width:499px),
+    'large': (min-width:1000px),
+    'huge': (min-width:1200px),
+    'smallHeight': (max-height:450px) and (max-width:501px),
+    'littleHeight': (max-height:500px),
+);
+
+
+$font-weights: (
+    'light': 300,
+    'regular': 400,
+    'medium': 500,
+    'bold': 700,
+);
+
+
+@mixin flexCenter($direction){
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: $direction;
+};
+
+@function weights($weight-name){
+    @return map-get($font-weights, $weight-name)
+};
+
+@function color($color-name){
+    @return map-get($color-pallete, $color-name )
+}
+
+@mixin respond-to($breakpoint) {
+    $raw-query: map-get($breakpoints, $breakpoint);
+    
+    @if $raw-query {
+        $query: if(
+            type-of($raw-query) == 'string',
+            unquoute($raw-query),
+            inspect($raw-query)
+        );
+
+        @media #{$query}{
+             @content;
+        }
+    } @else {
+        @error 'No value found for `#{$breakpoint}`. ' + 'Please make sure it is defined in `#{$breakpoints}` map.'
+    }
+}
+
+
+$color-pallete: (
+    "black": #000000,
+    "darkish-black": #282935,
+    "brown" : #735F32,
+    "biege": #C69749
+);
+
+@mixin gradient($direction, $list) { 
+    background: -webkit-linear-gradient($direction, $list);
+    background: -moz-linear-gradient($direction, $list);
+    background: -o-linear-gradient($direction, $list);
+    background: linear-gradient($direction, $list);  
+  }
+

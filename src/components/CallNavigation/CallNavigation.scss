@@ -1,0 +1,27 @@
+.call-navigation{
+    place-content: center;
+    display:grid;
+    .wrapper {
+        display: flex;
+        border-radius: 10px;
+        padding: .5rem .8rem;
+
+        background: #120F13;
+        gap:1rem;
+        border:1px solid rgba(0, 0, 0, 0.746);
+        align-items: center;
+        justify-content: center;
+        button {
+            width: 40px;
+            padding: 0;
+    
+        }
+    }
+    
+ 
+    position: absolute;
+    left: 0;
+    top:0;
+    right:0;
+   
+}

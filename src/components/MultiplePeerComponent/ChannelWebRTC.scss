@@ -1,0 +1,193 @@
+@use '../utils/animations.scss' as *;
+@use '../../App.scss' as *;
+
+.video-chat-wrapper {
+    display: flex;
+    flex:1;
+    position: relative;
+
+    .messages-wrapper-outer{
+        background: #00031d3a;
+        height: 100dvh;
+        flex:30%;
+    }
+    .hamburger-outer.messages {
+        border-radius: 5px;
+        right: 0;
+        &[data-istoggled=untoggled]{
+            animation-name: disapperToRight !important;
+            .hamburger-btn {
+                left: -30px;
+            }
+        }
+        &[data-istoggled=toggled]{
+
+            // animation-name: appearFromRigth !important;
+            .hamburger-btn{
+                left: 0%;
+            }
+        }
+        &[data-istoggled=loaded]{
+            position: absolute;
+            right: 0;
+            .hamburger-btn {
+                left: -30px;
+            }
+            .hamburger {
+                &-children {
+                    display: none;
+                    // transform: translateX(200%) !important;
+                    // opacity: 0;
+                }
+            }
+        }
+        .hamburger-btn {
+            position: absolute !important;
+            // top: 2% !important;
+
+        }
+    }
+    .messages-wrapper-outer {
+        @extend .scrollbar;
+        flex:40%;
+        min-width: 250px;
+        max-height: 100dvh;
+        order:1;
+        padding: .2rem .7rem;
+        // overflow: scroll;
+        right: 0;
+        
+    }
+}
+
+.channel-webrtc{
+    background-color: rgba(4, 29, 250, 0.064);
+
+    @media (max-height:440px) {
+        display: flex;
+        flex-wrap:wrap;
+        gap:1rem;
+        justify-content: center;
+    }
+    display: grid;
+    flex:70%;
+    padding: .5rem 1rem;
+    place-content: center;
+    background-color: none;
+    position: relative;
+    // flex:45%; 
+    border-right: 1px solid black;
+    gap:1rem;  
+
+    .speaking {
+        outline: 2px solid green;
+    }
+    .local-user{
+        // margin:auto;
+        padding: .5rem;
+        align-self:center;
+        border-radius: 10px;
+        background-color: black;
+        box-shadow: 0 0 0 2px ;
+
+
+        &-video{
+            height: 160px;
+            border-radius:50%;
+            width: 160px;
+
+            object-fit: cover;
+            // border:2px solid rgb(58, 255, 173);
+       }
+       &-name{
+        text-align: center;
+       }
+    }
+
+    video[data-camera=off]{
+        position: relative;
+        background-size: contain;
+        background-color: none;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-image: url('../../assets/userIco.svg');
+
+    }
+
+    .remote-users {
+        display: flex;
+        gap:1rem;
+
+    }
+    .remote-user{
+        display: grid;
+        margin: auto;
+        z-index: 2;
+        background-color: black;
+        padding: .6rem;
+        border-radius: 10px;
+
+
+        box-shadow: 0 0 0 2px ;
+
+        &-video{
+             height: 160px;
+            border-radius:50%;
+            width: 160px;
+
+            object-fit: cover;
+            border:1px solid gray
+        }
+         
+        &-name {
+            position: relative;
+            top:0;
+            text-align: center;
+            border-radius: 10px;
+        }
+        &-call {
+            position:absolute;
+            padding:0;
+            width: 30px;
+            inset:0;
+            margin:auto;
+        }
+    }
+
+    .focused-user {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        background-color: black;
+        padding: .6rem;
+        margin: auto;
+        z-index: 3;
+        top:0;
+        bottom:0;
+        border-radius: 20px !important;
+        // background-color: black;
+        left: 0;
+        right: 0;
+        width: 75%;
+        min-width: 330px;
+        min-height:350px;
+        height: 75%;
+
+        video {
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+        }
+
+        &::after{
+            inset:0;
+            content:'';
+            position:fixed;
+            width:63%;
+            height: 100%;
+            z-index: -1;
+            background-color: rgba(0, 0, 0, 0.499);
+        }
+    }
+   
+}

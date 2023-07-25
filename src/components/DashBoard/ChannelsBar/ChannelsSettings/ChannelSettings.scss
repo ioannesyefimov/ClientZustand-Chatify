@@ -1,0 +1,21 @@
+.channels-settings-component {
+
+    width:80%;
+    max-width: 700px;
+    // display: grid;
+    margin: auto;
+    inset: 0;
+    display: grid;
+    z-index: 154;
+    background-color: rgb(17, 15, 21);
+    & > * {
+        color: white;
+    }
+
+    .channel {
+        // display: flex;
+        &-logo {
+            max-width: 100px;
+        }
+    }
+}

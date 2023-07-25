@@ -1,0 +1,40 @@
+.file-upload-component{
+    display: flex;
+    gap:.6rem;
+    flex-direction: column;
+    align-items: center;
+    text-align: left;
+    position: relative;
+    .converted-img {
+        max-width: 70px;
+        max-height: 70px;
+        border-radius: 10px;
+        aspect-ratio: 10/10;
+        object-fit: cover;
+        margin: 0 auto;
+    }
+
+    input{
+        all:unset;
+        position: absolute;
+        bottom: 0;
+        margin: auto;
+        visibility: hidden;
+        max-width: 70px;
+        height: 70px;
+
+    }
+  
+    .delete-btn {
+        padding: 0;
+        position: absolute;
+        bottom: 15%;
+        right: 3%;
+        width:25px;
+        img{
+            width: 100% !important;
+            height:  100% !important;
+        }
+    }
+
+}

@@ -1,0 +1,89 @@
+@use '../utils/utils.scss' as *;
+@use '../../App.scss' as *;
+
+.profile-component {
+    @include respond-to(medium){
+        justify-content: space-around;
+        flex-direction: row
+       };
+
+       @media (max-width:650px) {
+        flex-direction: column;
+       }
+    flex-direction: column;
+    display: flex;
+    flex:1;
+    display: flex;
+    max-width: 1020px;
+    padding: 1rem auto auto auto;
+    align-items: center;
+    background: #0B090C;
+    .profile-information{
+        display: grid;
+        gap:0.5rem;
+        gap:.5rem;
+        p{
+            max-width: 55ch;
+            word-wrap:break-word;
+            strong {
+                color:burlywood;
+            }
+        }
+        .channels {
+            margin: 0
+        }
+    }
+    .wrapper {
+        // @extend .box-shadow--gray;
+        padding: .5rem 2rem;
+        border:1px solid gray;
+        background-color: #3C393F !important;
+        border-radius: 8px;
+        place-content: center;
+        display:grid;
+
+    }
+    .link {
+        margin: auto;        
+    }
+    .user {
+        all: unset;
+        margin: auto;
+        display: flex;
+        text-align: center;
+        flex-direction: column;
+        gap:.4rem;
+        &-img{
+            border-radius: 10px;
+            width: 100px;
+        }
+        &-name {
+            text-align: center;
+        }
+
+    }
+
+    .channels{
+        margin-top: 4rem;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border:1px solid gray;
+
+        background-color: #3C393F !important;
+
+        min-width: 320px;
+
+        h4 {
+            text-align: center;
+
+        }
+        .channel{
+            box-shadow:0 0 2px beige;
+            &-name{
+                color: whitesmoke;
+            }
+
+        }
+    }
+
+}

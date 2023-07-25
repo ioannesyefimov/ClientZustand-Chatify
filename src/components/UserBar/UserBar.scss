@@ -1,0 +1,99 @@
+ .user-bar-component {
+    display: flex;
+    align-items: center;
+    position: relative;
+
+    gap:.5rem;
+    // position: absolute;
+    .user {
+        all: unset;
+        display: flex;
+        align-items: center;
+        gap:.5rem;
+        &-img {
+            border-radius: 8px;
+            width: 35px;
+            height: 35px;
+            object-fit: cover;
+        }
+        &-name{
+            color:#828282;
+        }
+    }
+    bottom: 0;
+    padding: .5rem 1rem;
+    width: 100%;
+
+    .dropdown{
+
+        display: grid;
+        gap:.3rem;
+        position: absolute;
+        bottom:95%;
+        padding: 1rem .5rem;
+        padding-bottom: 0rem;
+        background-color: #252329 !important;
+        // left:  60%;
+        right: 12%;
+        border-radius: 8px ;
+        width: calc(60%);
+        // padding:1rem;
+        z-index: 555;
+        
+        .link {
+            text-transform: capitalize;
+            padding: .5rem .5rem;
+            color:#E0E0E0;
+            display: flex;
+            gap:.5rem;
+
+            &:hover{
+                font-weight: 700;
+                background-color:#3C393F ;
+            }
+            img{
+                max-width: 25px;
+                order:-11;
+            }
+        }.logout-btn {
+            gap:.2rem;
+            margin-block: 1rem;
+            color:#ffa3a3cd;
+            position: relative;
+            &::before{
+                position: absolute;
+                content: '';
+                width: 100%;
+                inset: 0;
+                top:-25%;
+                height:1px;
+                background-color: rgba(128, 128, 128, 0.508);
+            }
+        }
+    }
+    .dropdown-img {
+        
+        padding: 0;
+        margin-left: auto;
+        max-width: 20px;
+        filter: brightness(50%) invert(60%);
+        
+        img{
+            transition: .5s all ease;
+            &[data-istoggled=true]{
+                transform:rotate(180deg)
+            }
+        }
+    }
+    .profile-img {
+        width: clamp(1.875rem, 1.611rem + 1.127vw, 2.625rem);
+        height: clamp(1.875rem, 1.611rem + 1.127vw, 2.625rem);
+        border-radius: 7px;
+        font-size: .5rem;
+    }
+    .name {
+        font-size: .8rem;
+        font-weight: 700;
+        color:#828282;
+    }
+ }

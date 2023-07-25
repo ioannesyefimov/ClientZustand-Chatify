@@ -1,0 +1,62 @@
+@use '../../utils/utils.scss' as * ;
+@use '../../../App.scss' as * ;
+.App{
+    position: relative;
+    .channels {
+        @include respond-to(smallHeight){
+            display: flex;
+        }
+        // margin-top: 2rem;
+        display: grid;
+        gap:.8rem;
+        &-wrapper{
+            @extend .scrollbar;
+            overflow-x:hidden;
+
+            display: inherit;
+            padding: .3rem .9rem .3rem .2rem;
+
+            max-height: 40dvh;
+            height: 100%;
+            gap:1rem;
+            &::-webkit-scrollbar {
+                width: 3px;
+            }
+            
+            
+            
+          .channel {
+              padding: .25rem;
+              border-radius: 10px;
+              box-shadow: 0px 0px 2px 1px rgb(1, 56, 57);
+              .leave {
+                  margin:  auto 0 auto auto;
+                left: 0;
+                top:0;
+                bottom: 0;
+                  max-width: 15px;
+                  padding: 0rem;
+                  border: 0;
+                  img{
+                      width: 100%;
+                      filter: invert(100%) brightness(70%);
+                  }
+              }
+          }
+      }
+    }
+    .left-wrapper{
+        // position: absolute !important;
+        @include respond-to(small){
+            
+        }   
+        .left-wrapper-inner{
+        }
+        h4.hint{
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+
+    }
+}

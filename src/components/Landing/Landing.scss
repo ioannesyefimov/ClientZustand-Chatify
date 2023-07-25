@@ -1,0 +1,56 @@
+@use '../utils/utils.scss' as *;
+.landing-component{
+    @include respond-to(small){
+        margin: auto ;
+        
+    }
+    margin: 0 0 0 clamp(1rem, -0.761rem + 7.512vw, 6rem);
+    background: rgba(10, 10, 26, 0.669);
+    align-self: flex-start;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    gap:2.2rem;
+    padding: 1rem 2rem;
+    position: relative;
+    max-width: 500px;
+    .wrapper{
+        display: grid;
+        gap:1rem;
+        text-align: center;
+        flex:1;
+        h3{
+            line-height: 1.2;
+            text-align: center;
+            margin: 0 auto;
+        }
+        p{
+            font-size: .8rem;
+            
+        }
+        &:nth-child(1){
+
+            &::after{
+                position: absolute;
+                content: '';
+                background-color: gray;
+                width: 100%;
+                left: 0;
+                height: 1px;
+                top:52%
+            }
+        }
+    }
+    h3{
+        max-width: 40ch;
+        font-size: clamp(0.9rem, 0.794rem + 0.451vw, 1.2rem);
+    }
+        .link{
+            color:bisque;
+        margin: 0 auto;
+        padding: .2rem 1.5rem; 
+        font-size: .8rem;
+        border-radius: 10px;
+        border: 1px solid beige;
+    }
+}

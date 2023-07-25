@@ -1,0 +1,31 @@
+.channels {
+
+    .channel{
+        position: relative;
+        display: flex;
+        gap:.6rem;
+        align-items: center;
+    
+        &-logo{
+            display: grid;
+            place-content: center;
+            width: 40px;
+            font-weight: bolder;
+            height: 40px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        
+        }
+        &-name{
+            // text-transform: uppercase;
+            font-size: .8rem;
+            font-weight: bold;
+            line-height: 1.2;
+            text-align: left;
+        }
+    
+        .link-tag  {
+            text-decoration: none !important;
+        }
+    }
+}

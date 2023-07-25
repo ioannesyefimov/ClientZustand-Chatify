@@ -1,0 +1,15 @@
+@use '../../App.scss' as *;
+
+.error-fallback {
+    @extend .fallback-component;
+    align-items: center;
+    gap:.4rem;
+    flex-direction: column;
+    margin:auto;
+    h1.error-heading {
+        font-size: 2rem;
+        text-align: center;
+        color:red;
+        text-shadow: 1px 1px 1px red;
+    }
+}

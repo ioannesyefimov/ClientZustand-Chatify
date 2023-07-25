@@ -1,0 +1,59 @@
+@use '../../../App.scss' as *;
+.main-wrapper {
+    @extend .scrollbar;
+    display: flex;
+    // flex-direction: column;
+    gap:1rem;
+    overflow-y: scroll;
+    position: relative;
+
+
+    padding:0rem 1.25rem 1rem 2.5rem ;
+    h2.channel-title.dashboard{
+        text-align: center;
+        margin: auto;
+        position: relative;
+        
+    }
+    
+
+
+            flex:1;
+        .users-wrapper {
+            display: flex;
+            gap:.75rem;            
+            .user{
+                outline: 1px solid black;
+                border-radius: 15px;
+                display: grid;
+                padding: .5rem;
+                gap:.5rem;
+                img{
+                    width: 45px;
+                    height: 45px;
+                    // max-width: 35px;
+                    object-fit: cover;
+                    margin: auto;
+                }
+                p.name {
+                    line-height: 1.25;
+                    font-size: .9rem;
+                }
+            }
+
+        }
+        .link{
+            font-weight:  700;
+            align-self:center;
+        }
+   
+
+    
+
+}
+
+.channel-title.dashboard {
+    // position: absolute;
+    inset: 0;
+    margin: auto;
+}

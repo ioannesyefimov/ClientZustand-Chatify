@@ -1,0 +1,22 @@
+.search-component {
+    gap:2rem;
+    padding: 0 5rem;
+    margin-block: auto;
+    align-items: center;
+    justify-content: center;
+    // margin: auto;
+    a {
+        text-align: center;
+        flex:1;
+        color:ghostwhite;
+        outline: 1px solid black;
+        padding: 1rem;
+        border-radius: 10px;
+
+        &:hover{
+            transition: .4s all ease-in-out;
+            background-color: azure;
+            color:black;
+        }
+    }
+}

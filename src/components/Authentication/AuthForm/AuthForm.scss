@@ -1,0 +1,91 @@
+@use '../../utils/utils.scss' as *;
+
+.box-shadow--gray{
+    @include respond-to(small){
+        box-shadow: none !important; 
+    }
+
+}
+.auth-form-component{
+    @include respond-to(small){
+        width: 100%;
+        padding: 0 1rem;
+    }
+    max-width: 500px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    border-radius: 20px;
+    gap:.5rem;
+    padding:1rem clamp(3rem, 1.944rem + 4.507vw, 6rem) ;
+    h2{
+        font-size: 1.4rem;
+    }
+ .hint{
+    text-align: center;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    bottom:3%;
+    font-size: .8rem;
+ }    
+
+ .input-wrapper{
+     display: flex;
+     flex-direction: column;
+    gap:1rem;
+
+    .inner-wrapper {
+        position: relative;
+    }
+    .show-password {
+        padding: 0;
+        background-color: rgba(128, 128, 128, 0.144);
+        top:35%;
+        bottom:0;
+        margin-block:auto;
+        right: 8px;
+        width: 18px;
+        height:18px;
+        position: absolute;
+        img{
+            filter: invert(100%)
+        }
+    }
+
+    .form-wrapper{
+        display: flex;
+        position: relative;
+
+       
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap:.3rem;
+
+        label{
+           font-size: .9rem;
+        }
+        input {
+            &:focus{
+                background-color: gainsboro;
+            }
+            padding: .5rem 0 0.5rem 2.5rem;
+        }
+        .submit-btn{
+           padding: .2rem 2rem;
+           border: solid 1px gray;
+           align-self: center;
+           margin:.2rem;
+           color: white;
+           &:hover{
+               border-color:wheat !important;
+           }
+       
+        }
+    }
+ }
+
+}

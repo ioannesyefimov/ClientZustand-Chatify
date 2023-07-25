@@ -1,0 +1,124 @@
+@use '../../utils/utils.scss' as *;
+.profile-settings-component {
+    display:flex;
+    flex:1;
+    flex-direction: column;
+    gap:1rem;
+    padding: 1rem 1rem 1rem clamp(1rem, -0.533rem + 7.665vw, 9rem)  ;
+    .user {
+        @include respond-to(huge){
+            position: absolute;
+            margin: auto !important;
+            right:  2%;
+            display: grid;
+        }
+        display: none;
+        margin: auto;
+        &-img{
+            border-radius: 8px;
+            max-width: 50px;
+            height: 50px;
+            margin: auto;
+        }
+    }
+    form {
+        display:grid;
+        gap:1rem;
+
+        flex:1;
+        
+        max-width: 350px;
+        width: 100%;
+        .inner-wrapper {
+            @include respond-to(huge){
+                position: relative;
+            }
+            input{
+                padding: .45rem ;
+            }
+            $inputWidth: 160px;
+            $inputHeigth: 160px;
+            &.file-upload-component {
+                @include respond-to(huge){
+                    position: absolute;
+                    right: 16rem;
+                    align-content: center;
+                    justify-content: center;
+                    
+                    top:0;
+                    bottom: 0;
+                    // width: 200px;
+                    margin:  0 0 0  auto;
+                }   
+                all:unset;
+                gap:.5rem;
+                margin-block: .25rem;
+                display: grid;
+                div.wrapper {
+                    @include respond-to(medium){
+                    }   
+                    
+                    display: flex;
+                    justify-content: center;
+                    position: relative;
+                    border-radius: inherit;
+                    // height: 80px;
+                    // padding:.5rem ;
+                    border:1px solid gray;
+                    width: calc($inputWidth);
+                    height: $inputHeigth;
+                    border-radius: 8px;
+                    width: 200px;
+                    .converted-img {
+                        all: unset;
+                        inset: 0;
+                        padding: .5rem;
+                        margin: auto ;
+                        max-width: calc($inputWidth - 35px);
+                        max-height: calc($inputHeigth - 35px);
+                        border-radius: inherit;
+                        outline: 1px solid gray;
+                        position: absolute; 
+                        object-fit:cover;
+
+                    }
+                input {
+                    all: unset;
+                    visibility: hidden;
+                    inset: 0;
+                    width: 55%;
+                    width: calc($inputWidth - 35px);
+                    margin: auto 0;
+                    height: calc($inputHeigth - 35px);
+                    // margin: auto 0;
+                    border-radius: 8px;
+                    position: absolute; 
+                }
+                button{
+                    position: absolute;
+                    width: 20px;
+                    bottom: 0%;
+                    top:0;
+                    right: 2%;
+                    margin: auto ;
+                }
+                }
+            }
+
+        }
+    }
+    button.submit-btn{
+        margin:  auto;
+        padding:.55rem 2rem;
+        margin-top: .5rem;
+        border:1px solid gray;
+        align-items: center;
+        &:hover{
+            border: 1px solid red;
+            transform: scale(1.15);
+        }
+        img {
+            max-width: 40px;
+        }
+    }
+}

@@ -1,0 +1,46 @@
+@use '../../App.scss' as *;
+.member-info{
+    display: flex;
+    flex-direction: column;
+    gap:2rem;
+    margin: auto ;
+    width:50%;
+    max-width: 500px;
+    // align-items: center;
+    padding: 1.25rem 1.5rem;
+    border-radius: 10px;
+    background-color: #120F13 ;
+    flex:1;
+    .users-wrapper {
+        @extend .scrollbar;
+        max-height: 60%;
+
+        display: grid;
+        gap:.5rem;
+        .user{
+            flex:1;
+            display: flex;
+            align-items: center;
+            gap:1rem;
+            &-img {
+                width: 40px;
+                height: 40px;
+            }
+            &-name {
+                color:gainsboro
+            }
+        }
+    }
+    img{
+        height: 55px;
+        border-radius: 10px;
+        align-self: center;
+        width: 55px;
+    }
+
+    button.hide {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+    }
+}

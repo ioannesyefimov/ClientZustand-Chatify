@@ -1,0 +1,69 @@
+body[theme="dark"]{
+    
+}
+body[theme="ligth"]{
+
+}
+.App{
+    .auth-form-component{
+        background:#09070a !important;
+    }
+    .hamburger-outer{
+        background: #120F13;
+
+        
+        .user-bar-component {
+
+            background:#0B090C !important;
+        }
+        .left-wrapper{
+                .inner-wrapper{
+                   
+                    .form-wrapper{
+                        input {
+                            border-radius: inherit;
+                            background-color: #3C393F !important;
+                        }
+                    }
+                }
+                // border-radius: inherit;
+             
+
+            .channels {
+    
+                .channel{
+                    
+                    .link-tag  {
+                        color:whitesmoke ;
+                    }
+                    &-logo{
+                        background-color:#252329 ;
+                    
+                    }
+
+                    &-name {
+                        color:#BDBDBD;
+                    }
+    
+                }
+    
+    
+            }
+    }
+    }
+    .chat-container-outer{
+        .prompt-menu-component {
+            background:#120F13 !important;
+
+            input{
+                background-color:#252329 ;
+                
+            }
+        }
+        
+
+        .main-wrapper {
+            background-color: #252329;
+        }
+    }
+}

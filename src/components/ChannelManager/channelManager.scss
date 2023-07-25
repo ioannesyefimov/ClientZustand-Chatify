@@ -1,0 +1,74 @@
+@use '../utils/utils.scss' as * ;
+
+.channel-manager-component{
+    @include respond-to(medium){
+        border-radius: 8px;
+        flex:1;
+        margin: auto;
+        padding: 1rem;
+    }
+    display:flex;
+    align-items: center;
+    gap:1rem;
+    position: absolute;
+    text-align: center;
+    inset: 0;
+    z-index: 2;
+    margin: auto;
+    
+    & > div.wrapper {
+        background-color: black;
+        padding: 2rem;
+        border-radius: 8px;
+        display:grid;
+        gap:1rem;
+        margin: auto;
+    }
+    a {
+        all:unset;
+        &:hover{
+            color:gold;
+            font-weight: 700;
+        }
+        outline: 1px solid gray;
+        padding: .3rem .5rem;
+        border-radius: 12px;
+    }
+    
+    
+    button{
+        padding: .4rem;
+    }
+}
+.prompt-menu-component{
+    background-color:black ;
+    button.close{
+        position: absolute;
+        right: 5px;
+        top:5px;
+        padding: 0;
+        img{
+            filter: brightness(100%) invert(50%);
+            max-width: 23px;
+    
+        }
+        &:hover{
+            img{
+                filter: brightness(50%) invert(100%);
+            }
+        }
+    }
+    button.back{
+        position: absolute;
+        left: 1px;
+        top:1px;
+        padding: 0;
+        img{
+            filter: brightness(100%) invert(50%);
+            max-width: 30px;
+    
+        }
+        
+    }
+        
+}

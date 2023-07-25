@@ -1,0 +1,36 @@
+{
+  "name": "client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "devip": "vite --mode ipaddress",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@types/react-facebook-login": "^4.1.5",
+    "peerjs": "^1.4.7",
+    "react": "^18.2.0",
+    "react-cookie": "^4.1.1",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.9.0",
+    "simple-zustand-devtools": "^1.1.0",
+    "socket.io-client": "^4.6.1",
+    "stable-hash": "^0.0.3",
+    "swr": "^2.1.5",
+    "vite-plugin-mkcert": "^1.13.4",
+    "zustand": "^4.3.8"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.5",
+    "@types/react": "^18.0.28",
+    "@types/react-cookies": "^0.1.0",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^3.1.0",
+    "sass": "^1.60.0",
+    "typescript": "^4.9.3",
+    "vite": "^4.2.0"
+  }
+}

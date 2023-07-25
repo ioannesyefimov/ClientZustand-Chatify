@@ -1,0 +1,24 @@
+@use '../utils/utils.scss' as *;
+
+
+.App:has(.dashboard-component){
+    position: relative;
+    .dashboard-component {
+        margin-top: 1rem;
+    }
+}
+
+
+.dashboard-component{
+
+    display: grid;
+    .main-wrapper {
+         transition: .3s all cubic-bezier(1, 0, 0, 1);
+
+        position: relative;
+    }
+
+
+
+   
+}

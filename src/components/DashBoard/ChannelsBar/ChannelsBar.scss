@@ -1,0 +1,216 @@
+@use '../../utils/utils.scss' as *;
+@use './../../../App.scss' as *;
+.app-wrapper{
+
+    .hamburger-btn {
+        top:2%;
+        left: 2%;
+    }
+
+    .hamburger-outer {
+        .hamburger.channel-navigation{
+            display: flex;
+            flex:1;
+            
+            .hamburger-children{
+                flex:1;
+                flex-direction: column;
+                display: flex;
+            }
+        }
+    }
+
+    .left-wrapper{
+        flex:1;
+        display:grid;
+        position: relative;
+        padding: 3.5rem 2rem 1rem;
+        button {
+            color: white;
+        }
+        button.settings {
+            position: absolute;
+            padding: 0;
+            bottom: 15px;
+            left:15px;
+            img {
+                width: 35px;
+
+            }
+        }
+        button.back{
+            position: absolute;
+            top:2%;
+            padding:0;
+            left: 0%;
+            gap:0;
+            font-size: 1rem;
+            // font-size: .9rem;
+            align-items: center;
+            border: none;
+            display: inherit;
+            img{
+                
+                order: -1;
+                width: 30px;
+                margin-right: auto;
+                filter: invert(50%) brightness(100%);
+            }
+        }
+            button.back.logo {
+                max-width: 65px;
+                top:0;
+                img{
+                    width: 100% !important;
+                    filter: invert(100%);
+                }
+            }
+            button.leave {
+                display: flex;
+                position: relative;
+                right: -6%;
+                gap:.2rem;
+                padding: .2rem .5rem;
+                margin-top: auto;
+                margin-left: auto;
+                border: 1px solid rebeccapurple;
+                align-items: center;
+                img{
+                    order:-1;
+                    max-width: 30px;
+                }
+            }
+            button.leave {
+                display: flex;
+                position: relative;
+                right: -6%;
+                gap:.2rem;
+                padding: .2rem .5rem;
+                margin-top: auto;
+                margin-left: auto;
+                border: 1px solid rebeccapurple;
+                align-items: center;
+                img{
+                    order:-1;
+                    max-width: 30px;
+                }
+            }
+        
+        &[data-showedbar=true]{
+            padding: 3.5rem 1.6rem .5rem;
+            .left-wrapper-inner {
+                flex:1;
+                .channel {
+                    display: grid;
+                    @include respond-to(littleHeight){
+                        gap:.1rem;
+                    }
+                    gap:.7rem,;
+                    &-name{
+                        font-size: 1.2rem;
+                    }
+                    &-description {
+                        font-size: .95rem;
+                        max-width: 30ch;
+                    }
+                    &-members {
+                        @include respond-to(littleHeight){
+                            gap:.5rem;
+                            display: block
+                        }
+                        @extend .scrollbar;
+                        max-height: 450px;
+                        overflow-y: scroll;
+                        gap:.35rem;
+                            display: grid;
+                        .user {
+                            all:unset;
+                            display: flex;
+                            gap:.7rem;
+                            align-items: center;
+                            &-img{
+                                max-width: 35px;
+                                border-radius: 6px;
+                            }
+                            &-status{
+                                max-width: 15px;
+                            }
+
+                            &-name{
+                                color:#828282;
+                            }
+                        
+                        }
+                    }
+                }
+
+            }
+            
+        }
+
+     
+        &-inner {
+            display: flex;
+            flex-direction: column;
+            gap:.5rem;
+            .refetch {
+                padding: 0;
+                align-self: flex-end;
+                width: 18px;
+                position: absolute;
+                bottom: 2%;
+                right: 5%;
+            }
+        }
+
+        .link{
+            border-radius: 5px;
+            min-width:30px !important;
+            min-height: 30px;
+            padding: .1rem;
+            border: 1px solid gray;
+        
+        }
+        
+        .flex.flex--between{
+            margin-bottom: 1rem;
+                align-items: center;
+                span{
+                    font-weight: 650;
+                    font-size: 1.1 rem;
+                }
+            
+            }
+
+            
+        .inner-wrapper{
+            input {
+                @include respond-to(medium){
+                    &::placeholder{
+                        visibility: visible;
+                    }
+                }
+
+                &::placeholder{
+                    visibility: hidden;
+                }
+                font-size: clamp(0.6rem, 0.424rem + 0.751vw, 1.1rem);
+                padding: 0.5rem 1rem  .5rem 2.5rem  ;
+                width: 100%;
+                font-size: .85rem;
+            }
+           
+            img{
+                @include respond-to(medium){
+                    visibility: visible;
+                }
+                filter: brightness(0) invert(1);
+                padding: .1rem;
+                max-width: 20px;
+            }
+        }
+
+        
+        }
+     
+}

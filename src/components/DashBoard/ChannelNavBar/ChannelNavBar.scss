@@ -1,0 +1,39 @@
+.channel-nav-bar{
+    position: fixed;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    inset: 0;
+    height: 35px;
+    background: #0B090C !important;
+    z-index: 5;
+
+    .wrapper {
+        right: 5%;
+        position: absolute;
+        a {
+            padding: 0;
+            img{
+                max-width: 25px;
+            }
+        }
+    }
+    .channel-title{
+        // margin-top: .25rem;
+        margin: auto;
+        border-radius: 8px;
+        width: 30%;
+        // inset: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(229, 119, 152, 1);
+        text-align: center;
+        z-index: 2;
+        margin-inline: auto;
+        h2 {
+             font-size: clamp(1rem, 0.857rem + 0.714vw, 1.3rem);
+              }
+
+         }
+    
+}

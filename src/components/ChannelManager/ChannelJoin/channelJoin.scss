@@ -1,0 +1,51 @@
+.prompt-menu-component {
+    display: flex;
+    position: relative;
+    margin:auto;
+    // position: static;
+ 
+    form {
+        display: grid;
+        .inner-wrapper {
+            .form-wrapper {
+
+                #search{
+                    padding: .7rem 1rem .7rem 3rem ;
+                    font-size: 1rem;
+                } 
+                img {
+                    width: 55px;
+                    filter: invert(100%) brightness(80%);
+                }
+            }
+        }
+    }
+    h4 {
+        text-align: center;
+    }
+    .channels {
+        display: grid;
+
+        .channel{
+            padding: .35rem 1rem;
+            border-radius: 10px;
+            box-shadow: 0 0 4px 1px  rgb(128, 128, 128);
+            position: relative;
+            .join {
+                position: absolute;
+                border-color:gray ;
+                right: 10px;
+                padding:.1rem;
+                width: 35px;
+                height: 35px;
+                img{
+                    width: 100%;
+                    filter: invert(100%) brightness(70%);
+                }
+            }
+        }
+    }
+
+
+    
+}

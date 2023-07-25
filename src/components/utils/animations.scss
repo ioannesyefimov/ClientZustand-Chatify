@@ -1,0 +1,119 @@
+@keyframes appearFromTop {
+    from {
+        clip-path: inset(0 0 99% 0);
+        opacity: 0;
+    } to {
+        clip-path: inset(0 0 0 0);    
+       opacity: 1;
+    }
+}
+@keyframes disappearToTop {
+    from {
+        clip-path: inset(0 0 0 0);  
+       opacity: 1;
+
+    } to {
+        clip-path: inset(100% 0 0 0);
+        opacity: 0;
+    }
+}
+@keyframes appearFromLeft {
+    from {
+        transform: translateX(-120%);
+        z-index: -1;
+        opacity: 0;
+    } to {
+        transform: translateX(0%);   
+     opacity: 1;
+     z-index: 4;
+    }
+}
+@keyframes appearFromRight {
+    from {
+        transform: translateX(120%);
+        z-index: -1;
+        opacity: 0;
+    } to {
+        transform: translateX(0%);   
+     opacity: 1;
+     z-index: 4;
+    }
+}
+@keyframes disappearToRight {
+    from {
+        transform: translateX(-120%);   
+       opacity: 1;
+       z-index: 4;
+
+    } to {
+        transform: translateX(120%);
+        opacity: 0;
+        z-index: -1;
+
+    }
+}
+@keyframes disappearToLeft {
+    from {
+        transform: translateX(0%);   
+       opacity: 1;
+       z-index: 4;
+
+    } to {
+        transform: translateX(-120%);
+        opacity: 0;
+        z-index: -1;
+
+    }
+}
+
+.animate {
+    animation-direction: normal;
+}
+.animate.transition--slow{
+    transition: all 4s;
+}
+
+.animate.animate--slow{
+    animation-duration: 3s !important;
+}
+.animate.animate--normal
+{
+    animation-duration: 2s !important;
+}
+.animate.animate--fast{
+    animation-duration: 1s !important;
+}
+.animate.appearFromTop {
+    animation-name: appearFromTop !important;
+
+}
+.animate.disappearToTop {
+    animation-name: disappearToTop !important;
+
+}
+.animate.appearFromLeft {
+    animation-name: appearFromLeft !important;
+}
+.animate.appearFromRight {
+    animation-name: appearFromRight !important;
+}
+.animate.disappearToRight {
+    animation-name: disappearToRight !important;
+}
+.animate.disappearToLeft {
+    animation-name: disappearToLeft !important;
+
+
+}
+
+.animate.animate--infinite {
+    animation-iteration-count: infinite;
+}
+
+.animate.animate--forwards {
+    -webkit-animation-fill-mode: forwards; /* Chrome 16+, Safari 4+ */
+    -moz-animation-fill-mode: forwards;    /* FF 5+ */
+    -o-animation-fill-mode: forwards;      /* Not implemented yet */
+    -ms-animation-fill-mode: forwards;     /* IE 10+ */
+    animation-fill-mode: forwards !important;
+}

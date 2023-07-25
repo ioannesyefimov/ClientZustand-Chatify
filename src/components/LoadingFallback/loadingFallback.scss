@@ -1,0 +1,21 @@
+@use '../../App.scss' as *;
+.loading-component {
+    display: flex;
+
+    z-index: 2000;
+    position: absolute;
+    margin:auto;
+    inset: 0;
+
+    h3{
+        text-align: center;
+
+    }
+    max-width: 500px;
+    height: 100%; 
+    img{
+        width: 30%;
+        border-radius: 20px;
+        margin: auto;
+    }
+}
