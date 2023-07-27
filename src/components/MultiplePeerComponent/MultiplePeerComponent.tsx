@@ -37,7 +37,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
   const audioSources = useRef<{[key:string]:MediaStreamAudioSourceNode}>({})
   const userAudioSource =useRef<MediaStreamAudioSourceNode>()
   const checkingPeerConnectionRefCount = useRef(0)
-
+  const setServerResponse = useAuthStore(s=>s.setServerResponse)
   useEffect(() => {
     socket.connect()
     socket.on('connect',async ()=>{
@@ -160,6 +160,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
     console.log(`initializing current channel call`);
     return () => {
       socket.off('offer',onOffer)
+      socket.off('joinCallUser',onJoinCallUser)
       socket.off('join_room',onJoinRoom)
       socket.off('users',onUsers)
       socket.off('answer',onAnswer)
@@ -244,6 +245,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
         });
       } catch (error) {
         console.log('Error accessing media devices:', error);
+        setServerResponse(error)
       }
     };
     initializeMediaStream()
