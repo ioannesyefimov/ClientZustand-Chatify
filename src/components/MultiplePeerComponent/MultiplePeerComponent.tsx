@@ -51,8 +51,8 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
       }
       setMe('')
     }
-  // }, [reload]);
-  }, []);
+  }, [reload]);
+  // }, []);
 
   useEffect(
     ()=>{
@@ -101,32 +101,33 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
         });
       }
     }
-    // function onJoinRoom(userId:string){
-    //   console.log(`peers`, peers)
-    //   console.log(`joined room with id ${userId}`)
-    //   let Peer = peers.find(peer=>peer.userId===userId)
-    //   if(!Peer) return
-    //   handleCallingPeer(Peer.peerConnection,Peer.userId,Peer.socketId!)
-    // }
-    function onJoinRoom(data:{userId:string,socketId:string,userName:string}){
-      console.log(`peers`, peers)
-      console.log(`joined room with id ${data.userId}`)
-      let Peer =  {
-        userId:data.userId,
-        socketId: data.socketId,
-        peerConnection: initializePeerConnection(data.userId,data.socketId),
-        userName:data.userName
-      }
-      setPeers(prev=>[...prev,Peer])
-      socket.emit('joinCallUser',data.userId)
-    }
-    function onJoinCallUser(userId:string){
+    function onJoinRoom(userId:string){
       console.log(`peers`, peers)
       console.log(`joined room with id ${userId}`)
       let Peer = peers.find(peer=>peer.userId===userId)
       if(!Peer) return
       handleCallingPeer(Peer.peerConnection,Peer.userId,Peer.socketId!)
     }
+    // function onJoinRoom(data:{userId:string,socketId:string,userName:string}){
+    //   console.log(`peers`, peers)
+    //   console.log(`joined room with id ${data.userId}`)
+    //   let Peer =  {
+    //     userId:data.userId,
+    //     socketId: data.socketId,
+    //     peerConnection: initializePeerConnection(data.userId,data.socketId),
+    //     userName:data.userName
+    //   }
+    //   setPeers(prev=>[...prev,Peer])
+    //   sleep(1000)
+    //   socket.emit('joinCallUser',data.userId)
+    // }
+    // function onJoinCallUser(userId:string){
+    //   console.log(`peers`, peers)
+    //   console.log(`joined room with id ${userId}`)
+    //   let Peer = peers.find(peer=>peer.userId===userId)
+    //   if(!Peer) return
+    //   handleCallingPeer(Peer.peerConnection,Peer.userId,Peer.socketId!)
+    // }
     function onIceCandidate({ userId,socketId, candidate,fromUserId }: { userId: string;socketId:string; candidate: RTCIceCandidate; fromUserId:string }) {
       const peer = peers.find((p) => p.userId === userId);
       console.log(`peers`,peers);
@@ -146,7 +147,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
       console.log(`user disconnected id:`,userId)
       setPeers(prev=>prev.filter(peer=>peer.userId!==userId))
     }
-    socket.on('joinCallUser',onJoinCallUser)
+    // socket.on('joinCallUser',onJoinCallUser)
     socket.on('user-disconnected',onUserDisconnected)
     socket.on('offer', onOffer);
     socket.on('answer',onAnswer);
@@ -160,7 +161,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
     console.log(`initializing current channel call`);
     return () => {
       socket.off('offer',onOffer)
-      socket.off('joinCallUser',onJoinCallUser)
+      // socket.off('joinCallUser',onJoinCallUser)
       socket.off('join_room',onJoinRoom)
       socket.off('users',onUsers)
       socket.off('answer',onAnswer)

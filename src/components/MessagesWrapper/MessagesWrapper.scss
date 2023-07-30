@@ -73,11 +73,15 @@
         }
     }
     .inner-wrapper.message-input{
+        @include respond-to(medium){
+            width: 80%;
+        }
         display: flex;
         align-items: center;
         margin-top: auto;
         // position: fixed;
-        width: 90%;
+        width: 50%;
+        margin: auto; 
         bottom: 10px;
 
         .form-wrapper{
