@@ -39,7 +39,7 @@ function CallNavigation({userAudioSource,senders, socket,setPeers,setJoinedPeers
       
       const bufferLength = analyser.frequencyBinCount
       const dataArray = new Uint8Array(bufferLength)
-      let threshold = 0.9
+      let threshold = 1
       function checkIfUserIsSpeaking() {
         function calculateAverageVolume(dataArray:Uint8Array
           ) {   

@@ -114,16 +114,11 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
         if(!messagesCountRef.current) return console.log(`messagesCountRef is ${messagesCountRef.current}`)
         if(unReadMessages > 0){
           messagesCountRef.current.innerHTML = `${unReadMessages}`
-        }else {
-          // messagesCountRef.current.
         }
       },[unReadMessages]
     )
     useEffect(
         ()=>{
-            // let onConnect = ()=>{
-            //   console.log(`CONNECTED BY ID ${socketRef?.current!.id}`)
-            // }
             let onMessage = (data:SocketResponse)=>{
               if(!data?.success) setServerResponse(data?.err)
               console.log(`received message`, data);
@@ -132,7 +127,6 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                 setUnReadMessages((p)=>p + 1)
                 // scrollToRef?.current
                 console.log(`getting message and isInView is ${isInView}`);
-
               }
               if(data?.data?.messages){
                 addCurrentChannelMessage(data?.data?.message)
