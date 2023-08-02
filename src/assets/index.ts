@@ -1,3 +1,4 @@
+import callInProggress from './callInProggress.svg'
 import downArrowIco from './downArrowIco.svg'
 import microIco from './microIco.svg'
 import onlineStatusIco from './onlineStatusIco.svg'
@@ -46,6 +47,6 @@ export  {
     triangleIco, logoutIco, backIco,cameraIco,correctUploadIco,
       groupIco, hamburgerIco,trashIco,
         facebookIco, GithubIco, GoogleIco,
-        TwitterIco, mailIco, lockerIco,profileIco,notFoundIco,
+        TwitterIco, mailIco, lockerIco,profileIco,notFoundIco,callInProggress,
         chatifyIco,sendIco,userIco,joinIco,settingIco,landingBg,disabledIco,closeIco,callIco,screenIco,declineIco,videoIco,downArrowIco,microIco
 } 

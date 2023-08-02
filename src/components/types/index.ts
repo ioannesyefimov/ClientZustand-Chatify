@@ -56,6 +56,7 @@ export type ChannelType = {
     isJoined?:boolean
     channelAvatar:string 
     channelDescription?: string
+    isInCall?:boolean
     hasAdminPermissions?:boolean
 }
 

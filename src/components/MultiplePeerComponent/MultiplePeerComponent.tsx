@@ -111,6 +111,13 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
     function onJoinRoom(data:{userId:string,socketId:string,userName:string}){
       console.log(`peers`, peers)
       console.log(`joined room with id ${data.userId}`)
+      let isInRoom = peers.find(peer=>peer.userId===data.userId)
+      if(isInRoom){
+        sleep(1000).then(()=>{
+          socket.emit('joinCallUser',data.userId)
+        })
+        return
+      }
       let Peer =  {
         userId:data.userId,
         socketId: data.socketId,
@@ -118,7 +125,9 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
         userName:data.userName
       }
       setPeers(prev=>[...prev,Peer])
-      socket.emit('joinCallUser',data.userId)
+      sleep(1000).then(()=>{
+        socket.emit('joinCallUser',data.userId)
+      })
     }
     function onJoinCallUser(userId:string){
       console.log(`peers`, peers)

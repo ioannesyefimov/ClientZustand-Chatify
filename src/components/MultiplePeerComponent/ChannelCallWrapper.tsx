@@ -8,12 +8,10 @@ import MessagesWrapper from '../MessagesWrapper/MessagesWrapper'
 import MultiplePeerComponent from './MultiplePeerComponent'
 
 function ChannelCallWrapper() {
-    const setLoading = useAuthStore(state=>state.setLoading)
     const user = useAuthStore(state=>state.user)
-    const {setServerResponse} = useResponseContext()
     const {channel_id}=useParams()
-    const {currentChannel,setCurrentChannel,addCurrentChannelMessage,currentChannelMessages,deleteCurrentChannelMessage,isLoading}=useCurrentChannel(channel_id!,user)
-    const {width,height}=useWindowSize()
+    const {currentChannel,setCurrentChannel}=useCurrentChannel(channel_id!,user)
+    const {width}=useWindowSize()
     const content = (
         <div className="video-chat-wrapper">
             <Hamburger type='messages' animation={{toggled:'appearFromRight',untoggled:'disappearToRight'}} isHamburger={width > 700 ? false : true}>
@@ -22,7 +20,7 @@ function ChannelCallWrapper() {
                 </MessagesProvider>
             </Hamburger>
 
-            <MultiplePeerComponent channel_id={channel_id} currentChannel={currentChannel !}/>
+            <MultiplePeerComponent channel_id={channel_id?? ''} currentChannel={currentChannel !}/>
         </div>
     )
   return content
