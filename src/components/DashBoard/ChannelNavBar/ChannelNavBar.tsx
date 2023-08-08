@@ -6,8 +6,16 @@ import Button from '../../Button/Button'
 import { Link, useLocation } from 'react-router-dom'
 function ChannelNavBar({channel}:{channel:ChannelType}) {
     const location = useLocation()
-    const [isCallInProggres,setIsCallInProggres]=useState()
+    const [isCallInProggres,setIsCallInProggres]=useState<boolean>()
     
+
+    useEffect(
+    ()=>{
+        console.log(`isInCall:`,channel.isInCall);
+
+        setIsCallInProggres(channel.isInCall)
+    },[channel.isInCall]
+    )
 
     const content = (
         <div className="channel-nav-bar">

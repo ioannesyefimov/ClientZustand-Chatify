@@ -162,6 +162,16 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
               if(!data?.success) setServerResponse(data?.err)
               console.log(`JOINED CHANNEL ${data.data.room}`);
             }
+            let onIsInCall = (data:boolean)=>{
+              if(currentChannel?._id){
+                currentChannel!.isInCall = data
+                setCurrentChannel(currentChannel)
+              }
+              console.log(`currentChannel:`,currentChannel);
+              console.log(`is in call triggered:`,data);
+              
+            }
+            channelSocket.on('isInCall',onIsInCall)
             channelSocket.on('get_online_users',onOnlineUsers)
             channelSocket.on('disconnect',onDisconnect)
             channelSocket.on('join_channel',onJoinChannel)
@@ -181,6 +191,15 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
           }
          
         },[currentChannel?._id,isInView]
-      )
-    return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading,unReadMessages}
+    )
+
+
+    const value = useMemo(
+      ()=>{
+        return {
+        currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading,unReadMessages
+      }},[currentChannel,currentChannelMessages]
+    )
+    // return {currentChannel,currentChannelMessages,setCurrentChannel,addCurrentChannelMessage,deleteCurrentChannelMessage,isLoading,unReadMessages}
+    return value
 }
