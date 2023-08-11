@@ -105,7 +105,8 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
           }
 
             
-        },[channel]
+        },[]
+        // },[channel]
     )
 
     useEffect(
@@ -190,7 +191,8 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
               // }
           }
          
-        },[currentChannel?._id,isInView]
+        // },[currentChannel?._id,isInView]
+        },[isInView]
     )
 
 
