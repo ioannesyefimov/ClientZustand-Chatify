@@ -28,12 +28,10 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
     const [unReadMessages,setUnReadMessages]=useState(0)
     // const [reload,setReload]=useState(false)
     const [isInView,setIsInView]=useState(false)
-      const fetcher = useCallback(
+      const fetcher = 
         ()=>APIFetch({
                 url:`${serverUrl}/api/channels/channel/${channel_id}?userEmail=${user?.email}`,method:'GET'
             })
-        ,[channel_id,user?.email]
-    )
     // const {data:channel,error,isLoading}=useSWR(()=>channel_id ? `/api/channels/channel/${channel_id}` : null,fetcher ,{refreshInterval:1000}   )
     const {data:channel,error,isLoading}=useSWR(()=>channel_id ? `/api/channels/channel/${channel_id}` : null,fetcher)
     
@@ -105,8 +103,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
           }
 
             
-        },[]
-        // },[channel]
+        },[channel?.data]
     )
 
     useEffect(
@@ -191,7 +188,6 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
               // }
           }
          
-        // },[currentChannel?._id,isInView]
         },[isInView]
     )
 

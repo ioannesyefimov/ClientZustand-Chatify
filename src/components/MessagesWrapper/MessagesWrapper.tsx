@@ -52,7 +52,6 @@ export default function MessagesWrapper({currentChannel,currentChannelMessages,s
       // loop through array of every message
         Object.keys(sortedMessages).map((arrays: any,i:number)=>{
           // then loop through every instance of array that is created on different day
-          
             return Object?.keys(sortedMessages[arrays] as any).map((key:any)=>{
               let date =new Date(key)?.toDateString()  
               if(!arrays) return

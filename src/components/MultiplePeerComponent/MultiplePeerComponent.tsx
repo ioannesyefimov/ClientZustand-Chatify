@@ -51,8 +51,8 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
       }
       setMe('')
     }
-  // }, [reload]);
-  }, []);
+  }, [reload]);
+  // }, []);
 
   useEffect(
     ()=>{
@@ -222,8 +222,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
   //         } else if (connectionState ==='connected'){
   //           checkingPeerConnectionRefCount.current = 0
   //         }
-  //       })
-  //     } 
+  //       })p
   //     let interval = setInterval(checkPeerConnection,20000)
   //     return ()=>{clearInterval(interval)}
   //   },[peers.length]
@@ -254,7 +253,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
         });
       } catch (error) {
         console.log('Error accessing media devices:', error);
-        setServerResponse(error)
+        // setServerResponse(error)
       }
     };
     initializeMediaStream()

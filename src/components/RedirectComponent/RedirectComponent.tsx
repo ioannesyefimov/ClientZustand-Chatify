@@ -56,6 +56,15 @@ const RedirectComponent = () => {
             }
         },[data]
     )
+    useEffect(
+        ()=>{
+            if(error){
+                console.log(`registration ERROR:`,error);
+            }
+
+        },[error]
+    )
+    
     const content = (
         <div className='redirect-component'>
             {isLoading ? <LoadingFallback/> : (
