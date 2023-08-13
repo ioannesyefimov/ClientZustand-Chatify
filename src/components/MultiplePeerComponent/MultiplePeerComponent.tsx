@@ -1,4 +1,4 @@
-import React, { LegacyRef, useEffect, useRef, useState } from 'react';
+import React, { LegacyRef, ReactElement, ReactNode, useEffect, useRef, useState } from 'react';
 import SocketStore from '../SocketStore';
 import { ChannelType } from '../types';
 import { Socket } from 'socket.io-client';
@@ -20,7 +20,7 @@ export interface Peer {
 }
 const socket = io(`${serverUrl}/current-channel-call`,{pfx: certOptions.pfx,passphrase:certOptions.passphrase,autoConnect:false}); // Replace with your Socket.IO server URL
 
-const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:ChannelType; channel_id:string}) => {
+const MultiplePeerComponent = ({currentChannel,channel_id, children}:{currentChannel:ChannelType; channel_id:string; children?:ReactNode | ReactElement}) => {
   const [peers, setPeers] = useState<Peer[]>([]);
   
   const [joinedPeers,setJoinedPeers]=useState<string[]>([])
@@ -342,7 +342,9 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
     e.currentTarget?.classList.toggle('focused-user')
   }
   return (
-    <div   className='channel-webrtc'>
+    <>
+      {children && children}
+      <div   className='channel-webrtc'>
       <div ref={localUserRef as LegacyRef<HTMLDivElement>} onClick={(e)=>handleFocusedStream(e)}  id={user?._id} className='local-user '>
         <video className='local-user-video ' ref={userVideoRef} playsInline autoPlay muted />
         <p className="local-user-name">You</p>
@@ -362,6 +364,8 @@ const MultiplePeerComponent = ({currentChannel,channel_id}:{currentChannel:Chann
       </div>
       <CallNavigation userAudioSource={userAudioSource.current!} senders={senders.current} peers={peers} userStreamRef={userStreamRef} remoteVideoRefs={remoteVideoRefs} userVideoRef={userVideoRef} socket={socket} setPeers={setPeers} setJoinedPeers={setJoinedPeers} channel={currentChannel}/> 
     </div>
+    </>
+    
   );
 };
 export default MultiplePeerComponent;

@@ -17,11 +17,10 @@ type PropsType ={
 
 export default function MessagesWrapper({currentChannel,currentChannelMessages,setCurrentChannel}:PropsType) {
    const {
-    sortedMessages
-    ,setSortedMessages
-    ,handleSubmitMessage
-    // ,scrollToRef
+    handleSubmitMessage
   }=useMessagesContext()!
+  const sortedMessages = useChatStore(s=>s.sortedMessages)
+  const setSortedMessages = useChatStore(s=>s.setSortedMessages)
   const scrollToRef = useChatStore(s=>s.scrollToRef)
   const messagesCountRef = useChatStore(s=>s.messagesCountRef)
    let initMessages = async()=>{
