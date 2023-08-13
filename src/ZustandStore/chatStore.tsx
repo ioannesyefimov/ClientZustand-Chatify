@@ -8,17 +8,23 @@ const initState = {
     currentChannelMessages:[]
 
 }
+type SortedStateType = {
+    [index:number | string]: MessageType[] |undefined  
+  }
+  
 const useChatStore = create<{
     // fetchChannels: (user:UserType)=>Promise<void>
     channels:ChannelType[] | [];
+    sortedMessages:SortedStateType 
     currentChannel: ChannelType | null
     messagesCountRef: React.RefObject<HTMLDivElement | undefined>;
+    scrollToRef:React.RefObject<HTMLDivElement | undefined>;
+    setSortedMessages:(sortedMessages:SortedStateType)=>any
     setCurrentChannel: (channel:ChannelType|null)=>void
     setChannels: (channels:ChannelType[])=>void;
     addCurrentChannelMessage: (message:MessageType)=>any
     joinChannel: (channel:ChannelType) =>void
     leaveChannel: (channel_id:string) =>void
-    scrollToRef:React.RefObject<HTMLDivElement | undefined>;
     deleteCurrentChannelMessage : (message_id:string)=>void
     resetChat:()=>void
 }>((set,get)=> ({
@@ -26,6 +32,8 @@ const useChatStore = create<{
     currentChannel:initState.currentChannel,
     scrollToRef:React.createRef(),
     messagesCountRef:React.createRef(),
+    sortedMessages: {},
+    setSortedMessages:(sortedMessages)=>set({sortedMessages}),
     setCurrentChannel: (currentChannel:ChannelType | null)=>set({currentChannel}),
     setChannels: (channels) =>set({channels}),
     joinChannel: (channel:ChannelType) => set((state)=>({channels: [...state?.channels,channel]})),

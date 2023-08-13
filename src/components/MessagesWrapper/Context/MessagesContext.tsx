@@ -27,7 +27,6 @@ type SortedStateType = {
 }
 
 const useMessagesStore = ()=>{
-    const [sortedMessages,setSortedMessages]=useState<SortedStateType>()
     const user=useAuthStore(s=>s.user)
     const loading = useAuthStore(s=>s.loading)
     const scrollToRef = useRef<HTMLDivElement>()
@@ -69,7 +68,7 @@ const useMessagesStore = ()=>{
       }
     }
     return {
-        handleDeleteMessage,handleSubmitMessage,sortedMessages,setSortedMessages,scrollToRef
+        handleDeleteMessage,handleSubmitMessage,scrollToRef
     }
 }
 
@@ -80,7 +79,6 @@ const initState:unknown = {
   handleSubmitMessage:({e,value,setValue,propsValue,setPropsValue}:HandleClickType)=>{},
   sortedMessages:[],
 
-  scrollToRef: undefined
 }
 export const MessagesContext = React.createContext<UseMessageStoreType | null>(initState as UseMessageStoreType)
 

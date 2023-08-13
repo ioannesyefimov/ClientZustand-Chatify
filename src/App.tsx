@@ -5,6 +5,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorProvider/ErrorProvider'
 import React, { ReactNode, Suspense, lazy } from 'react'
 import { LoadingFallback } from './components/LoadingFallback/LoadingFallback'
+import ErrorPage from './components/RouteError/RouteError'
 const ServerResponseFallback = lazy(()=>import('./components/ServerResponseFallback/ServerResponseFallback'))
 const NotFound = lazy(()=>import('./components/NotFound'))
 const SearchComponent = lazy(()=>import('./components/SearchComponent/SearchComponent'))
@@ -71,6 +72,19 @@ let router = createBrowserRouter([
           },
           {
     
+            element: <ChatContainer  />,
+            path: '/chat-video/:channel_id',
+            children: [
+             {
+               element: <ChannelsSettings/>,
+               path:'settings'
+             },
+            
+            ]
+           },
+          
+          {
+    
            element: <ChatContainer  />,
            path: '/chat/:channel_id?/:manager?',
            children: [
@@ -81,10 +95,10 @@ let router = createBrowserRouter([
            
            ]
           },
-          {
-            element: <ChannelCallWrapper/>,
-            path:'/chat-video/:channel_id?'
-          },
+          // {
+          //   element: <ChannelCallWrapper/>,
+          //   path:'/chat-video/:channel_id?'
+          // },
           {
            // element: <ChannelManager/>,
            // path: '/chat/manage',
@@ -125,7 +139,7 @@ let router = createBrowserRouter([
     ]
   },
   {
-    ErrorBoundary: <ErrorBoundary/> as any
+    errorElement:<ErrorPage/>
   }  
  
 ])

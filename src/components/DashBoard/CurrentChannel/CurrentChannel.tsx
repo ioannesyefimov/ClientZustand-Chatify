@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { useCurrentChannel, useResponseContext } from '../../../hooks'
 import './CurrentChannel.scss'
 import MessagesProvider from '../../MessagesWrapper/Context/MessagesContext'
@@ -14,9 +14,9 @@ const CurrentChannel = () => {
   const {setServerResponse} = useResponseContext()
   const {channel_id}=useParams()
   const {currentChannel,setCurrentChannel,addCurrentChannelMessage,currentChannelMessages,deleteCurrentChannelMessage,isLoading}=useCurrentChannel(channel_id ?? '',user)
-
+  const location = useLocation()
   if(!currentChannel?._id) return <h2 className='channel-title dashboard'>Choose your channel</h2>
-
+  let isInCall = location.pathname.slice(1,11).includes('chat-video')
   let channelContent =
   (
     <>
@@ -24,7 +24,15 @@ const CurrentChannel = () => {
       <MessagesProvider>
         {isLoading ? 
           (<h2>Loading messages...</h2>) : 
-          (<MessagesWrapper  currentChannelMessages={currentChannelMessages ?? []} setCurrentChannel={setCurrentChannel} currentChannel={currentChannel}/>)
+          (
+            isInCall ? (
+              <MultiplePeerComponent channel_id={channel_id!} currentChannel={currentChannel}>
+                  <MessagesWrapper  currentChannelMessages={currentChannelMessages ?? []} setCurrentChannel={setCurrentChannel} currentChannel={currentChannel}/>
+              </MultiplePeerComponent>
+            ): (
+              <MessagesWrapper  currentChannelMessages={currentChannelMessages ?? []} setCurrentChannel={setCurrentChannel} currentChannel={currentChannel}/>
+            )
+          )
         }
       </MessagesProvider>
     </>
