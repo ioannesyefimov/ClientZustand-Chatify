@@ -9,6 +9,8 @@ import { callIco, cameraIco, declineIco } from '../../assets';
 import { Link, useNavigate } from 'react-router-dom';
 import { sleep } from '../utils';
 import CallNavigation from '../CallNavigation/CallNavigation';
+import Hamburger from '../HamburgerMenu/Hamburger';
+import { useWindowSize } from '../../hooks';
 
 const { io, certOptions, serverUrl } = SocketStore();
 
@@ -38,6 +40,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id, children}:{currentCha
   const userAudioSource =useRef<MediaStreamAudioSourceNode>()
   const checkingPeerConnectionRefCount = useRef(0)
   const setServerResponse = useAuthStore(s=>s.setServerResponse)
+  const {width}=useWindowSize()
   useEffect(() => {
     socket.connect()
     socket.on('connect',async ()=>{
@@ -343,7 +346,6 @@ const MultiplePeerComponent = ({currentChannel,channel_id, children}:{currentCha
   }
   return (
     <>
-      {children && children}
       <div   className='channel-webrtc'>
       <div ref={localUserRef as LegacyRef<HTMLDivElement>} onClick={(e)=>handleFocusedStream(e)}  id={user?._id} className='local-user '>
         <video className='local-user-video ' ref={userVideoRef} playsInline autoPlay muted />
@@ -364,6 +366,10 @@ const MultiplePeerComponent = ({currentChannel,channel_id, children}:{currentCha
       </div>
       <CallNavigation userAudioSource={userAudioSource.current!} senders={senders.current} peers={peers} userStreamRef={userStreamRef} remoteVideoRefs={remoteVideoRefs} userVideoRef={userVideoRef} socket={socket} setPeers={setPeers} setJoinedPeers={setJoinedPeers} channel={currentChannel}/> 
     </div>
+    <Hamburger type='messages' animation={{toggled:'appearFromRight',untoggled:'disappearToRight'}} isHamburger={true}>
+      {children ? children : null}
+    </Hamburger>
+
     </>
     
   );
