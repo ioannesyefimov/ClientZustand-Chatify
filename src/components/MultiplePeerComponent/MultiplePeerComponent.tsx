@@ -366,7 +366,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id, children}:{currentCha
       </div>
       <CallNavigation userAudioSource={userAudioSource.current!} senders={senders.current} peers={peers} userStreamRef={userStreamRef} remoteVideoRefs={remoteVideoRefs} userVideoRef={userVideoRef} socket={socket} setPeers={setPeers} setJoinedPeers={setJoinedPeers} channel={currentChannel}/> 
     </div>
-    <Hamburger type='messages' animation={{toggled:'appearFromRight',untoggled:'disappearToRight'}} isHamburger={true}>
+    <Hamburger type='messages' animation={{loaded:'loaded',toggled:'appearFromRight',untoggled:'disappearToRight'}} isHamburger={width > 700 ?   false : true}>
       {children ? children : null}
     </Hamburger>
 

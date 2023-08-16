@@ -8,8 +8,10 @@ import { useLocation } from 'react-router-dom'
 type PropsType = {
     children?: ReactNode
     type:string
-    animation? : {"toggled":string,untoggled:string}
+    animation? : {"loaded"?:string, "toggled":string,untoggled:string}
     isHamburger:boolean
+    dataLoaded?:'loaded' | 'toggled' | 'untoggledd'
+    
 }
 
 declare module 'react' {
@@ -18,7 +20,7 @@ declare module 'react' {
     }
 }
 
-const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
+const Hamburger = ({children,type,animation,isHamburger=true,dataLoaded}:PropsType) => {
     const [isToggled, setIsToggled] = useState<'loaded'|'toggled'|'untoggled'|''>('loaded')
     const {width} = useWindowSize()
     let isShowed = width < 500 ? 'animate animate--fast animate--forwards' : ''
@@ -26,7 +28,7 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
     let location = useLocation()
 
     let img = isToggled === 'untoggled' || isToggled==='loaded' ? hamburgerIco : closeIco
-  
+    
     let toggle = ()=>{
         console.log(`changing hamburger state`);
         
@@ -38,6 +40,14 @@ const Hamburger = ({children,type,animation,isHamburger=true}:PropsType) => {
             setIsToggled('toggled')
         } 
     }
+    useEffect(
+        ()=>{
+            console.log(`isHamburger:`,isHamburger)
+            if(isHamburger){
+                setIsToggled('untoggled')
+            }
+        },[isHamburger]
+    )
    
     useEffect(
         ()=>{

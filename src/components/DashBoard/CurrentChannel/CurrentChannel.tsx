@@ -20,7 +20,12 @@ const CurrentChannel = () => {
   let channelContent =
   (
     <>
-      <ChannelNavBar channel={currentChannel!}/>
+      {
+        location?.pathname.slice(1,11).includes('chat-video') ? null : (
+          <ChannelNavBar channel={currentChannel!}/>
+
+        )
+      }
       <MessagesProvider>
         {isLoading ? 
           (<h2>Loading messages...</h2>) : 
