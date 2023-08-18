@@ -41,6 +41,14 @@ const MultiplePeerComponent = ({currentChannel,channel_id, children}:{currentCha
   const checkingPeerConnectionRefCount = useRef(0)
   const setServerResponse = useAuthStore(s=>s.setServerResponse)
   const {width}=useWindowSize()
+  const [isError,setIsError] = useState<any>(null)
+
+  useEffect(
+    ()=>{
+      console.log(`isError`,isError);
+      
+    },[isError]
+  )
   useEffect(() => {
     socket.connect()
     socket.on('connect',async ()=>{
@@ -257,6 +265,7 @@ const MultiplePeerComponent = ({currentChannel,channel_id, children}:{currentCha
       } catch (error) {
         console.log('Error accessing media devices:', error);
         // setServerResponse(error)
+        setIsError(error)
       }
     };
     initializeMediaStream()
@@ -346,6 +355,9 @@ const MultiplePeerComponent = ({currentChannel,channel_id, children}:{currentCha
   }
   return (
     <>
+      <div className='error'>
+        <p>{isError}</p>
+      </div>
       <div   className='channel-webrtc'>
       <div ref={localUserRef as LegacyRef<HTMLDivElement>} onClick={(e)=>handleFocusedStream(e)}  id={user?._id} className='local-user '>
         <video className='local-user-video ' ref={userVideoRef} playsInline autoPlay muted />
