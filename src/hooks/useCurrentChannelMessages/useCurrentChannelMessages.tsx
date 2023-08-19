@@ -2,20 +2,18 @@ import useSWR from 'swr'
 import { APIFetch } from '../../components/utils'
 import { useAuthStore } from '../../ZustandStore'
 import { useEffect } from 'react'
+import { url } from 'inspector'
+import { MessagesRoute, MessagesFetcer } from '../../api/swr'
 
-async function getMessages(channelId:string,userEmail:string){
-    const url = useAuthStore(s=>s.serverUrl)
-    return APIFetch({url:`${url}/messages/getMessages?channel_id=${channelId}&userEmail=${userEmail}`,method:'GET',})
-
-}
-export default function useCurrentChannelMessages(channelId:string,userEmail:string) {
-
-    const {data,error, mutate} = useSWR('/api/messages',()=>getMessages(channelId,userEmail))
+export default function useCurrentChannelMessages(channelId:string,userEmail:string,serverUrl:string) {
+    
+    const {data:currentChannelMessages,error, mutate} = useSWR(MessagesRoute,()=>MessagesFetcer(channelId,userEmail,serverUrl))
 
     useEffect(
         ()=>{
-            console.log(`USE CURRENT CHANNEL MESSAGES DATA`,data)
-        },[data]
-    )
-    return {data,mutate}
+          console.log(`error:`,error)
+          console.log(`currentChannel messages response:`,currentChannelMessages)
+        },[currentChannelMessages,error]
+       )
+    return {currentChannelMessages:currentChannelMessages?.data,mutate,error}
 }

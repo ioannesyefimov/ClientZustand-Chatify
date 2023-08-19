@@ -1,14 +1,19 @@
-import React, {SetStateAction, useEffect, useState } from "react"
+import React, {SetStateAction, useEffect, useId, useState } from "react"
 import { sendIco } from "../../assets"
 import Button from "../Button/Button"
-import {  SubmitInputType } from "../types"
+import {  ChannelType, SubmitInputType } from "../types"
 import { HandleClickType } from "../MessagesWrapper/Context/MessagesContext"
+import { createDate } from "../utils"
+import { KeyedMutator } from "swr"
 interface PropsType extends SubmitInputType {
   placeholder?: string
   name?: string
+  data:any
+  currentChannel:ChannelType
+  mutate:KeyedMutator<any>
   handleClick: ({e,value,setValue,propsValue,setPropsValue}: HandleClickType)=>Promise<void>
 }
-const SubmitInput = ({propsValue,setPropsValue,handleClick, name,placeholder}:PropsType) => {
+const SubmitInput = ({data,propsValue,setPropsValue,handleClick, name,placeholder,mutate,currentChannel}:PropsType) => {
     const [value,setValue] = useState('')
 
     let onKeyDown=(e:KeyboardEvent) => {
@@ -33,7 +38,26 @@ const SubmitInput = ({propsValue,setPropsValue,handleClick, name,placeholder}:Pr
         <div className='form-wrapper'>
             <input onChange={(e)=>setValue(e?.target?.value)} value={value} placeholder={placeholder}  name={name} id={name} aria-label={`${name} `} />
         </div>
-        <Button type='button' onClick={(e)=>handleClick({e,value,setValue,propsValue,setPropsValue})} img={sendIco} name='submit-btn' text={''} />
+        <Button type='button' onClick={async(e)=>{
+          try {
+            console.log(`submitting message:`,value)
+            const newMessage = {
+              _id:Date.now(),
+              message:value,
+              createdAt:createDate(),
+              channelAt:currentChannel
+            }
+            await mutate(handleClick({e,value,setValue,propsValue,setPropsValue}),
+            {
+              optimisticData:[...data,newMessage],
+              rollbackOnError:true,
+              populateCache:true,
+              revalidate:false
+            })
+          } catch (error) {
+            
+          }
+          }} img={sendIco} name='submit-btn' text={''} />
 
     </div>
     

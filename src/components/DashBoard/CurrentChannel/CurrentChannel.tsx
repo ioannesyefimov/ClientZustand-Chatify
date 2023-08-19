@@ -14,7 +14,6 @@ const CurrentChannel = () => {
   const {setServerResponse} = useResponseContext()
   const {channel_id}=useParams()
   const {currentChannel,setCurrentChannel,addCurrentChannelMessage,currentChannelMessages,deleteCurrentChannelMessage,isLoading}=useCurrentChannel(channel_id ?? '',user)
-  const {data,mutate}=useCurrentChannelMessages(currentChannel?._id!,user?.email)
   const location = useLocation()
   if(!currentChannel?._id) return <h2 className='channel-title dashboard'>Choose your channel</h2>
   let isInCall = location.pathname.slice(1,11).includes('chat-video')
@@ -33,10 +32,12 @@ const CurrentChannel = () => {
           (
             isInCall ? (
               <MultiplePeerComponent channel_id={channel_id!} currentChannel={currentChannel}>
-                  <MessagesWrapper  currentChannelMessages={currentChannelMessages ?? []} setCurrentChannel={setCurrentChannel} currentChannel={currentChannel}/>
+                  <MessagesWrapper   setCurrentChannel={setCurrentChannel} currentChannel={currentChannel}/>
+                  {/* <MessagesWrapper  currentChannelMessages={currentChannelMessages ?? []} setCurrentChannel={setCurrentChannel} currentChannel={currentChannel}/> */}
               </MultiplePeerComponent>
             ): (
-              <MessagesWrapper  currentChannelMessages={currentChannelMessages ?? []} setCurrentChannel={setCurrentChannel} currentChannel={currentChannel}/>
+              <MessagesWrapper   setCurrentChannel={setCurrentChannel} currentChannel={currentChannel}/>
+              // <MessagesWrapper  currentChannelMessages={currentChannelMessages ?? []} setCurrentChannel={setCurrentChannel} currentChannel={currentChannel}/>
             )
           )
         }
