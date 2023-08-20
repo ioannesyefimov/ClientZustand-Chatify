@@ -17,10 +17,12 @@ const useChatStore = create<{
     channels:ChannelType[] | [];
     sortedMessages:SortedStateType 
     currentChannel: ChannelType | null
+    currentChannelMessages:MessageType[] | undefined
     messagesCountRef: React.RefObject<HTMLDivElement | undefined>;
     scrollToRef:React.RefObject<HTMLDivElement | undefined>;
     setSortedMessages:(sortedMessages:SortedStateType)=>any
     setCurrentChannel: (channel:ChannelType|null)=>void
+    setCurrentChannelMessages:(messages:MessageType[])=>void
     setChannels: (channels:ChannelType[])=>void;
     addCurrentChannelMessage: (message:MessageType)=>any
     joinChannel: (channel:ChannelType) =>void
@@ -33,17 +35,20 @@ const useChatStore = create<{
     scrollToRef:React.createRef(),
     messagesCountRef:React.createRef(),
     sortedMessages: {},
+    currentChannelMessages:undefined,
+    setCurrentChannelMessages:(messages:MessageType[])=>set({currentChannelMessages:messages}),
+
     setSortedMessages:(sortedMessages)=>set({sortedMessages}),
     setCurrentChannel: (currentChannel:ChannelType | null)=>set({currentChannel}),
     setChannels: (channels) =>set({channels}),
     joinChannel: (channel:ChannelType) => set((state)=>({channels: [...state?.channels,channel]})),
     leaveChannel: (channel_id:string) => set((state)=>({channels: state?.channels.filter(channel=>channel._id !== channel_id)})),
     addCurrentChannelMessage: (message:MessageType)=>{
-        return set((state:any)=>({currentChannel:{...state.currentChannel,messages:[...state.currentChannel.messages, message]}}))
+        return set((state:any)=>({currentChannelMessages:[...state.currentChannelMessages, message]}))
     },
     deleteCurrentChannelMessage : (message_id:string)=>{
         console.log(`message_id`,message_id)
-        return set((state:any)=>({currentChannel:{...state.currentChannel,messages: state.currentChannel.messages?.filter((msg:MessageType)=>msg._id !== message_id)}}))
+        return set((state:any)=>({currentChannelMessages:[...state.currentChannelMessages, state.currentChannel.messages?.filter((msg:MessageType)=>msg._id !== message_id)]}))
     },
     resetChat: ()=>{set(initState)}
 
