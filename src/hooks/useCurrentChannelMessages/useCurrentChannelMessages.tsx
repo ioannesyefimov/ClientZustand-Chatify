@@ -14,7 +14,12 @@ export default function useCurrentChannelMessages(channelId:string,userEmail:str
           console.log(`error:`,error)
           console.log(`currentChannel messages response:`,currentChannelMessages)
           if(currentChannelMessages){
-            setCurrentChannelMessages(currentChannelMessages)
+            if(Array.isArray(currentChannelMessages[0])){
+              setCurrentChannelMessages(currentChannelMessages[0])
+            }else {
+              setCurrentChannelMessages(currentChannelMessages)
+
+            }
           }
         },[currentChannelMessages,error]
        )

@@ -1,6 +1,5 @@
 import React, { ChangeEvent,  RefObject, SetStateAction } from "react";
 import { MessageType } from "../types";
-import { log } from "console";
 
  const  validateEmail = function(email:string) {
     const regex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/; 
@@ -23,6 +22,7 @@ export function sortMessagesByDate  (data:MessageType[]){
   function sortMessages(a,b){
     return Number(new Date(a.createdAt?.timeStamp)) - Number(new Date(b.createdAt?.timeStamp))
   } 
+  
   // Sort array of messages from the end message to the latest
   const sortedData = data.sort(sortMessages);
   
@@ -57,7 +57,9 @@ export function sortMessagesByDate  (data:MessageType[]){
   }
   
   sortedData.forEach(message => {
-    if (!stillCurrentDay(message.createdAt.timeStamp)) {
+    console.log(`message:`,message);
+    
+    if (!stillCurrentDay(message?.createdAt?.timeStamp)) {
       createMessagesArray(dayMessageArray);
       currentDay = new Date(message.createdAt.timeStamp);
       dayMessageArray = [];
@@ -128,7 +130,7 @@ if (mm < 10) mm = '0' + mm;
 
 const formattedToday =  yyyy + '/' + mm + '/' + dd;
   DATE.day = formattedToday
-  DATE.time = today.toLocaleTimeString()
+  DATE.time = today.toLocaleTimeString("en-GB")
   return DATE
 }
 export const validateInput = ({fields,refs}:{fields:FieldsType,refs: RefsType})=>{

@@ -3,21 +3,25 @@ import './Message.scss'
 import { createDate } from '../../utils'
 import Button from '../../Button/Button'
 import { trashIco, userIco } from '../../../assets'
-import { UserType } from '../../types'
+import { ChannelType, UserType } from '../../types'
 import { Link, useNavigate } from 'react-router-dom'
-import { useMessagesContext } from '../../../hooks'
-import { useAuthStore } from '../../../ZustandStore'
+import { useCurrentChannelMessages, useMessagesContext } from '../../../hooks'
+import { useAuthStore, useChatStore } from '../../../ZustandStore'
 import User from '../../UserComponent/User'
+import { handleDeleteMessage } from '../../../helpers/messagesMutations'
+import { KeyedMutator } from 'swr'
 type PropsType = {
     createdAt:{day:string,
       time:string
-      timeStamp:'string'}
+      timeStamp:'string'
+    }
     message:string
     messageUser?:UserType
     key:any
     _id?: string
-    channel_id:string
-}
+    channel:ChannelType
+    handleDeleteMsg:(_id:string)=>any
+  }
 
 type DisplayDateProps ={
     day:string,
@@ -39,10 +43,13 @@ const displayDate = (date:DisplayDateProps) => {
 
 
 
-const Message = React.forwardRef(({createdAt,message,messageUser,_id,channel_id}:PropsType,ref:ForwardedRef<HTMLDivElement | undefined>) => {
-  const {handleDeleteMessage,scrollToRef}=useMessagesContext()!
+const Message = React.forwardRef(({handleDeleteMsg,createdAt,message,messageUser,_id,channel}:PropsType,ref:ForwardedRef<HTMLDivElement | undefined>) => {
+  const {scrollToRef}=useMessagesContext()!
+  const deleteCurrentChannelMessage = useChatStore(s=>s.deleteCurrentChannelMessage)
   const user = useAuthStore(s=>s.user)
   const navigate = useNavigate()
+  const serverUrl = useAuthStore(s=>s.serverUrl)
+  const currentChannelMessages =useChatStore(s=>s.currentChannelMessages)
   let sentBy = user?._id === messageUser?._id ? 'sent' : 'received'  
   
   let visitProfileFunc = sentBy ==='received' ? (`/user/${messageUser?._id ?? 'deleted'}` )
@@ -62,8 +69,10 @@ return (
        </div>
        <p className="message-text">{message}</p>
        {sentBy==='sent'? (
-         <Button img={trashIco} name='message-delete' type="button" onClick={()=>handleDeleteMessage(_id!,channel_id)} />
-
+        //  <Button img={trashIco} name='message-delete' type="button" onClick={()=>handleDeleteMessage(_id!,channel_id)} />
+          <button onClick={()=>handleDeleteMsg(_id!)} className='message-delete'>
+            <img src={trashIco} />
+          </button>
        ): (
         null
        )}

@@ -126,7 +126,7 @@ export default function useCurrentChannel(channel_id:string,user:UserType) {
                 // scrollToRef?.current
                 console.log(`getting message and isInView is ${isInView}`);
               }
-              if(data?.data?.messages){
+              if(data?.data?.message?.message){
                 addCurrentChannelMessage(data?.data?.message)
                 // scrollToRef?.current?.scrollIntoView({behavior:'smooth'}) 
               }

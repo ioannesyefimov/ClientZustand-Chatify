@@ -46,9 +46,13 @@ const useChatStore = create<{
     addCurrentChannelMessage: (message:MessageType)=>{
         return set((state:any)=>({currentChannelMessages:[...state.currentChannelMessages, message]}))
     },
+    // deleteCurrentChannelMessage : (message_id:string)=>{
+    //     console.log(`message_id`,message_id)
+    //     return set((state:any)=>({currentChannelMessages:[...state.currentChannelMessages, state.currentChannel.messages?.filter((msg:MessageType)=>msg._id !== message_id)]}))
+    // },
     deleteCurrentChannelMessage : (message_id:string)=>{
         console.log(`message_id`,message_id)
-        return set((state:any)=>({currentChannelMessages:[...state.currentChannelMessages, state.currentChannel.messages?.filter((msg:MessageType)=>msg._id !== message_id)]}))
+        return set((state:any)=>({currentChannelMessages:[...state.currentChannelMessages, state.currentChannelMessages?.filter((msg:MessageType)=>msg._id !== message_id)]}))
     },
     resetChat: ()=>{set(initState)}
 

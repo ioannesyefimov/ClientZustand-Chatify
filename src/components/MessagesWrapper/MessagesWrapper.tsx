@@ -1,15 +1,14 @@
-import React, { LegacyRef, RefObject, SetStateAction, useEffect, useRef, useState } from 'react'
-import { sleep, sortMessagesByDate } from '../utils'
+import  { LegacyRef, RefObject, useEffect } from 'react'
+import { sortMessagesByDate } from '../utils'
 import { ChannelType, MessageType } from '../types'
 import Messages from './Messages/Messages'
-import { useCurrentChannelMessages, useMessagesContext } from '../../hooks'
-import SubmitInput from '../SubmitInput/SubmitInput'
+import { useCurrentChannelMessages } from '../../hooks'
+import SubmitInput from '../SubmitMessageInput/SubmitIMessageInput'
 import './MessagesWrapper.scss'
 import { useAuthStore, useChatStore } from '../../ZustandStore'
 import { downArrowIco } from '../../assets'
 import Button from '../Button/Button'
-import useSWR from 'swr'
-import { MessagesFetcer, MessagesRoute } from '../../api/swr'
+import { handleDeleteMessage} from '../../helpers/messagesMutations'
 type PropsType ={
     currentChannel: ChannelType | null
     // currentChannelMessages: MessageType[] | null
@@ -18,19 +17,24 @@ type PropsType ={
 
 
 export default function MessagesWrapper({currentChannel,setCurrentChannel}:PropsType) {
-   const {
-    handleSubmitMessage
-  }=useMessagesContext()!
+  //  const {
+  //   handleSubmitMessage
+  // }=useMessagesContext()!
+
   const serverUrl=useAuthStore(s=>s.serverUrl)
   const user=useAuthStore(s=>s.user)
-  const {currentChannelMessages,mutate,error}=useCurrentChannelMessages(currentChannel?._id!,user.email,serverUrl)
+  const {mutate,error}=useCurrentChannelMessages(currentChannel?._id!,user.email,serverUrl)
+  const currentChannelMessages = useChatStore(s=>s.currentChannelMessages)
   const sortedMessages = useChatStore(s=>s.sortedMessages)
   const setSortedMessages = useChatStore(s=>s.setSortedMessages)
   const scrollToRef = useChatStore(s=>s.scrollToRef)
   const messagesCountRef = useChatStore(s=>s.messagesCountRef)
    let initMessages = async()=>{
-    await sleep(5000);
-    let messages=currentChannelMessages?.data ?? currentChannel?.messages ?? []
+    let messages=currentChannelMessages ?? currentChannel?.messages ?? []
+    console.log(`messages:`,messages);
+    
+
+ 
     if(!messages?.length) return
     let sorted = sortMessagesByDate(messages)
     if(sorted?.fullMessageArray?.length){
@@ -38,7 +42,19 @@ export default function MessagesWrapper({currentChannel,setCurrentChannel}:Props
     }
     console.log(`sorted.fullMessageArray`,sorted.fullMessageArray);
    }
- 
+   const handleDeleteMsg = async(_id:string)=>{
+    console.log(`deleting msg:`,_id);
+    
+    let filtered=currentChannelMessages?.filter(msg=>msg._id!== _id)
+    console.log(`filtered:`,filtered);
+
+    mutate(()=>handleDeleteMessage(_id,currentChannel!,user._id!),{
+      optimisticData:[filtered],
+      revalidate:true,
+      rollbackOnError:true,
+      populateCache:true
+    })
+  }
    useEffect(
     ()=>{
       scrollToRef?.current?.scrollIntoView({behavior:'smooth'})  
@@ -65,7 +81,7 @@ export default function MessagesWrapper({currentChannel,setCurrentChannel}:Props
               let messages:unknown = sortedMessages[arrays as keyof typeof sortedMessages]![key]
               // and return Messages with divider for day and time
               return(
-                    <Messages messages={messages as MessageType[]} date={date} key={key ?? 'newkey'}   />
+                    <Messages handleDeleteMsg={handleDeleteMsg} messages={messages as MessageType[]} date={date} key={key ?? 'newkey'}   />
                 )
                 }) 
         }) 
@@ -81,9 +97,7 @@ export default function MessagesWrapper({currentChannel,setCurrentChannel}:Props
       </div>
       <div className='scrool-ref'  ref={scrollToRef as RefObject<HTMLDivElement>}  >
     </div>
-      <SubmitInput data={currentChannelMessages} mutate={mutate} currentChannel={currentChannel!}  handleClick={handleSubmitMessage} setPropsValue={setCurrentChannel} propsValue={currentChannel} name="message-input" placeholder="Type a message here" e={undefined} value= {undefined} setValue={function (value: any): void {
-      throw new Error('Function not implemented.')
-    } } />
+      <SubmitInput data={currentChannelMessages} mutate={mutate} name="message-input" placeholder="Type a message here"  />
    
     <Button onClick={()=>{
       scrollToRef.current?.scrollIntoView({behavior:'smooth'})

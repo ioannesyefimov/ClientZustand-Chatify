@@ -17,7 +17,7 @@ import Dashboard from "./DashBoard/Dashboard";
 import RedirectComponent from "./RedirectComponent/RedirectComponent";
 import ChannelCreate from "./ChannelManager/ChannelCreate/ChannelCreate";
 import Button from "./Button/Button";
-import SubmitInput from "./SubmitInput/SubmitInput";
+import SubmitInput from "./SubmitMessageInput/SubmitIMessageInput";
 import MemberInfo from "./UserSearch/UserSearch";
 import Profile from "./ProfileComponent/Profile";
 import UserComponent from "./UserComponent/UserComponent";

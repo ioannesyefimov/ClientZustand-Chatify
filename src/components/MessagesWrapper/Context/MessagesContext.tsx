@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { ChildrenType, MessageType } from "../../types";
-import { useResponseContext } from "../../../hooks";
+import { useCurrentChannelMessages, useResponseContext } from "../../../hooks";
 import { useAuthStore, useChatStore } from "../../../ZustandStore";
 import { channelSocket } from "../../../hooks/useCurrentChannelContext/useCurrentChannel";
 import { sleep } from "../../utils";
@@ -30,9 +30,12 @@ const useMessagesStore = ()=>{
     const user=useAuthStore(s=>s.user)
     const loading = useAuthStore(s=>s.loading)
     const scrollToRef = useRef<HTMLDivElement>()
+    const serverUrl = useAuthStore(s=>s.serverUrl)
     const setLoading=useAuthStore(s=>s.setLoading)
     const {setServerResponse} = useResponseContext()
     const currentChannel=useChatStore(s=>s.currentChannel)
+    const {currentChannelMessages,mutate}=useCurrentChannelMessages(currentChannel!._id!,user.email,serverUrl)
+  
     const handleSubmitMessage=async({e,value,setValue,propsValue,setPropsValue}:HandleClickType): Promise<void> =>{
         try {
           if(loading) return 
@@ -62,6 +65,10 @@ const useMessagesStore = ()=>{
         //  console.log(`channel:`, currentChannel);
          if(!message_id) return console.error(`missing id`);
          channelSocket.emit('delete_message',{channel_id,message_id,userEmail:user.email,})
+         if(currentChannelMessages){
+        //  await mutate({...currentChannelMessages.filter(message=>message._id !== channel_id)})
+
+         }
       } catch (error) {
       } finally{
         setLoading(false)
